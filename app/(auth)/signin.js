@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from "../firebase/FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, Redirect, router } from "expo-router";
+import Toast from 'react-native-toast-message';
 import { signInUser } from "../firebase/auth";
 
 import logo from "../../assets/images/logo.png";
@@ -77,6 +78,7 @@ const signIn = () => {
             </Text>
           </View>
         </View>
+        <Toast/>
       </ScrollView>
     </SafeAreaView>
   );
