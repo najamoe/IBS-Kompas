@@ -56,7 +56,7 @@ export default function App() {
             Se tilbage og opdag, hvad der kan have udløst ubehaget
           </Text>
 
-          <CustomButton title="Opret dig" handlePress={() => router.push('/signup')} />
+          <CustomButton title="FORTSÆT" handlePress={() => router.push('/signin')} />
         </View>
       </ScrollView>
       <StatusBar backgroundColor="#161622" style="light" />
