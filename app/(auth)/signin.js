@@ -2,10 +2,8 @@ import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth } from "../firebase/FirebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { Link, Redirect, router } from "expo-router";
-import Toast from 'react-native-toast-message';
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
 import { signInUser } from "../firebase/auth";
 
 import logo from "../../assets/images/logo.png";
@@ -26,11 +24,11 @@ const signIn = () => {
     signInUser(email, password)
       .then(() => {
         setLoading(false);
-        router.push('/home');  // Redirect to the home page
+        router.push("/home");
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert('Login Error', error);  // Show alert if login fails
+        Alert.alert("Login Error", error); 
       });
 
     setLoading(true);
@@ -78,7 +76,7 @@ const signIn = () => {
             </Text>
           </View>
         </View>
-        <Toast/>
+        <Toast />
       </ScrollView>
     </SafeAreaView>
   );
@@ -129,7 +127,7 @@ const styles = StyleSheet.create({
   },
   signupStyle: {
     fontWeight: "bold",
-    fontFamily: 'Poppins-Regular',
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
   },
 });
