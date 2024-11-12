@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { auth } from "../firebase/FirebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Link, Redirect, router } from "expo-router";
+import { signInUser } from "../firebase/auth";
 
 import logo from "../../assets/images/logo.png";
 import CustomButton from "../components/CustomButton";
@@ -18,7 +19,21 @@ const signIn = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const submit = () => {};
+  const submit = () => {
+    const { email, password } = form;
+
+    signInUser(email, password)
+      .then(() => {
+        setLoading(false);
+        router.push('/home');  // Redirect to the home page
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert('Login Error', error);  // Show alert if login fails
+      });
+
+    setLoading(true);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,11 +65,15 @@ const signIn = () => {
               isLoading={isSubmitting}
             />
 
-            <Text
-              style={styles.registerText}
-              onPress={() => router.push("/signup")}
-            >
-              Don't have an account? Register
+            <Text style={styles.registerText}>
+              Har du ikke en konto?
+              <Text
+                style={styles.signupStyle}
+                onPress={() => router.push("/signup")}
+              >
+                {" "}
+                OPRET DIG HER
+              </Text>
             </Text>
           </View>
         </View>
@@ -65,12 +84,11 @@ const signIn = () => {
 
 export default signIn;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#86c5d8",
-    height: '100%',
+    height: "100%",
   },
   logo: {
     width: 200,
@@ -90,20 +108,26 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     margin: 5,
-    width: '100%',
+    width: "100%",
   },
   registerText: {
-    color: "white",
-    textAlign: 'center',
+    color: "black",
+    textAlign: "center",
+    fontSize: 14,
   },
   logincontainer: {
     alignItems: "center",
     backgroundColor: "white",
-    marginTop: 20,
-    padding: 5,
+    marginTop: 30,
+    padding: 20,
     borderRadius: 5,
-    width: "85%", 
-    alignSelf: "center", 
-    justifyContent: "center", 
+    width: "85%",
+    alignSelf: "center",
+    justifyContent: "center",
+  },
+  signupStyle: {
+    fontWeight: "bold",
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
   },
 });
