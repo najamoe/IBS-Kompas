@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 80,
     marginLeft: 15,
+    marginTop: 40,
   },
   loginText: {
     fontSize: 30,
