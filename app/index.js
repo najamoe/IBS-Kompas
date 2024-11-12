@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
+import Toast from 'react-native-toast-message';
 import { SplashScreen } from "expo-splash-screen";
 import { Link, Redirect, router } from "expo-router";
 import { useEffect } from "react";
@@ -59,6 +60,7 @@ export default function App() {
           <CustomButton title="FORTSÆT" handlePress={() => router.push('/signin')} />
         </View>
       </ScrollView>
+      <Toast/>
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
