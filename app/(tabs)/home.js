@@ -1,24 +1,30 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React from 'react'
+import React from "react";
 
 const home = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ height: "100%" }}>
-      <Text>home</Text>
-      </ScrollView>
+      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
+          <Text>home</Text>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default home
+export default home;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#cae9f5",
+  },
+  gradient: {
+    flex: 1,
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
-})
+});
