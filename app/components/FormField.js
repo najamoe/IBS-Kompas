@@ -24,7 +24,7 @@ const FormField = ({
           placeholderTextColor="grey"
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showpassword}
-          style={styles.input} // Add style to TextInput
+          style={styles.input} 
         />
 
         {title === "Password" && (
@@ -62,7 +62,9 @@ const styles = StyleSheet.create({
     flex: 1, 
     padding: 8, 
     fontSize:16,
+    backgroundColor: 'white',
   },
+
   eyeIcon: {
     marginLeft: 10, 
     
