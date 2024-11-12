@@ -8,8 +8,8 @@ import CustomButton from "../components/CustomButton";
 
 const profile = () => {
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View style={styles.container}>
           <CustomButton
             title="Sign Out"
