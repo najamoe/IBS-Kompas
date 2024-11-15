@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "IBS-Kompas",
-    "scheme": "IBS-Kompas",
+    "scheme": "ibs-kompas",
     "slug": "IBS-Kompas",
     "version": "1.0.0",
     "orientation": "portrait",
