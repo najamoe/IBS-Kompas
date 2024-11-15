@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../firebase/auth";
 
@@ -23,6 +24,7 @@ const profile = () => {
               title="Slet konto"
               style={styles.DeleteButton}
               handlePress={deleteUser}
+              iconName="trash"
             />
           </View>
         </ScrollView>
@@ -43,11 +45,5 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-  },
-  signOutButton: {
-    marginBottom: 10,
-  },
-  deleteUser: {
-    marginBottom: 10,
-  },
+  }
 });
