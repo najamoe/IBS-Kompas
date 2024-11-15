@@ -12,6 +12,7 @@ const FormField = ({
   ...props
 }) => {
   const [showpassword, setShowpassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <View>
@@ -24,7 +25,7 @@ const FormField = ({
           placeholderTextColor="grey"
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showpassword}
-          style={styles.input} 
+          style={styles.input}
         />
 
         {title === "Password" && (
@@ -33,7 +34,20 @@ const FormField = ({
               name={!showpassword ? "eye" : "eye-slash"}
               size={20}
               color="black"
-              style={styles.eyeIcon} 
+              style={styles.eyeIcon}
+            />
+          </TouchableOpacity>
+        )}
+        
+        {title === "Confirm Password" && (
+          <TouchableOpacity
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <FontAwesome
+              name={!showConfirmPassword ? "eye" : "eye-slash"}
+              size={20}
+              color="black"
+              style={styles.eyeIcon}
             />
           </TouchableOpacity>
         )}
@@ -46,27 +60,25 @@ export default FormField;
 
 const styles = StyleSheet.create({
   form: {
-    width: '90%',
+    width: "90%",
     backgroundColor: "white",
-    flexDirection: "row", 
-    alignItems: "center", 
-    paddingHorizontal: 10, 
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: "grey", 
-    borderRadius: 5, 
+    borderColor: "grey",
+    borderRadius: 5,
     marginTop: 10,
     marginBottom: 10,
-    
   },
   input: {
-    flex: 1, 
-    padding: 8, 
-    fontSize:16,
-    backgroundColor: 'white',
+    flex: 1,
+    padding: 8,
+    fontSize: 16,
+    backgroundColor: "white",
   },
 
   eyeIcon: {
-    marginLeft: 10, 
-    
+    marginLeft: 10,
   },
 });
