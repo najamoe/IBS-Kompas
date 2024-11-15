@@ -1,14 +1,135 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput } from "react-native";
+import { useState } from "react";
+import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+import DatePicker from 'react-native-date-picker'
+import React from "react";
+import FormField from "../components/FormField";
+import CustomButton from "../components/CustomButton";
+import { createUser } from "../firebase/auth";
 
 const signUp = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [date, setDate] = useState(new Date());
+  const [loading, setLoading] = useState("");
+
+  const formatDate = (date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const submitNewUser = async () => {
+    setLoading(true);
+
+    // Validation check for password length and matching passwords
+    if (password.length <= 5) {
+      alert("Password skal indeholde 6 tegn");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords er ikke ens");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await createUser(email, password); // Create user with email and password
+      setLoading(false);
+      router.push('/home'); // Redirect to home after successful creation
+    } catch (error) {
+      setLoading(false);
+      console.error("Error creating user:", error);
+      // Handle any error during user creation (you can show a toast here)
+    }
+  };
+
   return (
-    <View>
-      <Text>signUp</Text>
-    </View>
-  )
-}
+    <SafeAreaView style={styles.container}>
+      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
+          <Text style={styles.signUpText}>Opret bruger</Text>
+          <View style={styles.signupContainer}>
+            
+            <FormField
+              title="Email"
+              value={email}
+              placeholder="Enter your email"
+              handleChangeText={setEmail}
+            />
+            <FormField
+              title="Password"
+              value={password}
+              placeholder="Indtast password"
+              handleChangeText={setPassword}
+            />
 
-export default signUp
+            <FormField
+              title="verificér Password"
+              value={confirmPassword}
+              placeholder="Indtast password igen"
+              handleChangeText={setConfirmPassword}
+            />
 
-const styles = StyleSheet.create({})
+
+            <CustomButton
+              style={styles.buttonStyle}
+              title={loading ? "Opretter bruger" : "Opret bruger"}
+              handlePress={submitNewUser}
+              
+            />
+
+          </View>
+        </ScrollView>
+        <StatusBar backgroundColor="#161622" style="light" />
+      </LinearGradient>
+    </SafeAreaView>
+  );
+};
+
+export default signUp;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gradient: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  signUpText: {
+    fontWeight: "bold",
+    fontSize: 34,
+    color: "black",
+    marginTop: 50,
+  },
+  signupContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    marginTop: 50,
+    padding: 20,
+    borderRadius: 5,
+    width: "140%",
+    alignSelf: "center",
+    justifyContent: "center",
+  },
+  label: {
+    fontSize: 16,
+    color: "black",
+    marginBottom: 10,
+  },
+  dateDisplay: {
+    fontSize: 18,
+    color: "black",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+});
