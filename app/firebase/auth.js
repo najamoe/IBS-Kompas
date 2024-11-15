@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser } from "firebase/auth";
 import Toast from 'react-native-toast-message';
 import { auth } from "./FirebaseConfig"; 
 import { router } from "expo-router";
@@ -85,3 +85,46 @@ export const resetPassword = (email) => {
           throw error;
       });
 };
+
+export const deleteUserAccount = () => {
+  const user = auth.currentUser; // Get the currently authenticated user
+  if (!user) {
+      Toast.show({
+          type: 'error',
+          text1: 'Deletion failed',
+          text2: 'User is not authenticated',
+          visibilityTime: 5000,
+          position: 'top',
+      });
+      return Promise.reject("User is not authenticated");
+  }
+
+  // Delete the user account from Firebase Authentication
+  return deleteUser(user)
+      .then(() => {
+        console.log("User deleted successfully");
+          // Account deletion successful
+          Toast.show({
+              type: 'success',
+              text1: 'Konto slettet',
+              text2: 'Din konto er slettet',
+              visibilityTime: 5000,
+              position: 'top',
+          });
+
+          // redirect user after deletion
+          router.replace('/');  
+      })
+      .catch((error) => {
+          // Handle errors (e.g., user is not signed in or other issues)
+          console.error("Error deleting account:", error.message);
+          Toast.show({
+              type: 'error',
+              text1: 'Account deletion failed',
+              text2: error.message,
+              visibilityTime: 5000,
+              position: 'top',
+          });
+          throw error;
+      });
+}
