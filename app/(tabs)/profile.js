@@ -1,16 +1,24 @@
 import { StatusBar } from "expo-status-bar";
 import { ScrollView, StyleSheet, Text, View, Modal } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { useState } from "react";
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
-
 import CustomButton from "../components/CustomButton";
+import { auth } from "../firebase/FirebaseConfig"; // Correct import
 
-const profile = () => {
+const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    // Get the signed-in user's email when the component mounts
+    const user = auth.currentUser;
+    if (user) {
+      setUserEmail(user.email); // Set the email in the state
+    }
+  }, []);
 
   const handleDeleteUser = async () => {
     try {
@@ -18,14 +26,18 @@ const profile = () => {
       await deleteUserAccount();
       setModalVisible(false);
     } catch (error) {
-      console.error("Noget gik galt med sletning af konto", error)
+      console.error("Something went wrong with account deletion", error);
     }
-  }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
           <View style={styles.container}>
+            {/* Display the user's email */}
+            <Text style={styles.emailText}>Signed in as: {userEmail}</Text>
+
             <CustomButton
               title="Sign Out"
               style={styles.signOutButton}
@@ -38,7 +50,7 @@ const profile = () => {
               title="Slet konto"
               style={styles.DeleteButton}
               handlePress={() => {
-                console.log("Slet konto button pressed");
+                console.log("Delete account button pressed");
                 setModalVisible(true);
               }}
               iconName="trash"
@@ -75,7 +87,7 @@ const profile = () => {
   );
 };
 
-export default profile;
+export default Profile;
 
 const styles = StyleSheet.create({
   container: {
@@ -86,6 +98,12 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+  },
+  emailText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "black",
   },
   modalContainer: {
     flex: 1,
