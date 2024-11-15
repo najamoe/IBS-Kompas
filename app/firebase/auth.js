@@ -1,7 +1,48 @@
-import { signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser } from "firebase/auth";
 import Toast from 'react-native-toast-message';
 import { auth } from "./FirebaseConfig"; 
 import { router } from "expo-router";
+
+export const createUser = (email, password) => {
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      console.log("User created successfully:", user);
+      // You can also redirect the user or show a success message here
+      Toast.show({
+        type: 'success',
+        text1: 'Account Created',
+        text2: 'Your account has been created successfully!',
+        visibilityTime: 5000,
+        position: 'top',
+      });
+      // Optionally, redirect the user or handle further actions here
+      // For example:
+      // router.push('/dashboard'); // redirect after successful sign-up
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      
+      console.error("Create user error:", errorMessage);
+
+      let errorText = 'Kunne ikke oprette bruger'; // Default error message
+
+      if (errorCode === 'auth/email-already-in-use') {
+        errorText = 'Email already in use';
+      } else if (errorCode === 'auth/weak-password') {
+        errorText = 'Password is too weak';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: 'Oprettelse mislykkedes',
+        text2: errorText,
+        visibilityTime: 5000,
+        position: 'top',
+      });
+    });
+};
 
 export const signInUser = (email, password) => {
     if (!email || !password) {
