@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../firebase/auth";
 
 import CustomButton from "../components/CustomButton";
+import { deleteUser } from "firebase/auth";
 
 const profile = () => {
   return (
@@ -17,6 +18,11 @@ const profile = () => {
               title="Sign Out"
               style={styles.signOutButton}
               handlePress={signOutUser}
+            />
+            <CustomButton
+              title="Slet konto"
+              style={styles.DeleteButton}
+              handlePress={deleteUser}
             />
           </View>
         </ScrollView>
@@ -39,6 +45,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   signOutButton: {
+    marginBottom: 10,
+  },
+  deleteUser: {
     marginBottom: 10,
   },
 });
