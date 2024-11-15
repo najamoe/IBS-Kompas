@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
-import { signInUser } from "../firebase/auth";
+import { signInUser, resetPassword } from "../firebase/auth";
 
 import logo from "../../assets/images/logo.png";
 import CustomButton from "../components/CustomButton";
@@ -37,8 +37,13 @@ const signIn = () => {
   };
 
   const handlePasswordReset = async () => {
-    
-  }
+    try {
+      await resetPassword(resetEmail);
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Password reset error:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -108,10 +113,7 @@ const signIn = () => {
               handleChangeText={setResetEmail}
               keyboardType="email-address"
             />
-            <CustomButton
-              title="Submit"
-              handlePress={handlePasswordReset}
-            />
+            <CustomButton title="Submit" handlePress={handlePasswordReset} />
             <CustomButton
               title="Cancel"
               handlePress={() => setModalVisible(false)}
@@ -120,7 +122,6 @@ const signIn = () => {
           </View>
         </View>
       </Modal>
-
     </SafeAreaView>
   );
 };
