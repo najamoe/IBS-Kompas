@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, Image } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,6 +7,8 @@ import React from "react";
 import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
+import icon from "../../assets/icon.png";
+import { reloadAppAsync } from "expo";
 
 const signUp = () => {
   const [name, setName] = useState("");
@@ -45,8 +47,9 @@ const signUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+      <LinearGradient colors={["#cae9f5", "white"]}>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
+        <Image source={icon} style={styles.icon}/>
           <Text style={styles.signUpText}>Opret bruger</Text>
           <View style={styles.signupContainer}>
             
@@ -90,18 +93,19 @@ export default signUp;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   signUpText: {
     fontWeight: "bold",
     fontSize: 44,
     color: "black",
-    marginTop: 80,
-    textAlign: "center", // Center the text horizontally
+    marginTop: 200,
+    textAlign: "center", 
   },
   signupContainer: {
     alignItems: "center",
     backgroundColor: "white",
-    marginTop: 50,
+    marginTop: 80,
     padding: 20,
     borderRadius: 5,
     width: "85%", 
@@ -112,6 +116,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
     marginBottom: 10,
+  },
+  icon: {
+    width: 80,  
+    height: 80, 
+    position: "absolute", 
+    top: 40, 
+    right: 20, 
   },
 });
 
