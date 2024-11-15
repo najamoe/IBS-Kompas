@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, Modal } from "react-native";
 import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,6 +17,8 @@ const signIn = () => {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   const submit = () => {
     const { email, password } = form;
@@ -28,11 +30,15 @@ const signIn = () => {
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert("Login Error", error); 
+        Alert.alert("Login Error", error);
       });
 
     setLoading(true);
   };
+
+  const handlePasswordReset = async () => {
+    
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -64,6 +70,13 @@ const signIn = () => {
               isLoading={isSubmitting}
             />
 
+            <Text
+              style={styles.forgotPasswordText}
+              onPress={() => setModalVisible(true)}
+            >
+              Glemt password?
+            </Text>
+
             <Text style={styles.registerText}>
               Har du ikke en konto?
               <Text
@@ -78,6 +91,36 @@ const signIn = () => {
         </View>
         <Toast />
       </ScrollView>
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Nulstil password</Text>
+            <FormField
+              title=""
+              placeholder="Indtast din email"
+              value={resetEmail}
+              handleChangeText={setResetEmail}
+              keyboardType="email-address"
+            />
+            <CustomButton
+              title="Submit"
+              handlePress={handlePasswordReset}
+            />
+            <CustomButton
+              title="Cancel"
+              handlePress={() => setModalVisible(false)}
+              style={styles.cancelButton}
+            />
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 };
@@ -130,5 +173,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Poppins-Regular",
     fontSize: 14,
+  },
+  forgotPasswordText: {
+    color: "blue",
+    textAlign: "center",
+    marginTop: 10,
+    textDecorationLine: "underline",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+  cancelButton: {
+    marginTop: 10,
+    backgroundColor: "gray",
   },
 });
