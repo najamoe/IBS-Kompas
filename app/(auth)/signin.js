@@ -86,7 +86,7 @@ const signIn = () => {
               Har du ikke en konto?
               <Text
                 style={styles.signupStyle}
-                onPress={() => router.push("/signup")}
+                onPress={() => router.push("/SignUp")}
               >
                 {" "}
                 OPRET DIG HER
