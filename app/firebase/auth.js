@@ -4,43 +4,20 @@ import { auth } from "./FirebaseConfig";
 import { router } from "expo-router";
 
 export const createUser = (email, password) => {
-  createUserWithEmailAndPassword(auth, email, password)
+  return createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      const user = userCredential.user;
-      console.log("User created successfully:", user);
-      // You can also redirect the user or show a success message here
-      Toast.show({
-        type: 'success',
-        text1: 'Account Created',
-        text2: 'Your account has been created successfully!',
-        visibilityTime: 5000,
-        position: 'top',
-      });
-      // Optionally, redirect the user or handle further actions here
-      // For example:
-      // router.push('/dashboard'); // redirect after successful sign-up
+      console.log('User account created & signed in!', userCredential.user);
+      return userCredential;
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      
-      console.error("Create user error:", errorMessage);
-
-      let errorText = 'Kunne ikke oprette bruger'; // Default error message
-
-      if (errorCode === 'auth/email-already-in-use') {
-        errorText = 'Email already in use';
-      } else if (errorCode === 'auth/weak-password') {
-        errorText = 'Password is too weak';
+      let message = 'Noget gik galt.';
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'Den emailadresse er allerede i brug!';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'Den angivne emailadresse er ugyldig!';
+      } else if (error.code === 'auth/weak-password') {
+        message = 'Adgangskoden er for svag.';
       }
-
-      Toast.show({
-        type: 'error',
-        text1: 'Oprettelse mislykkedes',
-        text2: errorText,
-        visibilityTime: 5000,
-        position: 'top',
-      });
     });
 };
 
