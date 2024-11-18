@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, Image } from "react-native";
 import { useState } from "react";
+import Toast from 'react-native-toast-message';
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -8,51 +9,51 @@ import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
 import icon from "../../assets/icon.png";
-import { reloadAppAsync } from "expo";
 
 const signUp = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [date, setDate] = useState(new Date());
-  const [loading, setLoading] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   const submitNewUser = async () => {
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Oprettelse mislykkedes',
+        text2: 'Passwords stemmer ikke overens!',
+        visibilityTime: 5000,
+        position: 'top',
+      });
+      return;
+    }
+
     setLoading(true);
 
-    // Validation check for password length and matching passwords
-    if (password.length <= 5) {
-      alert("Password skal indeholde 6 tegn");
-      setLoading(false);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Passwords er ikke ens");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      await createUser(email, password); // Create user with email and password
-      setLoading(false);
-      router.push('/home'); // Redirect to home after successful creation
-    } catch (error) {
-      setLoading(false);
-      console.error("Error creating user:", error);
-      // Handle any error during user creation (you can show a toast here)
-    }
+    createUser(email, password)
+      .then(() => {
+        setLoading(false);
+        router.replace('/home');
+      })
+      .catch((error) => {
+        setLoading(false);
+        Toast.show({
+          type: 'error',
+          text1: 'Oprettelse mislykkedes',
+          text2: error.message,
+          visibilityTime: 5000,
+          position: 'top',
+        });
+      });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]}>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
-        <Image source={icon} style={styles.icon}/>
+          <Image source={icon} style={styles.icon}/>
           <Text style={styles.signUpText}>Opret bruger</Text>
           <View style={styles.signupContainer}>
-            
             <FormField
               title="Email"
               value={email}
@@ -65,22 +66,19 @@ const signUp = () => {
               placeholder="Indtast password"
               handleChangeText={setPassword}
             />
-
             <FormField
               title="verificér Password"
               value={confirmPassword}
               placeholder="Indtast password igen"
               handleChangeText={setConfirmPassword}
             />
-
             <CustomButton
               style={styles.buttonStyle}
               title={loading ? "Opretter bruger" : "Opret bruger"}
               handlePress={submitNewUser}
-              
             />
-
           </View>
+          <Toast />
         </ScrollView>
         <StatusBar backgroundColor="#161622" style="light" />
       </LinearGradient>
@@ -125,4 +123,3 @@ const styles = StyleSheet.create({
     right: 20, 
   },
 });
-
