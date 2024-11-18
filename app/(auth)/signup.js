@@ -16,6 +16,7 @@ const signUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false); 
 
+  
   const submitNewUser = async () => {
     if (password !== confirmPassword) {
       Toast.show({
@@ -27,25 +28,19 @@ const signUp = () => {
       });
       return;
     }
-
+  
     setLoading(true);
-
-    createUser(email, password)
-      .then(() => {
-        setLoading(false);
-        router.replace('/home');
-      })
-      .catch((error) => {
-        setLoading(false);
-        Toast.show({
-          type: 'error',
-          text1: 'Oprettelse mislykkedes',
-          text2: error.message,
-          visibilityTime: 5000,
-          position: 'top',
-        });
-      });
+  
+    try {
+      await createUser(email, password); // Ensure that the error is thrown here if weak password
+      setLoading(false);
+      router.replace('/home'); // Only redirect if user was successfully created
+    } catch (error) {
+      setLoading(false);
+      // Error handling is done in the createUser function, so no need to handle here again
+    }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
