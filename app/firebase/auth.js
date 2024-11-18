@@ -16,10 +16,22 @@ export const createUser = (email, password) => {
       } else if (error.code === 'auth/invalid-email') {
         message = 'Den angivne emailadresse er ugyldig!';
       } else if (error.code === 'auth/weak-password') {
-        message = 'Adgangskoden er for svag.';
+        message = 'Adgangskoden skal være over 6 tegn';
       }
+
+      // Show the toast message for weak password or other errors
+      Toast.show({
+        type: 'error',
+        text1: 'Oprettelse mislykkedes',
+        text2: message,
+        visibilityTime: 5000,
+        position: 'top',
+      });
+
+      throw new Error(message); // Reject the promise to stop further actions
     });
 };
+
 
 export const signInUser = (email, password) => {
     if (!email || !password) {
