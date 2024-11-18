@@ -57,7 +57,7 @@ export default function App() {
             Se tilbage og opdag, hvad der kan have udløst ubehaget
           </Text>
 
-          <CustomButton title="FORTSÆT" handlePress={() => router.push('/signin')} />
+          <CustomButton title="FORTSÆT" handlePress={() => router.push('/SignIn')} />
         </View>
       </ScrollView>
       <Toast/>
