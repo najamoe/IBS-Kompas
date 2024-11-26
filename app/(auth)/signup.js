@@ -1,6 +1,14 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  TextInput,
+  Image,
+} from "react-native";
 import { useState } from "react";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
@@ -14,41 +22,39 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
-  
   const submitNewUser = async () => {
     if (password !== confirmPassword) {
       Toast.show({
-        type: 'error',
-        text1: 'Oprettelse mislykkedes',
-        text2: 'Passwords stemmer ikke overens!',
+        type: "error",
+        text1: "Oprettelse mislykkedes",
+        text2: "Passwords stemmer ikke overens!",
         visibilityTime: 5000,
-        position: 'top',
+        position: "top",
       });
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       // Create user with Firebase Authentication
-      const userCredential = await createUser(email, password); 
+      const userCredential = await createUser(email, password);
       const uid = userCredential.user.uid; // Get the UID of the new user
-  
+
       // Prepare basic user data for Firestore
       const userData = {
         email,
         uid,
         createdAt: new Date(),
-        profileCompleted: false,  // Flag to track profile completion
+        profileCompleted: false, // Flag to track profile completion
       };
-  
-  
+
       await addUserToFirestore(uid, userData);
-  
+
       setLoading(false);
-      router.replace('/home'); // Redirect to home or profile setup screen
+      router.replace("/home"); // Redirect to home or profile setup screen
     } catch (error) {
       setLoading(false);
       console.error("Error during signup:", error);
@@ -58,14 +64,12 @@ const SignUp = () => {
   const handleGoBack = () => {
     router.back(); // Go back to the previous screen
   };
-  
-  
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]}>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <Image source={icon} style={styles.icon}/>
+          <Image source={icon} style={styles.icon} />
           <Text style={styles.signUpText}>Opret bruger</Text>
           <View style={styles.signupContainer}>
             <FormField
@@ -86,16 +90,18 @@ const SignUp = () => {
               placeholder="Indtast password igen"
               handleChangeText={setConfirmPassword}
             />
-            <CustomButton
-              style={styles.buttonStyle}
-              title={loading ? "Opretter bruger" : "Opret bruger"}
-              handlePress={submitNewUser}
-            />
-            <CustomButton 
-            style = {styles.buttonStyle}
-            title= "Gå tilbage"
-            handlePress={handleGoBack}
-            />
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                style={styles.buttonStyle}
+                title={loading ? "Opretter bruger" : "Opret bruger"}
+                handlePress={submitNewUser}
+              />
+              <CustomButton
+                containerStyles={[styles.button, { backgroundColor: "#a60202", marginTop: 5 }]} // Apply the red background color here
+                title="Gå tilbage"
+                handlePress={handleGoBack}
+              />
+            </View>
           </View>
           <Toast />
         </ScrollView>
@@ -117,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 44,
     color: "black",
     marginTop: 200,
-    textAlign: "center", 
+    textAlign: "center",
   },
   signupContainer: {
     alignItems: "center",
@@ -125,7 +131,7 @@ const styles = StyleSheet.create({
     marginTop: 80,
     padding: 20,
     borderRadius: 5,
-    width: "85%", 
+    width: "85%",
     alignSelf: "center",
     justifyContent: "center",
   },
@@ -135,10 +141,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   icon: {
-    width: 80,  
-    height: 80, 
-    position: "absolute", 
-    top: 40, 
-    right: 20, 
+    width: 80,
+    height: 80,
+    position: "absolute",
+    top: 40,
+    right: 20,
   },
 });
