@@ -10,7 +10,7 @@ import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
 import icon from "../../assets/icon.png";
 
-const signUp = () => {
+const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -81,7 +81,7 @@ const signUp = () => {
   );
 };
 
-export default signUp;
+export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
