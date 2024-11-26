@@ -1,4 +1,5 @@
-import { doc, setDoc } from "firebase/firestore"; // Modular Firestore imports
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Modular Firestore imports
+import { getAuth } from "firebase/auth";
 import firebaseConfig from "./FirebaseConfig";
 
 const { db } = firebaseConfig; // Get Firestore instance
@@ -12,4 +13,22 @@ export const addUserToFirestore = async (uid, userData) => {
     console.error("Error adding user to Firestore:", error.message);
     throw error;
   }
+};
+
+export const fetchUserDetails = async (uid) => {
+  const userRef = doc(db, "users", uid); // Ensure the collection name is correct
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    return userSnap.data();
+  } else {
+    console.log("No such document!");
+    return null;
+  }
+};
+
+export const addDetailsToUser = async (uid, ) => {
+
+
+
 };
