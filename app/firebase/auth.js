@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser } from "firebase/auth";
 import FirebaseConfig from "./FirebaseConfig";
 import { router } from "expo-router";
+import Toast from 'react-native-toast-message';
 
 const { auth } = FirebaseConfig; 
 
