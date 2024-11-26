@@ -32,14 +32,33 @@ const SignUp = () => {
     setLoading(true);
   
     try {
-      await createUser(email, password); // Ensure that the error is thrown here if weak password
+      // Create user with Firebase Authentication
+      const userCredential = await createUser(email, password); 
+      const uid = userCredential.user.uid; // Get the UID of the new user
+  
+      // Prepare basic user data for Firestore
+      const userData = {
+        email,
+        uid,
+        createdAt: new Date(),
+        profileCompleted: false,  // Flag to track profile completion
+      };
+  
+  
+      await addUserToFirestore(uid, userData);
+  
       setLoading(false);
-      router.replace('/home'); // Only redirect if user was successfully created
+      router.replace('/home'); // Redirect to home or profile setup screen
     } catch (error) {
       setLoading(false);
-      // Error handling is done in the createUser function, so no need to handle here again
+      console.error("Error during signup:", error);
     }
   };
+
+  const handleGoBack = () => {
+    router.back(); // Go back to the previous screen
+  };
+  
   
 
   return (
@@ -71,6 +90,11 @@ const SignUp = () => {
               style={styles.buttonStyle}
               title={loading ? "Opretter bruger" : "Opret bruger"}
               handlePress={submitNewUser}
+            />
+            <CustomButton 
+            style = {styles.buttonStyle}
+            title= "Gå tilbage"
+            handlePress={handleGoBack}
             />
           </View>
           <Toast />
