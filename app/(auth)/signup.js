@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  ScrollView,
-  TextInput,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image,} from "react-native";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
@@ -17,6 +9,7 @@ import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
 import icon from "../../assets/icon.png";
+import { addUserToFirestore } from '../firebase/firestoreService';
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -97,7 +90,7 @@ const SignUp = () => {
                 handlePress={submitNewUser}
               />
               <CustomButton
-                containerStyles={[styles.button, { backgroundColor: "#a60202", marginTop: 5 }]} // Apply the red background color here
+                containerStyles={[styles.button, { backgroundColor: "#a60202", marginTop: 5 }]} 
                 title="Gå tilbage"
                 handlePress={handleGoBack}
               />
