@@ -6,7 +6,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
-import { auth } from "../firebase/FirebaseConfig"; // Correct import
+import firebaseConfig from "../firebase/FirebaseConfig";
+
+const { auth } = firebaseConfig; 
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
