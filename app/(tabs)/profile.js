@@ -65,11 +65,12 @@ const Profile = () => {
                 Name: {loading ? "Henter navn..." : getUserField("name")}
               </Text>
 
-              {/* Display other profile fields similarly */}
               <Text style={styles.profileText}>
                 Email: {loading ? "Henter email..." : getUserField("email")}
               </Text>
             </View>
+
+
             <CustomButton
               title="Sign Out"
               style={styles.signOutButton}
@@ -98,9 +99,9 @@ const Profile = () => {
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nulstil password</Text>
+        <View style={styles.modalContainerDelete}>
+          <View style={styles.modalContentDelete}>
+            <Text style={styles.modalTitleDelete}>Slet konto</Text>
             <Text>Er du sikker på du ønsker at slette din konto?</Text>
             <Text>Handlingen kan ikke fortrydes</Text>
             <CustomButton title="Ja, slet konto" handlePress={handleDeleteUser} />
@@ -131,32 +132,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  emailText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "black",
+  profileContainer: {
+    backgroundColor: 'white',
   },
-  modalContainer: {
+  modalContainerDelete: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  modalContent: {
+  modalContentDelete: {
     width: "80%",
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
   },
-  modalTitle: {
+  modalTitleDelete: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 1,
   },
   cancelButton: {
-    marginTop: 10,
+    marginTop: 1,
     backgroundColor: "gray",
   },
 });
