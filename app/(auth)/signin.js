@@ -10,7 +10,7 @@ import logo from "../../assets/images/logo.png";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
 
-const signIn = () => {
+const SignIn = () => {
   const [loading, setLoading] = useState("");
   const [form, setForm] = useState({
     email: "",
@@ -86,7 +86,7 @@ const signIn = () => {
               Har du ikke en konto?
               <Text
                 style={styles.signupStyle}
-                onPress={() => router.push("/SignUp")}
+                onPress={() => router.push("/signup")}
               >
                 {" "}
                 OPRET DIG HER
@@ -126,7 +126,7 @@ const signIn = () => {
   );
 };
 
-export default signIn;
+export default SignIn;
 
 const styles = StyleSheet.create({
   container: {

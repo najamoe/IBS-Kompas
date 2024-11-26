@@ -6,19 +6,42 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
-import { auth } from "../firebase/FirebaseConfig"; // Correct import
+import firebaseConfig from "../firebase/FirebaseConfig";
+import { fetchUserDetails } from "../firebase/firestoreService";
+
+const { auth } = firebaseConfig; 
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  const [userData, setUserData] = useState(null); // Store user data
+  const [loading, setLoading] = useState(true); // Loading state
+
 
   useEffect(() => {
-    // Get the signed-in user's email when the component mounts
-    const user = auth.currentUser;
-    if (user) {
-      setUserEmail(user.email); // Set the email in the state
-    }
+    const getUserData = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error("No authenticated user.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await fetchUserDetails(user.uid);
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUserData();
   }, []);
+
+   // Render fallback text if loading or user data is unavailable
+   const getUserField = (field) => {
+    return userData && userData[field] ? userData[field] : "Ikke indtastet";
+  };
 
   const handleDeleteUser = async () => {
     try {
@@ -35,9 +58,18 @@ const Profile = () => {
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
           <View style={styles.container}>
-            {/* Display the user's email */}
-            <Text style={styles.emailText}>Signed in as: {userEmail}</Text>
+      
+            <View style={styles.profileContainer}>
+              {/* Display user's name with fallback */}
+              <Text style={styles.profileText}>
+                Name: {loading ? "Henter navn..." : getUserField("name")}
+              </Text>
 
+              {/* Display other profile fields similarly */}
+              <Text style={styles.profileText}>
+                Email: {loading ? "Henter email..." : getUserField("email")}
+              </Text>
+            </View>
             <CustomButton
               title="Sign Out"
               style={styles.signOutButton}
