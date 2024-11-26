@@ -10,9 +10,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
 import Toast from 'react-native-toast-message';
 import { SplashScreen } from "expo-splash-screen";
-import { Link, Redirect, router } from "expo-router";
+import { router } from "expo-router";
 import { useEffect } from "react";
 import CustomButton from "./components/CustomButton";
+
 
 import logo from "../assets/images/logo.png";
 
@@ -57,7 +58,7 @@ export default function App() {
             Se tilbage og opdag, hvad der kan have udløst ubehaget
           </Text>
 
-          <CustomButton title="FORTSÆT" handlePress={() => router.push('/SignIn')} />
+          <CustomButton title="FORTSÆT" handlePress={() => router.push('/signin')} />
         </View>
       </ScrollView>
       <Toast/>
