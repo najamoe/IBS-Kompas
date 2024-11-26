@@ -1,7 +1,8 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser } from "firebase/auth";
-import Toast from 'react-native-toast-message';
-import { auth } from "./FirebaseConfig"; 
+import FirebaseConfig from "./FirebaseConfig";
 import { router } from "expo-router";
+
+const { auth } = FirebaseConfig; 
 
 export const createUser = (email, password) => {
   return createUserWithEmailAndPassword(auth, email, password)
