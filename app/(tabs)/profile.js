@@ -11,14 +11,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-
+import Icon from "react-native-vector-icons/FontAwesome";
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
 import firebaseConfig from "../firebase/FirebaseConfig";
-import { fetchUserDetails, updateUserDetails } from "../firebase/firestoreService"; // Add updateUserDetails function
-
+import {
+  fetchUserDetails,
+  updateUserDetails,
+} from "../firebase/firestoreService";
 const { auth } = firebaseConfig;
 
 const Profile = () => {
@@ -27,6 +27,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date());
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [editingField, setEditingField] = useState(null);
+  const [editedValue, setEditedValue] = useState("");
 
   useEffect(() => {
     const getUserData = async () => {
@@ -46,23 +48,40 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
     getUserData();
   }, []);
+
+  const handleSave = async () => {
+    const user = auth.currentUser;
+    if (!user || !editingField || !editedValue) return;
+
+    try {
+      // Update the respective field based on `editingField`
+      await updateUserDetails(user.uid, { [editingField]: editedValue });
+
+      // Update userData state to reflect the change
+      setUserData((prevData) => ({
+        ...prevData,
+        [editingField]: editedValue, // Dynamically update the corresponding field
+      }));
+
+      console.log(`${editingField} updated successfully!`);
+      setEditingField(null); // Close the edit mode
+      setEditedValue(""); // Reset the edited value
+    } catch (error) {
+      console.error(`Error updating ${editingField}:`, error);
+    }
+  };
+
+  const handleFieldEdit = (field) => {
+    setEditingField(field); // Set the field that is being edited (e.g., name, email)
+    setEditedValue(userData[field] || ""); // Preload the field value if it exists
+  };
 
   const getUserField = (field) => {
     return userData && userData[field] ? userData[field] : "Ikke indtastet";
   };
 
-  const handleDeleteUser = async () => {
-    try {
-      console.log("Delete account function triggered");
-      await deleteUserAccount();
-      setModalVisible(false);
-    } catch (error) {
-      console.error("Something went wrong with account deletion", error);
-    }
-  };
   const formatDateToDDMMYYYY = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
@@ -73,9 +92,9 @@ const Profile = () => {
   const saveBirthdayToFirestore = async (selectedDate) => {
     const user = auth.currentUser;
     if (!user) return;
-  
+
     const formattedDate = formatDateToDDMMYYYY(selectedDate);
-  
+
     try {
       await updateUserDetails(user.uid, { birthday: formattedDate });
       setUserData((prevData) => ({
@@ -87,7 +106,16 @@ const Profile = () => {
       console.error("Error updating birthday in Firestore:", error);
     }
   };
-  
+
+  const handleDeleteUser = async () => {
+    try {
+      console.log("Delete account function triggered");
+      await deleteUserAccount();
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Something went wrong with account deletion", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,20 +123,45 @@ const Profile = () => {
         <ScrollView contentContainerStyle={{ height: "100%" }}>
           <View style={styles.container}>
             <View style={styles.profileContainer}>
-              <Text style={styles.profileText}>
-                Name: {loading ? "Henter navn..." : getUserField("name")}
-              </Text>
+             
+              {/* Name Field */}
+              <Text>Name:</Text>
+              {editingField === "name" ? (
+                <TextInput
+                  value={editedValue}
+                  onChangeText={setEditedValue}
+                  placeholder="Navn"
+                />
+              ) : (
+                <Text>{userData?.name || "Ikke indtastet"}</Text>
+              )}
+              {editingField === "name" ? (
+                <Button title="Gem" onPress={handleSave} />
+              ) : (
+                <Icon
+                  name="edit"
+                  size={20} 
+                  color="#000" 
+                  onPress={() => handleFieldEdit("name")} // Trigger edit on icon press
+                />
+              )}
+
 
               <Text style={styles.profileText}>
                 Email: {loading ? "Henter email..." : getUserField("email")}
               </Text>
+
 
               <Text style={styles.profileText}>
                 Fødselsdato:{" "}
                 {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
                 {"  "}
                 <TouchableOpacity onPress={() => setPickerVisible(true)}>
-                  <FontAwesomeIcon icon={faPenToSquare} size={20} color="#000" />
+                  <Icon
+                    name="edit"
+                    size={20}
+                    color="#000"
+                  />
                 </TouchableOpacity>
               </Text>
 
