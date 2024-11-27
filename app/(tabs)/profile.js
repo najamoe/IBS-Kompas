@@ -120,14 +120,13 @@ const Profile = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
-        <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <View style={styles.container}>
-            <View style={styles.profileContainer}>
-             
-              {/* Name Field */}
-              <Text>Name:</Text>
+        <ScrollView>
+          <View style={styles.profileContainer}>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>Name:</Text>
               {editingField === "name" ? (
                 <TextInput
+                  style={styles.inputField}
                   value={editedValue}
                   onChangeText={setEditedValue}
                   placeholder="Navn"
@@ -138,50 +137,67 @@ const Profile = () => {
               {editingField === "name" ? (
                 <Button title="Gem" onPress={handleSave} />
               ) : (
-                <Icon
-                  name="edit"
-                  size={20} 
-                  color="#000" 
-                  onPress={() => handleFieldEdit("name")} // Trigger edit on icon press
-                />
-              )}
-
-
-              <Text style={styles.profileText}>
-                Email: {loading ? "Henter email..." : getUserField("email")}
-              </Text>
-
-
-              <Text style={styles.profileText}>
-                Fødselsdato:{" "}
-                {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
-                {"  "}
-                <TouchableOpacity onPress={() => setPickerVisible(true)}>
-                  <Icon
-                    name="edit"
-                    size={20}
-                    color="#000"
-                  />
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => handleFieldEdit("name")}
+                >
+                  <Icon name="edit" size={20} color="#000" />
                 </TouchableOpacity>
-              </Text>
-
-              {pickerVisible && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="spinner"
-                  onChange={(event, selectedDate) => {
-                    if (selectedDate) {
-                      setPickerVisible(false);
-                      setDate(selectedDate);
-                      saveBirthdayToFirestore(selectedDate);
-                    } else {
-                      setPickerVisible(false);
-                    }
-                  }}
-                />
               )}
             </View>
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>Email:</Text>
+              {editingField === "email" ? (
+                <TextInput
+                  style={styles.inputField}
+                  value={editedValue}
+                  onChangeText={setEditedValue}
+                  placeholder="Email"
+                />
+              ) : (
+                <Text>{userData?.name || "Ikke indtastet"}</Text>
+              )}
+              {editingField === "email" ? (
+                <Button title="Gem" onPress={handleSave} />
+              ) : (
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => handleFieldEdit("email")}
+                >
+                  <Icon name="edit" size={20} color="#000" />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View style={styles.fieldContainer}>
+            <Text style={styles.profileText}>
+              Fødselsdato:{" "}
+              {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
+              {"  "}
+              <TouchableOpacity 
+              onPress={() => setPickerVisible(true)}>
+                <Icon name="edit" size={20} color="#000" />
+              </TouchableOpacity>
+            </Text>
+              </View>
+
+            {pickerVisible && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="spinner"
+                onChange={(event, selectedDate) => {
+                  if (selectedDate) {
+                    setPickerVisible(false);
+                    setDate(selectedDate);
+                    saveBirthdayToFirestore(selectedDate);
+                  } else {
+                    setPickerVisible(false);
+                  }
+                }}
+              />
+            )}
 
             <CustomButton
               title="Sign Out"
@@ -238,25 +254,61 @@ const Profile = () => {
 export default Profile;
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  gradient: {
+  container: {
     flex: 1,
     width: "100%",
+    position: "relative",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", 
+  },
+  gradient: {
+    flex: 1,
+    width: "100%", 
   },
   profileContainer: {
     backgroundColor: "white",
+    width: "90%",
+    marginTop: 80,
+    marginLeft: 20,
+    padding: 20,
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center", 
+  },
+  fieldContainer: {
+    flexDirection: "row", 
+    alignItems: "center", 
+    marginBottom: 10, 
+    width: "65%",
+  },
+  fieldLabel: {
+    flex: 1, // Ensures the label takes up available space on the left
+  },
+  inputField: {
+    flex: 2, // Input takes more space in the center
+    borderWidth: 1,
+    borderColor: "#000", // Black border around input fields
+    padding: 8,
+    borderRadius: 5,
+    marginRight: 10, // Space between input and icon
+  },
+  iconContainer: {
+    marginLeft: 10, // Space between input and icon
+  },
+  profileText: {
+    flexDirection: "row", // Keep the label and icon in the same row
+    alignItems: "center", // Align the icon and text properly
   },
   modalContainerDelete: {
     flex: 1,
+    marginTop: 2,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContentDelete: {
     width: "80%",
-    padding: 20,
+    padding: 10,
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
@@ -269,5 +321,9 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginTop: 1,
     backgroundColor: "gray",
+  },
+  signOutButton: {
+    marginTop: 5,
+    marginBottom: 5,
   },
 });
