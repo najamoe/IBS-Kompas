@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc } from "firebase/firestore"; // Modular Firestore imports
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; // Modular Firestore imports
 import { getAuth } from "firebase/auth";
 import firebaseConfig from "./FirebaseConfig";
 
@@ -27,8 +27,15 @@ export const fetchUserDetails = async (uid) => {
   }
 };
 
-export const addDetailsToUser = async (uid, ) => {
-
-
-
+export const updateUserDetails = async (uid, updates) => {
+  try {
+    const userRef = doc(db, "users", uid); // Reference the document in the "users" collection
+    await updateDoc(userRef, updates); // Update the document with the provided data
+    console.log("User details updated:", updates);
+  } catch (error) {
+    console.error("Error updating user details:", error.message);
+    throw error;
+  }
 };
+
+
