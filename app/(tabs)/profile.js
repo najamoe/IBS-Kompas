@@ -388,21 +388,32 @@ const Profile = () => {
             </View>
 
             <CustomButton
-              title="Sign Out"
+              title="Log ud"
               style={styles.signOutButton}
               handlePress={() => {
-                console.log("Sign Out button pressed");
                 signOutUser();
+              }}
+              containerStyles={{
+                paddingVertical: 15,
+                width: 180, 
+                marginTop: 10,
+                marginBottom: 15,
               }}
             />
             <CustomButton
               title="Slet konto"
               style={styles.DeleteButton}
               handlePress={() => {
-                console.log("Delete account button pressed");
+            
                 setModalVisible(true);
               }}
               iconName="trash"
+              containerStyles={{
+                backgroundColor: '#f44336', 
+                paddingVertical: 15,
+                width: 180, 
+                marginTop: 0,
+              }}
             />
           </View>
         </ScrollView>
@@ -623,13 +634,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 1,
-  },
-  cancelButton: {
-    marginTop: 1,
-    backgroundColor: "gray",
-  },
-  signOutButton: {
-    marginTop: 5,
-    marginBottom: 5,
-  },
+  } 
 });
