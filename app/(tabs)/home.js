@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
-import { addDailyLog } from "../firebase/firestoreService";
+import { addDailyLog, fetchDailyLog } from "../firebase/firestoreService";
 import { Calendar } from "react-native-calendars";
 
 const Home = () => {
@@ -37,6 +37,7 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(formatDateStorage(new Date()));
   const [user, setUser] = useState(null);
+  const [waterIntake, setWaterIntake] = useState(0);
 
     // Check if the user is signed in
     useEffect(() => {
@@ -47,7 +48,24 @@ const Home = () => {
       }
     }, []);
 
-  
+  // Fetch daily log when the selected date changes
+  useEffect(() => {
+    if (user) {
+      const fetchLogData = async () => {
+        try {
+          const logData = await fetchDailyLog(user.uid, selectedDate);
+          if (logData) {
+            setWaterIntake(logData.waterIntake || 0); // Set water intake if data exists
+          } else {
+            setWaterIntake(0); // Set to 0 if no log data found
+          }
+        } catch (error) {
+          console.error("Error fetching daily log:", error);
+        }
+      };
+      fetchLogData();
+    }
+  }, [user, selectedDate]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -59,17 +77,21 @@ const Home = () => {
     if (user) {
       const userUid = user.uid; // Get the signed-in user's UID
 
+      // Add 2 dl to the current water intake
+      const newWaterIntake = waterIntake + 2;
+
       const logData = {
-        waterIntake: 2, // 2 dl of water
+        waterIntake: newWaterIntake, // Add to the existing water intake
         timestamp: new Date().toISOString(), // Timestamp for logging
       };
 
       try {
         await addDailyLog(userUid, logData); // Call Firestore service to add the daily log
-        alert('Water added to your daily log!');
+        setWaterIntake(newWaterIntake); // Update state with the new water intake
+        
       } catch (error) {
         console.error('Error adding water to daily log:', error.message);
-        alert('Failed to add water log. Please try again.');
+        
       }
     } else {
       alert('Please sign in to log your water intake.');
@@ -105,9 +127,9 @@ const Home = () => {
 
             {/* Daily Stats */}
             <View style={styles.statsContainer}>
-              <Text>
+            <Text>Water Intake: {waterIntake} dl</Text>
               <Button title="Add 2 dl of Water" onPress={handleAddWater} />
-</Text>
+
              
             </View>
           </View>
