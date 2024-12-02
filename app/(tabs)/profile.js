@@ -3,9 +3,12 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
   Modal,
   TouchableOpacity,
+  Button,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
@@ -19,6 +22,8 @@ import {
   fetchUserDetails,
   updateUserDetails,
 } from "../firebase/firestoreService";
+import icon from "../../assets/icon.png";
+
 const { auth } = firebaseConfig;
 
 const Profile = () => {
@@ -29,6 +34,7 @@ const Profile = () => {
   const [pickerVisible, setPickerVisible] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [editedValue, setEditedValue] = useState("");
+  const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
   useEffect(() => {
     const getUserData = async () => {
@@ -41,7 +47,8 @@ const Profile = () => {
       try {
         const data = await fetchUserDetails(user.uid);
         setUserData(data);
-        if (data.birthday) setDate(new Date(data.birthday)); // Preload the date picker
+        if (data.birthday) setDate(new Date(data.birthday));
+        if (data.WaterGoal) setWaterGoal(data.WaterGoal);
       } catch (error) {
         console.error("Error fetching user details:", error);
       } finally {
@@ -121,6 +128,7 @@ const Profile = () => {
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
         <ScrollView>
+          <Image source={icon} style={styles.icon} />
           <View style={styles.profileContainer}>
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>Name:</Text>
@@ -156,7 +164,7 @@ const Profile = () => {
                   placeholder="Email"
                 />
               ) : (
-                <Text>{userData?.name || "Ikke indtastet"}</Text>
+                <Text>{userData?.email || "Ikke indtastet"}</Text>
               )}
               {editingField === "email" ? (
                 <Button title="Gem" onPress={handleSave} />
@@ -171,16 +179,19 @@ const Profile = () => {
             </View>
 
             <View style={styles.fieldContainer}>
-            <Text style={styles.profileText}>
-              Fødselsdato:{" "}
-              {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
-              {"  "}
-              <TouchableOpacity 
-              onPress={() => setPickerVisible(true)}>
-                <Icon name="edit" size={20} color="#000" />
-              </TouchableOpacity>
-            </Text>
+              <Text style={styles.fieldLabel}>Fødselsdato:</Text>
+              <View style={styles.birthdayContainer}>
+                <Text style={styles.profileText}>
+                  {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setPickerVisible(true)}
+                  style={styles.iconContainer}
+                >
+                  <Icon name="edit" size={20} color="#000" />
+                </TouchableOpacity>
               </View>
+            </View>
 
             {pickerVisible && (
               <DateTimePicker
@@ -198,6 +209,31 @@ const Profile = () => {
                 }}
               />
             )}
+
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>Dagligt Vandmål (liter):</Text>
+              {editingField === "waterGoal" ? (
+                <TextInput
+                  style={styles.inputField}
+                  value={editedValue}
+                  onChangeText={setEditedValue}
+                  keyboardType="numeric" // Only allow numeric input
+                  placeholder="Dagligt mål i liter"
+                />
+              ) : (
+                <Text>{userData?.waterGoal || "Ikke indtastet"}</Text>
+              )}
+              {editingField === "waterGoal" ? (
+                <Button title="Gem" onPress={handleSave} />
+              ) : (
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => handleFieldEdit("waterGoal")}
+                >
+                  <Icon name="edit" size={20} color="#000" />
+                </TouchableOpacity>
+              )}
+            </View>
 
             <CustomButton
               title="Sign Out"
@@ -259,30 +295,38 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "relative",
     alignItems: "center",
-    justifyContent: "center", 
+    justifyContent: "center",
   },
   gradient: {
     flex: 1,
-    width: "100%", 
+    width: "100%",
+  },
+  icon: {
+    width: 80,
+    height: 80,
+    position: "absolute",
+    top: 40,
+    right: 20,
   },
   profileContainer: {
     backgroundColor: "white",
     width: "90%",
-    marginTop: 80,
+    marginTop: 150,
     marginLeft: 20,
     padding: 20,
     borderRadius: 5,
     justifyContent: "center",
-    alignItems: "center", 
+    alignItems: "center",
   },
   fieldContainer: {
-    flexDirection: "row", 
-    alignItems: "center", 
-    marginBottom: 10, 
-    width: "65%",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    width: "75%",
   },
   fieldLabel: {
-    flex: 1, // Ensures the label takes up available space on the left
+    flex: 1,
+    fontWeight: "bold",
   },
   inputField: {
     flex: 2, // Input takes more space in the center
