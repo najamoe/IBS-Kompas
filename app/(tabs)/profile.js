@@ -217,43 +217,38 @@ const Profile = () => {
 
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>IBS Type:</Text>
-              <RNPickerSelect
-                value={ibsType} // The selected value
-                onValueChange={(value) => {
-                  console.log("Updating ibsType to:", value); // Check the value being updated
-                  if (userData) {
-                    // Ensure user data is loaded before updating Firestore
-                    console.log("User UID:", userData.uid);
-                    // Only update Firestore and local state if the value has changed
-                    if (value !== ibsType) {
-                      updateUserDetails(userData.uid, { ibsType: value }) // Update Firestore
-                        .then(() => {
-                          console.log("ibsType updated successfully in Firestore");
-                          setIbsType(value); // Update local state with the selected value
-                        })
-                        .catch((error) => {
-                          console.error("Error updating ibsType:", error);
-                        });
+              <View style={styles.pickerContainer}>
+                <RNPickerSelect
+                  value={ibsType} 
+                  onValueChange={(value) => {
+                    if (userData) {
+                      if (value !== ibsType) {
+                        updateUserDetails(userData.uid, { ibsType: value })
+                          .then(() => {
+                            setIbsType(value);
+                          })
+                          .catch((error) => {
+                            console.error("Error updating ibsType:", error);
+                          });
+                      }
                     }
-                  } else {
-                    console.error("User data is not available.");
-                  }
-                }}
-                
-                items={[
-                  { label: "IBS-D", value: "IBS-D" },
-                  { label: "IBS-C", value: "IBS-C" },
-                  { label: "IBS-M", value: "IBS-M" },
-                  { label: "Ved ikke", value: "Ved ikke" },
-                ]}
-                style={{
-                  inputAndroid: styles.pickerInput,
-                }}
-                placeholder={{
-                  label: ibsType ? ibsType : "Vælg IBS Type", 
-                  value: null,
-                }}
-              />
+                  }}
+                  items={[
+                    { label: "IBS-D", value: "IBS-D" },
+                    { label: "IBS-C", value: "IBS-C" },
+                    { label: "IBS-M", value: "IBS-M" },
+                    { label: "Ved ikke", value: "Ved ikke" },
+                  ]}
+                  style={{
+                    inputAndroid: styles.pickerInput,
+                    placeholder: styles.placeholderText,
+                  }}
+                  placeholder={{
+                    label: ibsType ? ibsType : "Vælg IBS Type",
+                    value: null,
+                  }}
+                />
+              </View>
             </View>
 
             <View style={styles.fieldContainer}>
@@ -263,7 +258,7 @@ const Profile = () => {
                   style={styles.inputField}
                   value={editedValue}
                   onChangeText={setEditedValue}
-                  keyboardType="numeric" // Only allow numeric input
+                  keyboardType="numeric" 
                   placeholder="Dagligt mål i liter"
                 />
               ) : (
@@ -366,28 +361,58 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     flexDirection: "row",
+    padding: 10, 
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15, 
     width: "100%",
+    backgroundColor: "#f5f5f5", 
+    borderColor: "#ccc", 
+    borderWidth: 1,
+    borderRadius: 8, 
+    justifyContent: "space-between",
   },
   fieldLabel: {
     flex: 1,
     fontWeight: "bold",
+    fontSize: 16, 
+    color: "#333", 
   },
   inputField: {
-    flex: 2, // Input takes more space in the center
+    flex: 2,
     borderWidth: 1,
-    borderColor: "#000", // Black border around input fields
-    padding: 8,
+    borderColor: "#ccc", 
+    padding: 10,
     borderRadius: 5,
-    marginRight: 10, // Space between input and icon
+    marginRight: 10,
+    backgroundColor: "#fff", 
+  },
+  pickerContainer: {
+    flex: 1,     
+    height: 50,
+  },
+  pickerInput: {
+    borderWidth: 1,
+    borderColor: "#ccc", 
+    backgroundColor: "#fafafa", 
+    borderRadius: 5, 
+    paddingHorizontal: 4,
+    height: 50,
+  },
+  placeholderText: {
+    color: "#888", 
+    fontSize: 16, 
+  },
+  birthdayContainer: {
+    flexDirection: "row", 
+    alignItems: "end",
+   
   },
   iconContainer: {
-    marginLeft: 10, // Space between input and icon
+    marginLeft: 10,
   },
   profileText: {
-    flexDirection: "row", // Keep the label and icon in the same row
-    alignItems: "center", // Align the icon and text properly
+    flexDirection: "row",
+    alignItems: "center",
   },
   modalContainerDelete: {
     flex: 1,
@@ -407,15 +432,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 1,
-  },
-  pickerInput: {
-    height: 40,
-    width: "1080%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    paddingLeft: 10,
-    backgroundColor: "#f5f5f5", // Ensure a visible background color
   },
   cancelButton: {
     marginTop: 1,
