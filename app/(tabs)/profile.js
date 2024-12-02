@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import {
   ScrollView,
   StyleSheet,
+  RefreshControl,
   Text,
   TextInput,
   View,
@@ -26,6 +27,7 @@ import {
   updateUserDetails,
 } from "../firebase/firestoreService";
 import icon from "../../assets/icon.png";
+import { ref } from "firebase/storage";
 
 const { auth } = firebaseConfig;
 
@@ -43,6 +45,7 @@ const allergyOptions = [
 ];
 
 const Profile = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +59,13 @@ const Profile = () => {
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  }, []);
+
   useEffect(() => {
     const getUserData = async () => {
       const user = auth.currentUser;
@@ -68,7 +78,7 @@ const Profile = () => {
         const data = await fetchUserDetails(user.uid);
 
         setUserData(data);
-        if (data.gender) setGender(data.gender);  
+        if (data.gender) setGender(data.gender);
         if (data.allergies) setSelectedAllergies(data.allergies);
         if (data.birthday) setDate(new Date(data.birthday));
         if (data.WaterGoal) setWaterGoal(data.WaterGoal);
@@ -164,7 +174,11 @@ const Profile = () => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           <Image source={icon} style={styles.icon} />
           <View style={styles.profileContainer}>
             <View style={styles.fieldContainer}>
@@ -395,7 +409,7 @@ const Profile = () => {
               }}
               containerStyles={{
                 paddingVertical: 15,
-                width: 180, 
+                width: 180,
                 marginTop: 10,
                 marginBottom: 15,
               }}
@@ -404,14 +418,13 @@ const Profile = () => {
               title="Slet konto"
               style={styles.DeleteButton}
               handlePress={() => {
-            
                 setModalVisible(true);
               }}
               iconName="trash"
               containerStyles={{
-                backgroundColor: '#f44336', 
+                backgroundColor: "#f44336",
                 paddingVertical: 15,
-                width: 180, 
+                width: 180,
                 marginTop: 0,
               }}
             />
@@ -634,5 +647,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 1,
-  } 
+  },
 });
