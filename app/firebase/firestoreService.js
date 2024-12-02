@@ -59,3 +59,23 @@ export const addDailyLog = async (uid, logData) => {
     throw error;
   }
 };
+
+// Fetch daily log for a specific user and date
+export const fetchDailyLog = async (uid, date) => {
+  try {
+    // Reference to the specific user's daily log document by date
+    const logRef = doc(db, "users", uid, "dailylogs", date); // Reference to daily log for the specific date
+
+    const logSnap = await getDoc(logRef); // Fetch the document
+
+    if (logSnap.exists()) {
+      return logSnap.data(); // Return the log data if exists
+    } else {
+      console.log("No daily log found for this date.");
+      return null; // Return null if no document is found
+    }
+  } catch (error) {
+    console.error("Error fetching daily log: ", error.message);
+    throw error;
+  }
+};
