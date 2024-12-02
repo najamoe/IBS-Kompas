@@ -224,20 +224,22 @@ const Profile = () => {
                   if (userData) {
                     // Ensure user data is loaded before updating Firestore
                     console.log("User UID:", userData.uid);
-                    updateUserDetails(userData.uid, { ibsType: value }) // Update Firestore
-                      .then(() => {
-                        console.log(
-                          "ibsType updated successfully in Firestore"
-                        );
-                        setIbsType(value); // Update local state with the selected value
-                      })
-                      .catch((error) => {
-                        console.error("Error updating ibsType:", error);
-                      });
+                    // Only update Firestore and local state if the value has changed
+                    if (value !== ibsType) {
+                      updateUserDetails(userData.uid, { ibsType: value }) // Update Firestore
+                        .then(() => {
+                          console.log("ibsType updated successfully in Firestore");
+                          setIbsType(value); // Update local state with the selected value
+                        })
+                        .catch((error) => {
+                          console.error("Error updating ibsType:", error);
+                        });
+                    }
                   } else {
                     console.error("User data is not available.");
                   }
                 }}
+                
                 items={[
                   { label: "IBS-D", value: "IBS-D" },
                   { label: "IBS-C", value: "IBS-C" },
@@ -248,7 +250,7 @@ const Profile = () => {
                   inputAndroid: styles.pickerInput,
                 }}
                 placeholder={{
-                  label: ibsType ? ibsType : "Vælg IBS Type", // Provide a default placeholder if no type is selected
+                  label: ibsType ? ibsType : "Vælg IBS Type", 
                   value: null,
                 }}
               />
