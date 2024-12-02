@@ -39,7 +39,7 @@ const allergyOptions = [
   { label: "Æg", value: "æg" },
   { label: "Skaldyr", value: "skaldyr" },
   { label: "Soja", value: "soja" },
-  { label: "Gluten", value: "gæuten" },
+  { label: "Jordnød", value: "jordnød" },
 ];
 
 const Profile = () => {
@@ -66,8 +66,10 @@ const Profile = () => {
       }
       try {
         const data = await fetchUserDetails(user.uid);
-        console.log("Fetched user data:", data);
+
         setUserData(data);
+        if (data.gender) setGender(data.gender);  
+        if (data.allergies) setSelectedAllergies(data.allergies);
         if (data.birthday) setDate(new Date(data.birthday));
         if (data.WaterGoal) setWaterGoal(data.WaterGoal);
         if (data.ibsType) setIbsType(data.ibsType);
@@ -117,18 +119,7 @@ const Profile = () => {
     if (!user) return;
     try {
       await updateUserDetails(user.uid, { allergies });
-      console.log("Allergies updated successfully!");
-    } catch (error) {
-      console.error("Error updating allergies in Firestore:", error);
-    }
-  };
-
-  const removeAllergy = (item) => {
-    const updatedAllergies = selectedAllergies.filter(
-      (selectedItem) => selectedItem.value !== item.value
-    );
-    setSelectedAllergies(updatedAllergies);
-    saveAllergiesToFirestore(updatedAllergies);
+    } catch (error) {}
   };
 
   const getUserField = (field) => {
@@ -314,30 +305,24 @@ const Profile = () => {
                   renderItem={(item) => (
                     <View style={styles.item}>
                       <Text style={styles.selectedTextStyle}>{item.label}</Text>
-                     
                     </View>
                   )}
                   renderSelectedItem={(item, unSelect) => (
                     <TouchableOpacity
                       onPress={() => unSelect && unSelect(item)}
                     >
-                      <View style={styles.selectedItemContainer}>
+                      <View style={styles.selectedItem}>
                         <Text style={styles.selectedText}>{item.label}</Text>
-                        <AntDesign color="black" name="delete" size={17} />
+                        <AntDesign
+                          color="black"
+                          name="delete"
+                          size={16}
+                          marginLeft="8"
+                        />
                       </View>
                     </TouchableOpacity>
                   )}
                 />
-                {/* Display selected allergies below the dropdown */}
-                {selectedAllergies.length > 0 && (
-                  <View style={styles.selectedAllergiesContainer}>
-                    {selectedAllergies.map((item) => (
-                      <Text key={item.value} style={styles.selectedAllergyText}>
-                        {item.label}
-                      </Text>
-                    ))}
-                  </View>
-                )}
               </View>
             </View>
 
@@ -469,16 +454,16 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   icon: {
-    width: 80,
-    height: 80,
+    width: 40,
+    height: 40,
     position: "absolute",
-    top: 40,
+    top: 20,
     right: 20,
   },
   profileContainer: {
     backgroundColor: "white",
     width: "90%",
-    marginTop: 150,
+    marginTop: 80,
     marginLeft: 20,
     padding: 20,
     borderRadius: 5,
@@ -542,20 +527,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "space-between",
   },
-  selectedItemsContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 10,
-  },
   selectedItem: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#e0e0e0",
     borderRadius: 15,
     padding: 5,
-    marginRight: 10,
-    marginBottom: 10,
   },
   selectedItemText: {
     fontSize: 14,
@@ -571,7 +548,6 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   dropdown: {
-    marginTop: 40,
     height: 40,
     width: 250,
     borderColor: "#ccc",
@@ -599,24 +575,18 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   item: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
   },
-  selectedItemContainer: {
+  selectedItem: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#e0e0e0",
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 5,
-    marginRight: 10,
-    marginBottom: 10,
-  },
-  selectedAllergiesContainer: {
     marginTop: 10,
-    flexDirection: "row",
-    flexWrap: "wrap",
+    marginRight: 10,
   },
   selectedAllergyText: {
     fontSize: 14,
