@@ -15,6 +15,8 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
@@ -27,6 +29,11 @@ import icon from "../../assets/icon.png";
 
 const { auth } = firebaseConfig;
 
+const allergyOptions = [
+  { label: 'Laktose', value: 'laktose'},
+  { label: 'Gluten', value: 'gæuten'},
+];
+
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -36,7 +43,8 @@ const Profile = () => {
   const [editingField, setEditingField] = useState(null);
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
-
+  const [selectedAllergies, setSelectedAllergies] = useState([]);
+  const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
   useEffect(() => {
@@ -184,6 +192,42 @@ const Profile = () => {
             </View>
 
             <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>Køn:</Text>
+              <View style={styles.pickerContainer}>
+                <RNPickerSelect
+                  value={gender}
+                  onValueChange={(value) => {
+                    if (userData) {
+                      if (value !== gender) {
+                        updateUserDetails(userData.uid, { gender: value })
+                          .then(() => {
+                            setGender(value);
+                          })
+                          .catch((error) => {
+                            console.error("Error updating gender:", error);
+                          });
+                      }
+                    }
+                  }}
+                  items={[
+                    { label: "Mand", value: "mand" },
+                    { label: "Kvinde", value: "kvinde" },
+                    { label: "Andet", value: "andet" },
+                    { label: "Ønsker ikke at oplyse", value: "ikkeoplyst" },
+                  ]}
+                  style={{
+                    inputAndroid: styles.pickerInput,
+                    placeholder: styles.placeholderText,
+                  }}
+                  placeholder={{
+                    label: "Vælg køn", 
+                    value: null, 
+                  }}
+                />
+              </View>
+            </View>
+
+            <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>Fødselsdato:</Text>
               <View style={styles.birthdayContainer}>
                 <Text style={styles.profileText}>
@@ -215,11 +259,29 @@ const Profile = () => {
               />
             )}
 
+
+<View style={styles.fieldContainer}>
+        <Text style={styles.fieldLabel}>Kendte allergier og intolerancer:</Text>
+        <Dropdown
+          data={allergyOptions}
+          labelField="label"
+          valueField="value"
+          value={selectedAllergies}
+          onChange={item => setSelectedAllergies(item)}
+          placeholder="Vælg allergier"
+          multiple={true}  // Enable multiple selections
+          search
+          searchPlaceholder="Søg allergi"
+          selectedTextStyle={styles.selectedText}
+          style={styles.dropdown}
+        />
+      </View>
+
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>IBS Type:</Text>
               <View style={styles.pickerContainer}>
                 <RNPickerSelect
-                  value={ibsType} 
+                  value={ibsType}
                   onValueChange={(value) => {
                     if (userData) {
                       if (value !== ibsType) {
@@ -244,7 +306,7 @@ const Profile = () => {
                     placeholder: styles.placeholderText,
                   }}
                   placeholder={{
-                    label: ibsType ? ibsType : "Vælg IBS Type",
+                    label: "Vælg IBS Type",
                     value: null,
                   }}
                 />
@@ -258,7 +320,7 @@ const Profile = () => {
                   style={styles.inputField}
                   value={editedValue}
                   onChangeText={setEditedValue}
-                  keyboardType="numeric" 
+                  keyboardType="numeric"
                   placeholder="Dagligt mål i liter"
                 />
               ) : (
@@ -361,51 +423,61 @@ const styles = StyleSheet.create({
   },
   fieldContainer: {
     flexDirection: "row",
-    padding: 10, 
+    padding: 10,
     alignItems: "center",
-    marginBottom: 15, 
+    marginBottom: 15,
     width: "100%",
-    backgroundColor: "#f5f5f5", 
-    borderColor: "#ccc", 
+    backgroundColor: "#f5f5f5",
+    borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8, 
+    borderRadius: 8,
     justifyContent: "space-between",
   },
   fieldLabel: {
     flex: 1,
     fontWeight: "bold",
-    fontSize: 16, 
-    color: "#333", 
+    fontSize: 16,
+    color: "#333",
   },
   inputField: {
     flex: 2,
     borderWidth: 1,
-    borderColor: "#ccc", 
+    borderColor: "#ccc",
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
-    backgroundColor: "#fff", 
+    backgroundColor: "#fff",
   },
   pickerContainer: {
-    flex: 1,     
+    flex: 1,
     height: 50,
   },
   pickerInput: {
     borderWidth: 1,
-    borderColor: "#ccc", 
-    backgroundColor: "#fafafa", 
-    borderRadius: 5, 
+    borderColor: "#ccc",
+    backgroundColor: "#fafafa",
+    borderRadius: 5,
     paddingHorizontal: 4,
     height: 50,
   },
   placeholderText: {
-    color: "#888", 
-    fontSize: 16, 
+    color: "#888",
+    fontSize: 16,
+  },
+  dropdown: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 10,
+  },
+  selectedText: {
+    fontSize: 14,
+    color: '#333',
   },
   birthdayContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "end",
-   
   },
   iconContainer: {
     marginLeft: 10,

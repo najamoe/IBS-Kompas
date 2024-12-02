@@ -29,7 +29,7 @@ export const fetchUserDetails = async (uid) => {
 
 export const updateUserDetails = async (uid, updates) => {
   try {
-    const userRef = doc(db, "users", uid); // Reference the document in the "users" collection
+    const userRef = doc(db, "users", uid); 
     await updateDoc(userRef, updates); // Update the document with the provided data
     console.log("User details updated:", updates);
   } catch (error) {
