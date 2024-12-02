@@ -13,6 +13,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
@@ -34,6 +35,8 @@ const Profile = () => {
   const [pickerVisible, setPickerVisible] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [editedValue, setEditedValue] = useState("");
+  const [ibsType, setIbsType] = useState(null);
+
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
   useEffect(() => {
@@ -46,9 +49,11 @@ const Profile = () => {
       }
       try {
         const data = await fetchUserDetails(user.uid);
+        console.log("Fetched user data:", data);
         setUserData(data);
         if (data.birthday) setDate(new Date(data.birthday));
         if (data.WaterGoal) setWaterGoal(data.WaterGoal);
+        if (data.ibsType) setIbsType(data.ibsType);
       } catch (error) {
         console.error("Error fetching user details:", error);
       } finally {
@@ -211,6 +216,45 @@ const Profile = () => {
             )}
 
             <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>IBS Type:</Text>
+              <RNPickerSelect
+                value={ibsType} // The selected value
+                onValueChange={(value) => {
+                  console.log("Updating ibsType to:", value); // Check the value being updated
+                  if (userData) {
+                    // Ensure user data is loaded before updating Firestore
+                    console.log("User UID:", userData.uid);
+                    updateUserDetails(userData.uid, { ibsType: value }) // Update Firestore
+                      .then(() => {
+                        console.log(
+                          "ibsType updated successfully in Firestore"
+                        );
+                        setIbsType(value); // Update local state with the selected value
+                      })
+                      .catch((error) => {
+                        console.error("Error updating ibsType:", error);
+                      });
+                  } else {
+                    console.error("User data is not available.");
+                  }
+                }}
+                items={[
+                  { label: "IBS-D", value: "IBS-D" },
+                  { label: "IBS-C", value: "IBS-C" },
+                  { label: "IBS-M", value: "IBS-M" },
+                  { label: "Ved ikke", value: "Ved ikke" },
+                ]}
+                style={{
+                  inputAndroid: styles.pickerInput,
+                }}
+                placeholder={{
+                  label: ibsType ? ibsType : "Vælg IBS Type", // Provide a default placeholder if no type is selected
+                  value: null,
+                }}
+              />
+            </View>
+
+            <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>Dagligt Vandmål (liter):</Text>
               {editingField === "waterGoal" ? (
                 <TextInput
@@ -322,7 +366,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    width: "75%",
+    width: "100%",
   },
   fieldLabel: {
     flex: 1,
@@ -361,6 +405,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 1,
+  },
+  pickerInput: {
+    height: 40,
+    width: "1080%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingLeft: 10,
+    backgroundColor: "#f5f5f5", // Ensure a visible background color
   },
   cancelButton: {
     marginTop: 1,
