@@ -15,8 +15,8 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { Dropdown, MultiSelect } from "react-native-element-dropdown";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
@@ -30,8 +30,16 @@ import icon from "../../assets/icon.png";
 const { auth } = firebaseConfig;
 
 const allergyOptions = [
-  { label: 'Laktose', value: 'laktose'},
-  { label: 'Gluten', value: 'gæuten'},
+  { label: "Laktose", value: "laktose" },
+  { label: "Mælk", value: "mælk" },
+  { label: "Gluten", value: "gluten" },
+  { label: "Hvede", value: "hvede" },
+  { label: "Løg", value: "løg" },
+  { label: "Hvidløg", value: "hvidløg" },
+  { label: "Æg", value: "æg" },
+  { label: "Skaldyr", value: "skaldyr" },
+  { label: "Soja", value: "soja" },
+  { label: "Gluten", value: "gæuten" },
 ];
 
 const Profile = () => {
@@ -44,6 +52,7 @@ const Profile = () => {
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
+
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
@@ -96,6 +105,30 @@ const Profile = () => {
   const handleFieldEdit = (field) => {
     setEditingField(field); // Set the field that is being edited (e.g., name, email)
     setEditedValue(userData[field] || ""); // Preload the field value if it exists
+  };
+
+  const handleAllergyChange = (selectedItems) => {
+    setSelectedAllergies(selectedItems);
+    saveAllergiesToFirestore(selectedItems);
+  };
+
+  const saveAllergiesToFirestore = async (allergies) => {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      await updateUserDetails(user.uid, { allergies });
+      console.log("Allergies updated successfully!");
+    } catch (error) {
+      console.error("Error updating allergies in Firestore:", error);
+    }
+  };
+
+  const removeAllergy = (item) => {
+    const updatedAllergies = selectedAllergies.filter(
+      (selectedItem) => selectedItem.value !== item.value
+    );
+    setSelectedAllergies(updatedAllergies);
+    saveAllergiesToFirestore(updatedAllergies);
   };
 
   const getUserField = (field) => {
@@ -220,8 +253,8 @@ const Profile = () => {
                     placeholder: styles.placeholderText,
                   }}
                   placeholder={{
-                    label: "Vælg køn", 
-                    value: null, 
+                    label: "Vælg køn",
+                    value: null,
                   }}
                 />
               </View>
@@ -259,23 +292,59 @@ const Profile = () => {
               />
             )}
 
-
-<View style={styles.fieldContainer}>
-        <Text style={styles.fieldLabel}>Kendte allergier og intolerancer:</Text>
-        <Dropdown
-          data={allergyOptions}
-          labelField="label"
-          valueField="value"
-          value={selectedAllergies}
-          onChange={item => setSelectedAllergies(item)}
-          placeholder="Vælg allergier"
-          multiple={true}  // Enable multiple selections
-          search
-          searchPlaceholder="Søg allergi"
-          selectedTextStyle={styles.selectedText}
-          style={styles.dropdown}
-        />
-      </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.fieldLabel}>
+                Kendte allergier & intolerancer:
+              </Text>
+              <View style={styles.dropdownContainer}>
+                <MultiSelect
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={allergyOptions}
+                  labelField="label"
+                  valueField="value"
+                  placeholder="Vælg allergi"
+                  value={selectedAllergies}
+                  search
+                  searchPlaceholder="Søg..."
+                  onChange={handleAllergyChange}
+                  renderItem={(item) => (
+                    <View style={styles.item}>
+                      <Text style={styles.selectedTextStyle}>{item.label}</Text>
+                      <AntDesign
+                        style={styles.icon}
+                        color="black"
+                        name="Safety"
+                        size={20}
+                      />
+                    </View>
+                  )}
+                  renderSelectedItem={(item, unSelect) => (
+                    <TouchableOpacity
+                      onPress={() => unSelect && unSelect(item)}
+                    >
+                      <View style={styles.selectedItemContainer}>
+                        <Text style={styles.selectedText}>{item.label}</Text>
+                        <AntDesign color="black" name="delete" size={17} />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                />
+                {/* Display selected allergies below the dropdown */}
+                {selectedAllergies.length > 0 && (
+                  <View style={styles.selectedAllergiesContainer}>
+                    {selectedAllergies.map((item) => (
+                      <Text key={item.value} style={styles.selectedAllergyText}>
+                        {item.label}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
+            </View>
 
             <View style={styles.fieldContainer}>
               <Text style={styles.fieldLabel}>IBS Type:</Text>
@@ -464,17 +533,75 @@ const styles = StyleSheet.create({
     color: "#888",
     fontSize: 16,
   },
-  dropdown: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 10,
+  iconContainer: {
+    marginLeft: 10,
+  },
+  selectedItemsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 10,
+  },
+  selectedItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
+    borderRadius: 15,
+    padding: 5,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  selectedItemText: {
+    fontSize: 14,
+    color: "#333",
+    marginRight: 5,
   },
   selectedText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 16,
+    color: "#000",
   },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "#000",
+  },
+  dropdown: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: "#bbb",
+  },
+  inputSearchStyle: {
+    height: 40,
+    borderRadius: 5,
+    paddingLeft: 10,
+    fontSize: 16,
+  },
+  iconStyle: {
+    fontSize: 18,
+    color: "#000",
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  selectedItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0e0e0",
+    borderRadius: 20,
+    padding: 5,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+
   birthdayContainer: {
     flexDirection: "row",
     alignItems: "end",
