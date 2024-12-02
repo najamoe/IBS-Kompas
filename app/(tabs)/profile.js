@@ -292,7 +292,7 @@ const Profile = () => {
               />
             )}
 
-            <View style={styles.fieldContainer}>
+            <View style={styles.allergyFieldContainer}>
               <Text style={styles.fieldLabel}>
                 Kendte allergier & intolerancer:
               </Text>
@@ -314,12 +314,7 @@ const Profile = () => {
                   renderItem={(item) => (
                     <View style={styles.item}>
                       <Text style={styles.selectedTextStyle}>{item.label}</Text>
-                      <AntDesign
-                        style={styles.icon}
-                        color="black"
-                        name="Safety"
-                        size={20}
-                      />
+                     
                     </View>
                   )}
                   renderSelectedItem={(item, unSelect) => (
@@ -536,7 +531,19 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginLeft: 10,
   },
+  allergyFieldContainer: {
+    padding: 10,
+    alignItems: "center",
+    marginBottom: 15,
+    width: "100%",
+    backgroundColor: "#f5f5f5",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    justifyContent: "space-between",
+  },
   selectedItemsContainer: {
+    alignItems: "center",
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 10,
@@ -564,13 +571,18 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   dropdown: {
+    marginTop: 40,
     height: 40,
+    width: 250,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     justifyContent: "center",
     backgroundColor: "#fff",
+  },
+  dropdownContainer: {
+    marginTop: 10,
   },
   placeholderStyle: {
     fontSize: 16,
@@ -601,7 +613,17 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 10,
   },
-
+  selectedAllergiesContainer: {
+    marginTop: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  selectedAllergyText: {
+    fontSize: 14,
+    color: "#333",
+    marginRight: 10,
+    marginBottom: 5,
+  },
   birthdayContainer: {
     flexDirection: "row",
     alignItems: "end",
