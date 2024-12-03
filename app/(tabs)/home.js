@@ -96,10 +96,9 @@ const Home = () => {
 
   const handleRemoveWater = async (amount) => {
     if (user) {
-      const newWaterIntake = waterIntake - amount;
       try {
-        await removeWaterIntake(user.uid, selectedDate); // Remove the water intake for today
-        setWaterIntake(newWaterIntake); // Update the local state
+        const newWaterIntake = await removeWaterIntake(user.uid, selectedDate, amount); // Pass the amount to remove
+        setWaterIntake(newWaterIntake); // Update the local state with the new value
       } catch (error) {
         console.error("Error removing water from daily log:", error.message);
       }
@@ -158,7 +157,7 @@ const Home = () => {
               style={styles.iconContainer}
             />
 
-            <Text style={styles.waterIntakeText}>Væske {waterIntake} dl</Text>
+            <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
 
             <View style={styles.waterIconContainer}>
               <Ionicons

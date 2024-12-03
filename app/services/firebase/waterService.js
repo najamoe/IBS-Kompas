@@ -43,7 +43,7 @@ export const fetchWaterIntake = async (userId, date) => {
   }
 };
 
-export const removeWaterIntake = async (userId, date) => {
+export const removeWaterIntake = async (userId, date, amount) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
@@ -53,13 +53,20 @@ export const removeWaterIntake = async (userId, date) => {
     const snapshot = await getDoc(waterRef);
 
     if (snapshot.exists()) {
-      return snapshot.data().total || 0;
+      const currentIntake = snapshot.data().total || 0;
+      const newWaterIntake = currentIntake - amount;
+
+      // Update the water intake value in Firestore
+      await setDoc(waterRef, { total: newWaterIntake }, { merge: true });
+
+      console.log("Water intake updated:", newWaterIntake);
+      return newWaterIntake; // Return the updated intake value
     } else {
       console.log("No water log found for this date.");
       return 0;
     }
   } catch (error) {
-    console.error("Error fetching water intake:", error);
+    console.error("Error removing water from daily log:", error);
     throw error;
   }
 };
