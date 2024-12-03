@@ -15,7 +15,8 @@ import { getAuth } from "firebase/auth";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { addDailyLog, fetchDailyLog } from "../firebase/firestoreService";
+import { addWaterIntake, fetchWaterIntake } from "../services/firebase/waterService";
+import WaterModal from "../components/modal/waterModal";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -42,6 +43,7 @@ const Home = () => {
   );
   const [user, setUser] = useState(null);
   const [waterIntake, setWaterIntake] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Check if the user is signed in
   useEffect(() => {
@@ -52,45 +54,38 @@ const Home = () => {
     }
   }, []);
 
-  // Fetch daily log when the selected date changes
+  // Fetch daily when the selected date changes
   useEffect(() => {
     if (user) {
-      const fetchLogData = async () => {
+      const fetchWaterData = async () => {
         try {
-          const logData = await fetchDailyLog(user.uid, selectedDate);
-          if (logData) {
-            setWaterIntake(logData.waterIntake || 0); // Set water intake if data exists
-          } else {
-            setWaterIntake(0); // Set to 0 if no log data found
-          }
+          const intake = await fetchWaterIntake(user.uid, selectedDate);
+          setWaterIntake(intake);
         } catch (error) {
-          console.error("Error fetching daily log:", error);
+          console.error("Error fetching water intake:", error);
         }
       };
-      fetchLogData();
+      fetchWaterData();
     }
   }, [user, selectedDate]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
-    setSelectedDate(formatDateStorage(newDate)); // Store as YYYY-MM-DD
+    setSelectedDate(formatDateStorage(newDate)); 
   };
 
   const handleAddWater = async () => {
     if (user) {
       const userUid = user.uid; // Get the signed-in user's UID
-
+  
       // Add 2 dl to the current water intake
       const newWaterIntake = waterIntake + 2;
-
-      const logData = {
-        waterIntake: newWaterIntake, // Add to the existing water intake
-        timestamp: new Date().toISOString(), // Timestamp for logging
-      };
-
+  
       try {
-        await addDailyLog(userUid, logData); // Call Firestore service to add the daily log
+        // Call the updated Firestore service to add the water intake
+        await addWaterIntake(userUid, newWaterIntake); // Use the new water intake service
+  
         setWaterIntake(newWaterIntake); // Update state with the new water intake
       } catch (error) {
         console.error("Error adding water to daily log:", error.message);
@@ -99,6 +94,7 @@ const Home = () => {
       alert("Please sign in to log your water intake.");
     }
   };
+  
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -142,13 +138,21 @@ const Home = () => {
           </View>
 
           <View style={styles.waterContainer}>
-          <Ionicons
-              name="water"
-              size={20}
-              />
-            <Text>Water Intake: {waterIntake} dl</Text>
-            <Button title="Add 2 dl of Water" onPress={handleAddWater} />
-          </View>
+        <Ionicons
+          name="add-circle-outline" 
+          size={30}
+          color="green"
+          onPress={() => setIsModalVisible(true)} 
+        />
+        <Text>Water Intake: {waterIntake} dl</Text>
+      </View>
+
+      {/* Show the modal when isModalVisible is true */}
+      <WaterModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)} // Close modal
+        onAddWater={handleAddWater} // Add water when button is pressed
+      />
 
           <View style={styles.poopContainer}>
           <FontAwesomeIcons
