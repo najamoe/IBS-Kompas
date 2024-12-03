@@ -174,7 +174,10 @@ const Home = () => {
                 size={34}
                 marginLeft={10}
                 color="green"
-                onPress={() => setIsModalVisible(true)}
+                onPress={() => {
+                  setIsModalVisible(true);
+                  setIsAdding(true);  
+                }}
               />
             </View>
           </View>
