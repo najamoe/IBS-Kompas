@@ -15,7 +15,7 @@ import { getAuth } from "firebase/auth";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { addWaterIntake, fetchWaterIntake } from "../services/firebase/waterService";
+import { addWaterIntake, fetchWaterIntake, removeWaterIntake } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
 
 const Home = () => {
@@ -44,6 +44,7 @@ const Home = () => {
   const [user, setUser] = useState(null);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAdding, setIsAdding] = useState(true);
 
   // Check if the user is signed in
   useEffect(() => {
@@ -86,6 +87,20 @@ const Home = () => {
       }
     } else {
       alert("Please sign in to log your water intake.");
+    }
+  };
+
+  const handleRemoveWater = async (amount) => {
+    if (user) {
+      const newWaterIntake = waterIntake - amount;
+      try {
+        await removeWaterIntake(user.uid, selectedDate); // Remove the water intake for today
+        setWaterIntake(newWaterIntake); // Update the local state
+      } catch (error) {
+        console.error("Error removing water from daily log:", error.message);
+      }
+    } else {
+      alert("Please sign in to remove water intake.");
     }
   };
   
@@ -142,17 +157,20 @@ const Home = () => {
           name="remove-circle-outline" 
           size={30}
           color="red"
-          onPress={() => setIsModalVisible(true)} 
+          onPress={() => { 
+            setIsModalVisible(true);
+            setIsAdding(false); 
+          }} 
         />
         <Text>Væske {waterIntake} dl</Text>
       </View>
 
       {/* Show the modal when isModalVisible is true */}
       <WaterModal
-        isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)} 
-        onAddWater={handleAddWater} 
-      />
+            isVisible={isModalVisible}
+            onClose={() => setIsModalVisible(false)} 
+            onAddWater={isAdding ? handleAddWater : handleRemoveWater} 
+          />
 
           <View style={styles.poopContainer}>
           <FontAwesomeIcons
