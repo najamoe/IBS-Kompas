@@ -1,5 +1,5 @@
 import { doc, collection, setDoc, getDoc } from "firebase/firestore";
-import FirebaseConfig from "../../firebase/FirebaseConfig";  // Import the default config
+import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
@@ -13,11 +13,7 @@ export const addWaterIntake = async (userId, amount) => {
     const waterLogsRef = collection(firestore, `users/${userId}/waterlogs`); // Use firestore instance
     const waterRef = doc(waterLogsRef, date);
 
-    await setDoc(
-      waterRef,
-      { total: amount },
-      { merge: true }
-    );
+    await setDoc(waterRef, { total: amount }, { merge: true });
 
     console.log("Water intake saved:", amount);
   } catch (error) {
@@ -36,7 +32,7 @@ export const fetchWaterIntake = async (userId, date) => {
     const snapshot = await getDoc(waterRef);
 
     if (snapshot.exists()) {
-      return snapshot.data().total || 0; 
+      return snapshot.data().total || 0;
     } else {
       console.log("No water log found for this date.");
       return 0;
