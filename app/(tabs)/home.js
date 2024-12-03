@@ -6,7 +6,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +20,7 @@ import {
   removeWaterIntake,
 } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
+import BowelModal from "../components/modal/bowelModal";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -47,7 +47,8 @@ const Home = () => {
   );
   const [user, setUser] = useState(null);
   const [waterIntake, setWaterIntake] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
+  const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
 
   // Check if the user is signed in
@@ -106,6 +107,10 @@ const Home = () => {
       alert("Please sign in to remove water intake.");
     }
   };
+
+  const handleAddBowel = async (type) => {
+
+  }
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -182,23 +187,26 @@ const Home = () => {
             </View>
           </View>
 
-          {/* modal when isModalVisible is true */}
+          {/* modal when isWaterModalVisible is true */}
           <WaterModal
-            isVisible={isModalVisible}
-            onClose={() => setIsModalVisible(false)}
+            isVisible={isWaterModalVisible}
+            onClose={() => setIsWaterModalVisible(false)}
             onAddWater={isAdding ? handleAddWater : handleRemoveWater}
           />
 
+          {/* Bowel Container */}
           <View style={styles.bowelContainer}>
-            <FontAwesomeIcons
-              name="toilet"
-              size={26}
-              color={"#8c4c1f"}
-              style={styles.iconContainer}
-            />
-          <Text style={styles.addBowel}>Tilføj</Text>
-
+            <FontAwesomeIcons name="toilet" size={26} color={"#8c4c1f"} style={styles.iconContainer} />
+            <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
+              <Text style={styles.addBowel}>Tilføj</Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Bowel Modal */}
+          <BowelModal
+            isVisible={isBowelModalVisible}
+            onClose={() => setIsBowelModalVisible(false)}
+          />
 
           <View style={styles.WellnessContainer}>
             <FontAwesomeIcon
