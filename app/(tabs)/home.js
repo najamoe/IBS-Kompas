@@ -12,10 +12,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
-import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5'
-import Ionicons from 'react-native-vector-icons/Ionicons'
-import { addWaterIntake, fetchWaterIntake, removeWaterIntake } from "../services/firebase/waterService";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {
+  addWaterIntake,
+  fetchWaterIntake,
+  removeWaterIntake,
+} from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
 
 const Home = () => {
@@ -73,7 +77,7 @@ const Home = () => {
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
-    setSelectedDate(formatDateStorage(newDate)); 
+    setSelectedDate(formatDateStorage(newDate));
   };
 
   const handleAddWater = async (amount) => {
@@ -103,7 +107,6 @@ const Home = () => {
       alert("Please sign in to remove water intake.");
     }
   };
-  
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -141,51 +144,64 @@ const Home = () => {
           <View style={styles.foodContainer}>
             <FontAwesomeIcon
               name="cutlery"
-              size={20}
-              />
-            <Text> Food Display</Text>
+              size={30}
+              color={"#666666"}
+              style={styles.iconContainer}
+            />
           </View>
 
           <View style={styles.waterContainer}>
-        <Ionicons
-          name="add-circle-outline" 
-          size={30}
-          color="green"
-          onPress={() => setIsModalVisible(true)} 
-        />
-        <Ionicons
-          name="remove-circle-outline" 
-          size={30}
-          color="red"
-          onPress={() => { 
-            setIsModalVisible(true);
-            setIsAdding(false); 
-          }} 
-        />
-        <Text>Væske {waterIntake} dl</Text>
-      </View>
+            <Ionicons
+              name="water"
+              size={35}
+              color={"#1591ea"}
+              style={styles.iconContainer}
+            />
 
-      {/* Show the modal when isModalVisible is true */}
-      <WaterModal
+            <Text style={styles.waterIntakeText}>Væske {waterIntake} dl</Text>
+
+            <View style={styles.waterIconContainer}>
+              <Ionicons
+                name="remove-circle-outline"
+                size={30}
+                color="red"
+                onPress={() => {
+                  setIsModalVisible(true);
+                  setIsAdding(false);
+                }}
+              />
+              <Ionicons
+                name="add-circle-outline"
+                size={30}
+                color="green"
+                onPress={() => setIsModalVisible(true)}
+              />
+            </View>
+          </View>
+
+          {/* modal when isModalVisible is true */}
+          <WaterModal
             isVisible={isModalVisible}
-            onClose={() => setIsModalVisible(false)} 
-            onAddWater={isAdding ? handleAddWater : handleRemoveWater} 
+            onClose={() => setIsModalVisible(false)}
+            onAddWater={isAdding ? handleAddWater : handleRemoveWater}
           />
 
-          <View style={styles.poopContainer}>
-          <FontAwesomeIcons
+          <View style={styles.bowelContainer}>
+            <FontAwesomeIcons
               name="toilet"
-              size={20}
-              />
-            <Text> Poop Display</Text>
+              size={30}
+              color={"#8c4c1f"}
+              style={styles.iconContainer}
+            />
           </View>
 
           <View style={styles.WellnessContainer}>
-          <FontAwesomeIcon
+            <FontAwesomeIcon
               name="heart"
-              size={20}
-              />
-            <Text> Wellness Display</Text>
+              size={30}
+              color={"#cd1c18"}
+              style={styles.iconContainer}
+            />
           </View>
 
           <Toast />
@@ -201,7 +217,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    position: "relative",
     alignItems: "center",
   },
   gradient: {
@@ -229,27 +244,58 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   foodContainer: {
-    padding: 5,
+    marginLeft: "10",
+    width: "94%",
+    flexDirection: "row",
+    padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
   },
   waterContainer: {
-    padding: 5,
+    marginLeft: "10",
+    flexDirection: "row",
+    width: "94%",
+    padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
+    alignItems: "center",
   },
-  poopContainer: {
+  waterIntakeText: {
+    fontSize: 16,
+    fontWeight: "400",
+    marginLeft: 50,
+    borderColor: "black",
+    borderWidth: 0.2,
     padding: 5,
+    borderRadius: 5,
+    width: 140,
+    textAlign: "center",
+  },
+  waterIconContainer: {
+    flexDirection: "row",
+    marginLeft: 40,
+  },
+  iconContainer: {
+    marginLeft: 10,
+  },
+  bowelContainer: {
+    marginLeft: "10",
+    width: "94%",
+    flexDirection: "row",
+    padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
   },
   WellnessContainer: {
-    padding: 5,
+    marginLeft: "10",
+    width: "94%",
+    flexDirection: "row",
+    padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
-  }
+  },
 });
