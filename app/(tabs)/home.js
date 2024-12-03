@@ -12,8 +12,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
+import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import { addDailyLog, fetchDailyLog } from "../firebase/firestoreService";
-import { Calendar } from "react-native-calendars";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -35,18 +37,20 @@ const Home = () => {
   };
 
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(formatDateStorage(new Date()));
+  const [selectedDate, setSelectedDate] = useState(
+    formatDateStorage(new Date())
+  );
   const [user, setUser] = useState(null);
   const [waterIntake, setWaterIntake] = useState(0);
 
-    // Check if the user is signed in
-    useEffect(() => {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setUser(currentUser); // Store user info
-      }
-    }, []);
+  // Check if the user is signed in
+  useEffect(() => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser); // Store user info
+    }
+  }, []);
 
   // Fetch daily log when the selected date changes
   useEffect(() => {
@@ -88,13 +92,11 @@ const Home = () => {
       try {
         await addDailyLog(userUid, logData); // Call Firestore service to add the daily log
         setWaterIntake(newWaterIntake); // Update state with the new water intake
-        
       } catch (error) {
-        console.error('Error adding water to daily log:', error.message);
-        
+        console.error("Error adding water to daily log:", error.message);
       }
     } else {
-      alert('Please sign in to log your water intake.');
+      alert("Please sign in to log your water intake.");
     }
   };
 
@@ -109,29 +111,59 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
         <ScrollView
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
-          <View style={styles.container}>
+          <View style={styles.dateContainer}>
             {/* Header with date navigation */}
             <View style={styles.header}>
               <TouchableOpacity onPress={() => handleDayChange(-1)}>
                 <Text style={styles.arrow}>◀</Text>
               </TouchableOpacity>
-              <Text style={styles.dateText}>{formatDateDisplay(selectedDate)}</Text> {/* Display in DD/MM/YYYY */}
+              <Text style={styles.dateText}>
+                {formatDateDisplay(selectedDate)}
+              </Text>{" "}
+              {/* Display in DD/MM/YYYY */}
               <TouchableOpacity onPress={() => handleDayChange(1)}>
                 <Text style={styles.arrow}>▶</Text>
               </TouchableOpacity>
             </View>
+          </View>
 
-         
+          {/* Daily Stats */}
 
-            {/* Daily Stats */}
-            <View style={styles.statsContainer}>
+          <View style={styles.foodContainer}>
+            <FontAwesomeIcon
+              name="cutlery"
+              size={20}
+              />
+            <Text> Food Display</Text>
+          </View>
+
+          <View style={styles.waterContainer}>
+          <Ionicons
+              name="water"
+              size={20}
+              />
             <Text>Water Intake: {waterIntake} dl</Text>
-              <Button title="Add 2 dl of Water" onPress={handleAddWater} />
+            <Button title="Add 2 dl of Water" onPress={handleAddWater} />
+          </View>
 
-             
-            </View>
+          <View style={styles.poopContainer}>
+          <FontAwesomeIcons
+              name="toilet"
+              size={20}
+              />
+            <Text> Poop Display</Text>
+          </View>
+
+          <View style={styles.WellnessContainer}>
+          <FontAwesomeIcon
+              name="heart"
+              size={20}
+              />
+            <Text> Wellness Display</Text>
           </View>
 
           <Toast />
@@ -146,39 +178,61 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
+    position: "relative",
+    alignItems: "center",
   },
   gradient: {
     flex: 1,
     width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  dateContainer: {
+    backgroundColor: "pink",
+    padding: 5,
+    marginTop: 40,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
   },
   arrow: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#007BFF",
+    color: "black",
+    margin: 10,
   },
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
   },
-  calendar: {
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "gray",
+  foodContainer: {
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: "white",
   },
-  statsContainer: {
-    marginTop: 20,
-    alignItems: "center",
+  waterContainer: {
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: "white",
   },
-  statsText: {
-    fontSize: 16,
-    marginVertical: 5,
+  poopContainer: {
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: "white",
+  },
+  WellnessContainer: {
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: "white",
+  },
+  icon: {
+    fontFamily: "FontAwesome", // Matches the name in the CSS file
+    fontSize: 50,
+    color: "brown",
   },
 });
