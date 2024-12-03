@@ -1,97 +1,72 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import Modal from "react-native-modal"; 
+import { doc, collection, setDoc, getDoc } from "firebase/firestore";
+import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
 
-const BowelModal = ({ isVisible, onClose, onAddWater }) => {
-  const handleType = (type) => {
-    onAddWater(type); // Pass the selected amount back to the parent
-    onClose(); 
-  };
+const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-  return (
-    <Modal
-      isVisible={isVisible}
-      animationIn="fadeIn"
-      animationOut="fadeOut"
-      backdropColor="rgba(0, 0, 0, 0.6)"
-      onBackdropPress={onClose}
-      onRequestClose={onClose}
-      style={styles.modal}
-    >
-      <View style={styles.modalContent}>
-        <View style={styles.buttonsContainer}>
-          {[
-            { type: 1, image: require("../../../assets/images/bowel/type1.png") },
-            { type: 2, image: require("../../../assets/images/bowel/type2.png") },
-            { type: 3, image: require("../../../assets/images/bowel/type3.png") },
-            { type: 4, image: require("../../../assets/images/bowel/type4.png") },
-            { type: 4, image: require("../../../assets/images/bowel/type5.png") },
-            { type: 4, image: require("../../../assets/images/bowel/type6.png") },
-            { type: 4, image: require("../../../assets/images/bowel/type7.png") },
-          ].map((option) => (
-            <TouchableOpacity
-              key={option.type}
-              style={styles.button}
-              onPress={() => handleType(option.type)}
-            >
-              <Image source={option.image} style={styles.image} />
-              <Text style={styles.buttonText}>{option.type} liter</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </Modal>
-  );
+export const addBowelLog = async (userId, type) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`); 
+    const bowelRef = doc(bowelLogsRef, date);
+
+    await setDoc(bowelRef, { total: type }, { merge: true });
+
+    console.log("bowel log saved:", type);
+  } catch (error) {
+    console.error("Error saving boel log from ADDBOWELLOG:", error);
+    throw error;
+  }
 };
 
-const styles = StyleSheet.create({
-  modal: {
-    justifyContent: "center", 
-    alignItems: "center", 
-  },
-  modalContent: {
-    width: 250,
-    height: 250,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 180, 
-    alignItems: "center",
-  },
-  buttonsContainer: {
-    marginTop: 8,
-    flexDirection: "row", 
-    flexWrap: "wrap",
-    justifyContent: "center", 
-  },
-  button: {
-    padding: 10,
-    borderRadius: 20,
-    marginVertical: 10,
-    marginHorizontal: 5,
-    width: 95,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "black",
-    fontSize: 14,
-    marginTop: 10,
-  },
-  image: {
-    width: 30, 
-    height: 30, 
-  },
-  closeButton: {
-    backgroundColor: "#f44336",
-    padding: 5,
-    borderRadius: 10,
-    marginTop: 20,
-    width: "25%",
-    alignItems: "center",
-  },
-  closeText: {
-    color: "white",
-    fontSize: 14,
-  },
-});
+export const fetchBowelLog = async (userId, date) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
 
-export default BowelModal;
+    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`); 
+    const snapshot = await getDoc(bowelRef);
+
+    if (snapshot.exists()) {
+      return snapshot.data().total || 0;
+    } else {
+      console.log("No bowel log found for this date.");
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error fetching bowel log:", error);
+    throw error;
+  }
+};
+
+export const removeBowelLog = async (userId, date, type) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`); 
+    const snapshot = await getDoc(bowelRef);
+
+    if (snapshot.exists()) {
+      const currentBowelLog = snapshot.data().total || 0;
+      const newBowelLog = currentBowelLog - type;
+
+      // Update the bowel log in Firestore
+      await setDoc(bowelRef, { total: newBowelLog }, { merge: true });
+
+      console.log("bowel log updated:", newBowelLog);
+      return newBowelLog; // Return the updated log
+    } else {
+      console.log("No bowel log found for this date.");
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error removing bowel lof from daily log:", error);
+    throw error;
+  }
+};
