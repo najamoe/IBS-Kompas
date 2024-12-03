@@ -75,18 +75,12 @@ const Home = () => {
     setSelectedDate(formatDateStorage(newDate)); 
   };
 
-  const handleAddWater = async () => {
+  const handleAddWater = async (amount) => {
     if (user) {
-      const userUid = user.uid; // Get the signed-in user's UID
-  
-      // Add 2 dl to the current water intake
-      const newWaterIntake = waterIntake + 2;
-  
+      const newWaterIntake = waterIntake + amount;
       try {
-        // Call the updated Firestore service to add the water intake
-        await addWaterIntake(userUid, newWaterIntake); // Use the new water intake service
-  
-        setWaterIntake(newWaterIntake); // Update state with the new water intake
+        await addWaterIntake(user.uid, newWaterIntake); // Add the new water intake
+        setWaterIntake(newWaterIntake); // Update the local state
       } catch (error) {
         console.error("Error adding water to daily log:", error.message);
       }
@@ -144,14 +138,20 @@ const Home = () => {
           color="green"
           onPress={() => setIsModalVisible(true)} 
         />
-        <Text>Water Intake: {waterIntake} dl</Text>
+        <Ionicons
+          name="remove-circle-outline" 
+          size={30}
+          color="red"
+          onPress={() => setIsModalVisible(true)} 
+        />
+        <Text>Væske {waterIntake} dl</Text>
       </View>
 
       {/* Show the modal when isModalVisible is true */}
       <WaterModal
         isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)} // Close modal
-        onAddWater={handleAddWater} // Add water when button is pressed
+        onClose={() => setIsModalVisible(false)} 
+        onAddWater={handleAddWater} 
       />
 
           <View style={styles.poopContainer}>
@@ -233,10 +233,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
-  },
-  icon: {
-    fontFamily: "FontAwesome", // Matches the name in the CSS file
-    fontSize: 50,
-    color: "brown",
-  },
+  }
 });
