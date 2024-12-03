@@ -196,6 +196,8 @@ const Home = () => {
               color={"#8c4c1f"}
               style={styles.iconContainer}
             />
+          <Text style={styles.addBowel}>Tilføj</Text>
+
           </View>
 
           <View style={styles.WellnessContainer}>
@@ -286,8 +288,8 @@ const styles = StyleSheet.create({
     width: "34%", // Define the width of the container to control space between icons
     paddingHorizontal: 30,
   },
-  
   bowelContainer: {
+    backgroundColor: "grey",
     marginLeft: "10",
     flexDirection: "row",
     width: "94%",
@@ -296,6 +298,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+  },
+  addBowel: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 230,
+    borderColor: "black",
+    borderWidth: 0.2,
+    padding: 5,
+    borderRadius: 5,
+    width: 80,
+    textAlign: "center",
   },
   WellnessContainer: {
     marginLeft: "10",
