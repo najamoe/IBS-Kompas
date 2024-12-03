@@ -144,7 +144,7 @@ const Home = () => {
           <View style={styles.foodContainer}>
             <FontAwesomeIcon
               name="cutlery"
-              size={30}
+              size={25}
               color={"#666666"}
               style={styles.iconContainer}
             />
@@ -153,7 +153,7 @@ const Home = () => {
           <View style={styles.waterContainer}>
             <Ionicons
               name="water"
-              size={35}
+              size={30}
               color={"#1591ea"}
               style={styles.iconContainer}
             />
@@ -163,7 +163,7 @@ const Home = () => {
             <View style={styles.waterIconContainer}>
               <Ionicons
                 name="remove-circle-outline"
-                size={30}
+                size={34}
                 color="red"
                 onPress={() => {
                   setIsModalVisible(true);
@@ -172,7 +172,8 @@ const Home = () => {
               />
               <Ionicons
                 name="add-circle-outline"
-                size={30}
+                size={34}
+                marginLeft={10}
                 color="green"
                 onPress={() => setIsModalVisible(true)}
               />
@@ -189,7 +190,7 @@ const Home = () => {
           <View style={styles.bowelContainer}>
             <FontAwesomeIcons
               name="toilet"
-              size={30}
+              size={26}
               color={"#8c4c1f"}
               style={styles.iconContainer}
             />
@@ -198,7 +199,7 @@ const Home = () => {
           <View style={styles.WellnessContainer}>
             <FontAwesomeIcon
               name="heart"
-              size={30}
+              size={25}
               color={"#cd1c18"}
               style={styles.iconContainer}
             />
@@ -243,14 +244,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  iconContainer: {
+    marginLeft: 10,
+  },
   foodContainer: {
     marginLeft: "10",
-    width: "94%",
     flexDirection: "row",
+    width: "94%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
+    alignItems: "center",
   },
   waterContainer: {
     marginLeft: "10",
@@ -275,27 +280,29 @@ const styles = StyleSheet.create({
   },
   waterIconContainer: {
     flexDirection: "row",
-    marginLeft: 40,
+    marginLeft: 4, // Adjusts the left space for the container
+    width: "34%", // Define the width of the container to control space between icons
+    paddingHorizontal: 30,
   },
-  iconContainer: {
-    marginLeft: 10,
-  },
+  
   bowelContainer: {
     marginLeft: "10",
-    width: "94%",
     flexDirection: "row",
+    width: "94%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
+    alignItems: "center",
   },
   WellnessContainer: {
     marginLeft: "10",
-    width: "94%",
     flexDirection: "row",
+    width: "94%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
+    alignItems: "center",
   },
 });
