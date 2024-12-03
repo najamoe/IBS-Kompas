@@ -1,11 +1,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import Modal from "react-native-modal"; // Import react-native-modal
+import Modal from "react-native-modal"; 
 
 const WaterModal = ({ isVisible, onClose, onAddWater }) => {
   const handleAddAmount = (amount) => {
     onAddWater(amount); // Pass the selected amount back to the parent
-    onClose(); // Close the modal after selection
+    onClose(); 
   };
 
   return (
@@ -16,7 +16,7 @@ const WaterModal = ({ isVisible, onClose, onAddWater }) => {
       backdropColor="rgba(0, 0, 0, 0.6)"
       onBackdropPress={onClose}
       onRequestClose={onClose}
-      style={styles.modal} // Apply centering style to Modal
+      style={styles.modal}
     >
       <View style={styles.modalContent}>
         <View style={styles.buttonsContainer}>
@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
     height: 250,
     padding: 20,
     backgroundColor: "white",
-    borderRadius: 180, // Rounded corners
+    borderRadius: 180, 
     alignItems: "center",
   },
   buttonsContainer: {
     marginTop: 8,
-    flexDirection: "row", // Arrange the buttons horizontally
-    flexWrap: "wrap", // Allow wrapping if necessary
-    justifyContent: "center", // Center the buttons
+    flexDirection: "row", 
+    flexWrap: "wrap",
+    justifyContent: "center", 
   },
   button: {
     padding: 10,
@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width: 30, // Adjust image size as needed
-    height: 30, // Adjust image size as needed
+    width: 30, 
+    height: 30, 
   },
   closeButton: {
     backgroundColor: "#f44336",
