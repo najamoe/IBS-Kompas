@@ -1,5 +1,5 @@
 import { doc, collection, setDoc, getDoc } from "firebase/firestore";
-import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
+import FirebaseConfig from "../../firebase/FirebaseConfig"; 
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
