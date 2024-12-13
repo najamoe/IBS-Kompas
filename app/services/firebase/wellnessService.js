@@ -3,9 +3,9 @@ import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-export const addWellnessLog = async (userId) => {
+export const addWellnessLog = async (userId, emoticonType) => {
   try {
-    if (!firestore || !userId) {
+    if (!firestore || !userId || !emoticonType) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
@@ -23,7 +23,7 @@ export const addWellnessLog = async (userId) => {
     // Create a new log entry
     const logData = {
       timestamp: new Date(),
-      action: "Wellness activity added", 
+      emoticonType: emoticonType,
     };
 
     await setDoc(logRef, logData);
