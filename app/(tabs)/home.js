@@ -14,6 +14,8 @@ import { getAuth } from "firebase/auth";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -21,6 +23,7 @@ import {
 } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
 import BowelModal from "../components/modal/bowelModal";
+import { addWellnessLog } from "../services/firebase/wellnessService";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -50,6 +53,7 @@ const Home = () => {
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
+  const [selectedMood, setSelectedMood] = useState(null);
 
   // Check if the user is signed in
   useEffect(() => {
@@ -98,7 +102,11 @@ const Home = () => {
   const handleRemoveWater = async (amount) => {
     if (user) {
       try {
-        const newWaterIntake = await removeWaterIntake(user.uid, selectedDate, amount); // Pass the amount to remove
+        const newWaterIntake = await removeWaterIntake(
+          user.uid,
+          selectedDate,
+          amount
+        ); // Pass the amount to remove
         setWaterIntake(newWaterIntake); // Update the local state with the new value
       } catch (error) {
         console.error("Error removing water from daily log:", error.message);
@@ -108,9 +116,38 @@ const Home = () => {
     }
   };
 
-  const handleAddBowel = async (type) => {
+  const handleAddBowel = async (type) => {};
 
-  }
+  const emoticons = [
+    { name: "emoticon-excited-outline", color: "#FFC107" },
+    { name: "emoticon-outline", color: "#4CAF50" },
+    { name: "emoticon-happy-outline", color: "#4CAF50" },
+    { name: "emoticon-neutral-outline", color: "#FFC107" },
+    { name: "emoticon-cry-outline", color: "#4CAF50" },
+    { name: "emoticon-sad-outline", color: "#F44336" },
+    { name: "emoticon-sick-outline", color: "#FFC107" },
+  ];
+
+  const handleEmoticonPress = async (emoticon) => {
+    if (!user) {
+      console.error("User not logged in");
+      return;
+    }
+  
+    try {
+      setSelectedMood(emoticon);
+  
+      // Call addWellnessLog service to log the emoticon
+      await addWellnessLog(user.uid, {
+        emoticon,
+      });
+  
+      console.log("Emoticon saved successfully:", emoticon);
+    } catch (error) {
+      console.error("Error saving emoticon:", error.message);
+    }
+  };
+  
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -170,7 +207,7 @@ const Home = () => {
                 size={34}
                 color="red"
                 onPress={() => {
-                  setIsModalVisible(true);
+                  setIsWaterModalVisible(true);
                   setIsAdding(false);
                 }}
               />
@@ -180,8 +217,8 @@ const Home = () => {
                 marginLeft={10}
                 color="green"
                 onPress={() => {
-                  setIsModalVisible(true);
-                  setIsAdding(true);  
+                  setIsWaterModalVisible(true);
+                  setIsAdding(true);
                 }}
               />
             </View>
@@ -196,7 +233,12 @@ const Home = () => {
 
           {/* Bowel Container */}
           <View style={styles.bowelContainer}>
-            <FontAwesomeIcons name="toilet" size={26} color={"#8c4c1f"} style={styles.iconContainer} />
+            <FontAwesomeIcons
+              name="toilet"
+              size={26}
+              color={"#8c4c1f"}
+              style={styles.iconContainer}
+            />
             <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
               <Text style={styles.addBowel}>Tilføj</Text>
             </TouchableOpacity>
@@ -208,13 +250,24 @@ const Home = () => {
             onClose={() => setIsBowelModalVisible(false)}
           />
 
+          {/* Wellness container */}
           <View style={styles.WellnessContainer}>
-            <FontAwesomeIcon
-              name="heart"
-              size={25}
-              color={"#cd1c18"}
-              style={styles.iconContainer}
-            />
+            {emoticons.map((icon) => (
+              <TouchableOpacity
+                key={icon.name}
+                onPress={() => handleEmoticonPress(icon.name)}
+                style={[
+                  styles.emoticonWrapper,
+                  selectedMood === icon.name && styles.selectedEmoticon,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={icon.name}
+                  size={40}
+                  color={selectedMood === icon.name ? "blue" : icon.color}
+                />
+              </TouchableOpacity>
+            ))}
           </View>
 
           <Toast />
@@ -327,5 +380,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+  },
+  emoticonWrapper: {
+    margin: 10,
+    borderRadius: 10, // Round corners for the border
+    padding: 5,       // Add spacing for the icon inside the border
+  },
+  selectedEmoticon: {
+    borderWidth: 2,   // Thickness of the border
+    borderColor: "blue", // Border color for the selected emoticon
   },
 });
