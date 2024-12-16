@@ -4,7 +4,7 @@ import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the defaul
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
 
-export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes) => {
+export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes, date) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
@@ -20,6 +20,7 @@ export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes)
       blood,
       urgent,
       notes,
+      date,
       timestamp: new Date().toISOString(), // Include timestamp for the log entry
     };
 
