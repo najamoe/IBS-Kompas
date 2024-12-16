@@ -4,14 +4,14 @@ import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the defaul
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
 
-export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes, date) => {
+export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs/${date}/entries`);  // Create a subcollection for each day
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`); // Reference to the bowelLogs subcollection
 
     // Create a bowel log entry object with all fields
     const bowelLog = {
@@ -20,15 +20,14 @@ export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes,
       blood,
       urgent,
       notes,
-      date,
       timestamp: new Date().toISOString(), // Include timestamp for the log entry
     };
 
-    // Use auto-generated document ID for each new log entry
-    const bowelLogRef = doc(bowelLogsRef);  // This generates a new document ID for each entry
+    // Use a document reference with date as the ID
+    const bowelRef = doc(bowelLogsRef, date);  // Save the document with the current date as ID
 
     // Save the bowel log in Firestore
-    await setDoc(bowelLogRef, bowelLog);
+    await setDoc(bowelRef, bowelLog);
 
     console.log("Bowel log saved:", bowelLog);
   } catch (error) {
