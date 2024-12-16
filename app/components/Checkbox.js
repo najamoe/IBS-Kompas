@@ -36,8 +36,8 @@ const Checkbox = ({ options, checkedValues, onChange, style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row", // Change this to row for horizontal layout
-    flexWrap: "wrap", // Allows items to wrap onto the next line if necessary
+    flexDirection: "row", 
+    flexWrap: "wrap",
     width: "100%",
     height: 50,
   },
