@@ -16,7 +16,6 @@ export const addWellnessLog = async (userId, emoticonType) => {
     // Check if today's log exists
     const logDoc = await getDoc(logRef);
     if (logDoc.exists()) {
-      console.log("Wellness log already exists for today.");
       return; // Optional: Handle updates if needed
     }
 
@@ -28,7 +27,6 @@ export const addWellnessLog = async (userId, emoticonType) => {
 
     await setDoc(logRef, logData);
 
-    console.log("Wellness log added successfully!");
   } catch (error) {
     console.error("Error adding wellness log:", error.message);
     throw error;
@@ -46,7 +44,6 @@ export const fetchWellnessLog = async (userId, date) => {
         if(snapshot.exists()) {
             return snapshot.data().emoticonType;
         } else {
-            console.log("No wellnesslog found for this date")
             return 0;
         }
     } catch (error) {
