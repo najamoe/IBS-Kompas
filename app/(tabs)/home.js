@@ -365,14 +365,20 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   dateContainer: {
-    backgroundColor: "pink",
+    backgroundColor: "white",
+    borderRadius: 30,
+    width: "90%",  
     padding: 5,
-    marginTop: 40,
+    marginTop: 25,
+    marginBottom: 25,
+    alignSelf: "center",  
+    justifyContent: "center",  
   },
   header: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "center",  
+    alignItems: "center", 
+  
   },
   arrow: {
     fontSize: 22,
