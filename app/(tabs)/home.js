@@ -82,17 +82,14 @@ const Home = () => {
         try {
           // Fetch water intake
           const intake = await fetchWaterIntake(user.uid, selectedDate);
-          console.log("Fetched Water Intake:", intake); //LOGS
           setWaterIntake(intake);
 
           // Fetch wellness log
           const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
-          console.log("Fetched Wellness Log:", wellnesslog); //LOGS
           setSelectedMood(wellnesslog?.emoticon || null);
 
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
-          console.log("Fetched Symptoms:", symptoms); //LOGS
           setSymptoms(symptoms);
         } catch (error) {
           console.error("Error fetching data:", error); //LOGS
@@ -102,10 +99,7 @@ const Home = () => {
     }
   }, [user, selectedDate]);
 
-  useEffect(() => {
-    console.log("Updated Water Intake State:", waterIntake);
-    console.log("Updated Selected Mood State:", selectedMood);
-  }, [waterIntake, selectedMood]);
+  useEffect(() => {}, [waterIntake, selectedMood]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -164,11 +158,8 @@ const Home = () => {
 
     try {
       setSelectedMood(emoticon);
-
       // Call addWellnessLog service to log the emoticon
       await addWellnessLog(user.uid, emoticon);
-
-      console.log("Emoticon saved successfully:", emoticon);
     } catch (error) {
       console.error("Error saving emoticon:", error.message);
     }
@@ -207,7 +198,7 @@ const Home = () => {
       }
     }
   };
-  
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -242,46 +233,48 @@ const Home = () => {
           {/* Daily Stats */}
 
           <View style={styles.foodContainer}>
-          <Text style={styles.logTitle}>Madlog </Text>
-            <FontAwesomeIcon
-              name="cutlery"
-              size={25}
-              color={"#666666"}
-              style={styles.iconContainer}
-            />
+            <Text style={styles.logTitle}>Madlog </Text>
+            <View style={styles.foodContent}>
+              <FontAwesomeIcon
+                name="cutlery"
+                size={25}
+                color={"#666666"}
+              />
+            </View>
           </View>
 
           <View style={styles.waterContainer}>
-          <Text style={styles.logTitle}>Tilføj væskeindtag</Text>
-            <Ionicons
-              name="water"
-              size={30}
-              color={"#1591ea"}
-              style={styles.iconContainer}
-            />
+            <View style={styles.logTitleContainer}>
+              <Text style={styles.logTitle}>Tilføj væskeindtag <Ionicons
+                name="water"
+                size={22}
+                color="#1591ea"
+              /></Text>
+            </View>
 
-            <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
-
-            <View style={styles.waterIconContainer}>
-              <Ionicons
-                name="remove-circle-outline"
-                size={34}
-                color="red"
-                onPress={() => {
-                  setIsWaterModalVisible(true);
-                  setIsAdding(false);
-                }}
-              />
-              <Ionicons
-                name="add-circle-outline"
-                size={34}
-                marginLeft={10}
-                color="green"
-                onPress={() => {
-                  setIsWaterModalVisible(true);
-                  setIsAdding(true);
-                }}
-              />
+            <View style={styles.waterContent}>
+              <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
+              <View style={styles.waterIconContainer}>
+                <Ionicons
+                  name="remove-circle-outline"
+                  size={34}
+                  color="red"
+                  onPress={() => {
+                    setIsWaterModalVisible(true);
+                    setIsAdding(false);
+                  }}
+                />
+                <Ionicons
+                  name="add-circle-outline"
+                  size={34}
+                  marginLeft={10}
+                  color="green"
+                  onPress={() => {
+                    setIsWaterModalVisible(true);
+                    setIsAdding(true);
+                  }}
+                />
+              </View>
             </View>
           </View>
 
@@ -294,18 +287,22 @@ const Home = () => {
 
           {/* Bowel Container */}
           <View style={styles.bowelContainer}>
-          <Text style={styles.logTitle}>Log toiletbesøg</Text>
-            <FontAwesomeIcons
-              name="toilet"
-              size={26}
-              color={"#8c4c1f"}
-              style={styles.iconContainer}
-            />
-            <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
-              <Text style={styles.addBowel}>Tilføj</Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={styles.logTitle}>
+              Log toiletbesøg{" "}
+              <FontAwesomeIcons
+                name="toilet"
+                size={20}
+                color={"#8c4c1f"}
+                style={styles.iconContainer}
+              />
+            </Text>
 
+            <View style={styles.bowelContent}>
+              <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
+                <Text style={styles.addBowel}>Tilføj</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           {/* Bowel Modal */}
           <BowelModal
             isVisible={isBowelModalVisible}
@@ -314,44 +311,41 @@ const Home = () => {
 
           {/* Wellness container */}
           <View style={styles.WellnessContainer}>
-          <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
-          <View style = {styles.emoticonContainer}>
-            {emoticons.map((icon) => (
-              <TouchableOpacity
-                key={icon.name}
-                onPress={() => handleEmoticonPress(icon.name)}
-                style={[
-                  styles.emoticonWrapper,
-                  selectedMood === icon.name && styles.selectedEmoticon,
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={icon.name}
-                  size={selectedMood === icon.name ? 32 : 28} // Increase size if selected
-                  color={selectedMood === icon.name ? "blue" : icon.color}
-                />
-              </TouchableOpacity>
-            ))}
+            <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
+            <View style={styles.emoticonContainer}>
+              {emoticons.map((icon) => (
+                <TouchableOpacity
+                  key={icon.name}
+                  onPress={() => handleEmoticonPress(icon.name)}
+                  style={[
+                    styles.emoticonWrapper,
+                    selectedMood === icon.name && styles.selectedEmoticon,
+                  ]}
+                >
+                  <MaterialCommunityIcons
+                    name={icon.name}
+                    size={selectedMood === icon.name ? 32 : 28} // Increase size if selected
+                    color={selectedMood === icon.name ? "blue" : icon.color}
+                  />
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
 
           {/* symptom container */}
           <View style={styles.symptomContainer}>
             <Text style={styles.logTitle}>Vælg dine symptomer</Text>
-              {/* Map over symptomOptions and render Checkbox for each symptom */}
-              {symptomOptions.map(({ label, value }) => (
-                <Checkbox
-                  key={value} // Ensures each Checkbox has a unique key
-                  label={label} // Passes the symptom label
-                  value={value} // Passes the value of the symptom
-                  isChecked={selectedSymptoms.includes(value)} // Check if the symptom is selected
-                  onChange={(isChecked) =>
-                    handleCheckboxChange(value, isChecked)
-                  } // Handle checkbox change
-                />
-              ))}
-            </View>
-          
+            {/* Map over symptomOptions and render Checkbox for each symptom */}
+            {symptomOptions.map(({ label, value }) => (
+              <Checkbox
+                key={value} // Ensures each Checkbox has a unique key
+                label={label} // Passes the symptom label
+                value={value} // Passes the value of the symptom
+                isChecked={selectedSymptoms.includes(value)} // Check if the symptom is selected
+                onChange={(isChecked) => handleCheckboxChange(value, isChecked)} // Handle checkbox change
+              />
+            ))}
+          </View>
 
           <Toast />
         </ScrollView>
@@ -392,12 +386,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  iconContainer: {
-    marginLeft: 10,
-  },
   foodContainer: {
     marginLeft: "10",
-    flexDirection: "row",
     width: "94%",
     padding: 10,
     borderRadius: 5,
@@ -405,20 +395,24 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  foodContent: {},
   waterContainer: {
     marginLeft: "10",
-    flexDirection: "row",
     width: "94%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+    alignContent: "center",
+  },
+  waterContent: {
+    alignItems: "center", 
   },
   waterIntakeText: {
     fontSize: 16,
     fontWeight: "400",
-    marginLeft: 50,
+    marginTop: 10,
     borderColor: "black",
     borderWidth: 0.2,
     padding: 5,
@@ -428,14 +422,13 @@ const styles = StyleSheet.create({
   },
   waterIconContainer: {
     flexDirection: "row",
-    marginLeft: 4, // Adjusts the left space for the container
-    width: "34%", // Define the width of the container to control space between icons
-    paddingHorizontal: 30,
+    marginTop: 10,
+    width: "34%",
+    paddingHorizontal: 15,
   },
   bowelContainer: {
     backgroundColor: "grey",
     marginLeft: "10",
-    flexDirection: "row",
     width: "94%",
     padding: 10,
     borderRadius: 5,
@@ -443,6 +436,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  bowelContent: {},
   addBowel: {
     fontSize: 16,
     fontWeight: "500",
@@ -469,7 +463,7 @@ const styles = StyleSheet.create({
     padding: 2, // spacing for the icon inside the border
   },
   emoticonContainer: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   selectedEmoticon: {
     size: "30",
@@ -484,6 +478,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+  },
+  logTitleContainer: {
+    flexDirection: "row"
   },
   logTitle: {
     fontSize: 16,
