@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 import Modal from "react-native-modal";
 import { addBowelLog } from "../../services/firebase/bowelService";
+import { getAuth } from "firebase/auth";
 
 import { Entypo } from "@expo/vector-icons";
 
@@ -59,10 +60,14 @@ const BowelModal = ({ isVisible, onClose }) => {
   
     try {
       // Get the current userId
-      const userId = user?.id;  // Make sure to handle the case where user is undefined
+      const user = getAuth().currentUser; // Get the currently authenticated user
+      if (!user) {
+        Alert.alert("Error", "You must be logged in to save a bowel log.");
+        return;
+      }
   
-      // Call the addBowelLog service with the necessary parameters, including the date
-      await addBowelLog(userId, selectedBowelType, pain, blood, urgent, notes, date);
+      // Call the addBowelLog service with the necessary parameters
+      await addBowelLog(user.uid, selectedBowelType, pain, blood, urgent, notes, date);
       Alert.alert("Success", "Bowel log saved successfully!");
       onClose(); // Close the modal after saving
     } catch (error) {
@@ -70,6 +75,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Error", "Failed to save bowel log. Please try again.");
     }
   };
+  
   
 
   const handleGoBack = () => {
