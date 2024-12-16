@@ -242,6 +242,7 @@ const Home = () => {
           {/* Daily Stats */}
 
           <View style={styles.foodContainer}>
+          <Text style={styles.logTitle}>Madlog </Text>
             <FontAwesomeIcon
               name="cutlery"
               size={25}
@@ -251,6 +252,7 @@ const Home = () => {
           </View>
 
           <View style={styles.waterContainer}>
+          <Text style={styles.logTitle}>Tilføj væskeindtag</Text>
             <Ionicons
               name="water"
               size={30}
@@ -292,6 +294,7 @@ const Home = () => {
 
           {/* Bowel Container */}
           <View style={styles.bowelContainer}>
+          <Text style={styles.logTitle}>Log toiletbesøg</Text>
             <FontAwesomeIcons
               name="toilet"
               size={26}
@@ -311,6 +314,8 @@ const Home = () => {
 
           {/* Wellness container */}
           <View style={styles.WellnessContainer}>
+          <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
+          <View style = {styles.emoticonContainer}>
             {emoticons.map((icon) => (
               <TouchableOpacity
                 key={icon.name}
@@ -327,27 +332,26 @@ const Home = () => {
                 />
               </TouchableOpacity>
             ))}
+            </View>
           </View>
 
           {/* symptom container */}
           <View style={styles.symptomContainer}>
-            <Text style={styles.symptomTitle}>Vælg dine symptomer</Text>
-            <View style={styles.symptomButtonsContainer}>
+            <Text style={styles.logTitle}>Vælg dine symptomer</Text>
               {/* Map over symptomOptions and render Checkbox for each symptom */}
               {symptomOptions.map(({ label, value }) => (
                 <Checkbox
                   key={value} // Ensures each Checkbox has a unique key
                   label={label} // Passes the symptom label
                   value={value} // Passes the value of the symptom
-                  isChecked={selectedSymptoms.includes(value)} // Checks if the symptom is selected
+                  isChecked={selectedSymptoms.includes(value)} // Check if the symptom is selected
                   onChange={(isChecked) =>
                     handleCheckboxChange(value, isChecked)
                   } // Handle checkbox change
                 />
               ))}
-          
             </View>
-          </View>
+          
 
           <Toast />
         </ScrollView>
@@ -452,7 +456,6 @@ const styles = StyleSheet.create({
   },
   WellnessContainer: {
     marginLeft: "10",
-    flexDirection: "row",
     width: "94%",
     padding: 10,
     borderRadius: 5,
@@ -464,6 +467,9 @@ const styles = StyleSheet.create({
     margin: 8,
     borderRadius: 10,
     padding: 2, // spacing for the icon inside the border
+  },
+  emoticonContainer: {
+    flexDirection: "row"
   },
   selectedEmoticon: {
     size: "30",
@@ -479,8 +485,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
-  symptomTitle: {
-    fontSize: 20,
+  logTitle: {
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
   },

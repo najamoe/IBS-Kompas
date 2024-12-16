@@ -26,32 +26,30 @@ const Checkbox = ({ label, value, isChecked, onChange, style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row", 
-    flexWrap: "wrap",
-    width: "100%",
-    height: 50,
+   
+    width: "100%", // Make the container full width
   },
   checkbox: {
     height: 40,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    marginRight: 10,
+    marginRight: 10, 
     backgroundColor: "#f3f4f6",
     paddingHorizontal: 10,
     borderRadius: 10,
   },
   activeCheckbox: {
-    backgroundColor: "#06b6d4" + "11",
+    backgroundColor: "#06b6d4" + "11", // Lighter background when active
     borderColor: "blue",
   },
   text: {
     fontSize: 14,
-    marginLeft: 5,
+    marginLeft: 5, // Space between checkbox icon and text
     color: "#6b7280",
   },
   activeText: {
-    color: "#374151",
+    color: "#374151", // Change text color when active
   },
 });
 
