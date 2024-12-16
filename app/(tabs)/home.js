@@ -61,6 +61,8 @@ const Home = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
+  const [bowelStep, setBowelStep] = useState(1); // Default to the first step
+
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
   const [symptoms, setSymptoms] = useState([]);
@@ -137,8 +139,6 @@ const Home = () => {
       alert("Please sign in to remove water intake.");
     }
   };
-
-  const handleAddBowel = async (type) => {};
 
   const emoticons = [
     { name: "emoticon-excited-outline", color: "#FFC107" },
@@ -290,7 +290,13 @@ const Home = () => {
             </View>
 
             <View style={styles.bowelContent}>
-              <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsBowelModalVisible(true); // Open the modal
+                  // Reset to first step when the modal is opened
+                  setBowelStep(1); // Assuming `setBowelStep` is used to track which step is active
+                }}
+              >
                 <Text style={styles.addBowel}>Tilføj</Text>
               </TouchableOpacity>
             </View>
@@ -455,7 +461,7 @@ const styles = StyleSheet.create({
   emoticonWrapper: {
     margin: 8,
     borderRadius: 10,
-    padding: 2, 
+    padding: 2,
   },
   emoticonContainer: {
     flexDirection: "row",

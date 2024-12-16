@@ -39,7 +39,7 @@ const BowelModal = ({ isVisible, onClose }) => {
 
   const handleInfoPress = (type) => {
     setInfoText(bowelTypeInfo[type]);
-    setIsInfoModalVisible(true); // Show the modal when the info icon is pressed
+    setIsInfoModalVisible(true); 
   };
 
   const handleInfoModalClose = () => {
@@ -49,7 +49,6 @@ const BowelModal = ({ isVisible, onClose }) => {
   const handleBowelTypeSelect = (type) => {
     setSelectedBowelType(type);
     setCurrentStep(2);
-    console.log(`Selected bowel type: ${type}`); // Log the selected type
   };
 
   const handleSaveLog = async () => {
@@ -68,16 +67,14 @@ const BowelModal = ({ isVisible, onClose }) => {
   
       // Call the addBowelLog service with the necessary parameters
       await addBowelLog(user.uid, selectedBowelType, pain, blood, urgent, notes, date);
-      Alert.alert("Success", "Bowel log saved successfully!");
+      Alert.alert("Gemt", "Informationer er gemt");
       onClose(); // Close the modal after saving
     } catch (error) {
       console.error("Error saving bowel log:", error);
-      Alert.alert("Error", "Failed to save bowel log. Please try again.");
+      Alert.alert("Error", "Noget gik galt - prøv igen");
     }
   };
   
-  
-
   const handleGoBack = () => {
     setCurrentStep(1); // Navigate back to the first step
   };
@@ -128,7 +125,7 @@ const BowelModal = ({ isVisible, onClose }) => {
                 >
                   <Image source={bowelImages[type]} style={styles.image} />
                   <Text style={styles.imageLabel}>{`Type ${index + 1}`}</Text>
-                  <Entypo name="info-with-circle" size={15} color="white" style={styles.infoIcon} />
+                  <Entypo name="info-with-circle" size={15} color="white" style={styles.infoIcon} onPress={handleInfoPress}/>
                 </TouchableOpacity>
               ))}
             </View>
