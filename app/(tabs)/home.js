@@ -23,6 +23,7 @@ import {
 } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
 import BowelModal from "../components/modal/bowelModal";
+import { fetchBowelLog } from "../services/firebase/bowelService";
 import {
   addWellnessLog,
   fetchWellnessLog,
@@ -61,8 +62,8 @@ const Home = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
-  const [bowelStep, setBowelStep] = useState(1); // Default to the first step
-
+  const [bowelStep, setBowelStep] = useState(1); //
+  const [bowelLogs, setBowelLogs] = useState([]);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
   const [symptoms, setSymptoms] = useState([]);
@@ -93,6 +94,10 @@ const Home = () => {
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
+
+          // Fetch bowel logs for the selected date
+          const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
+          setBowelLogs(bowelLogData || []);
         } catch (error) {
           console.error("Error fetching data:", error); //LOGS
         }
@@ -290,11 +295,27 @@ const Home = () => {
             </View>
 
             <View style={styles.bowelContent}>
+              {bowelLogs.length > 0 ? (
+                bowelLogs.map((log, index) => (
+                  <View key={index} style={styles.bowelLogItem}>
+                    <MaterialCommunityIcons
+                      name="emoticon-poop"
+                      size={30}
+                      color="#8c4c1f"
+                    />
+                    <Text style={styles.bowelLogText}>{log.bowelType}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text>No bowel logs found for this date.</Text>
+              )}
               <TouchableOpacity
                 onPress={() => {
-                  setIsBowelModalVisible(true);        
+                  setIsBowelModalVisible(true);
                   setBowelStep(1);
                 }}
+
+                //Insert poo icon for each bowelLog
               >
                 <Text style={styles.addBowel}>Tilføj</Text>
               </TouchableOpacity>
@@ -367,18 +388,17 @@ const styles = StyleSheet.create({
   dateContainer: {
     backgroundColor: "white",
     borderRadius: 30,
-    width: "90%",  
+    width: "90%",
     padding: 5,
     marginTop: 25,
     marginBottom: 25,
-    alignSelf: "center",  
-    justifyContent: "center",  
+    alignSelf: "center",
+    justifyContent: "center",
   },
   header: {
     flexDirection: "row",
-    justifyContent: "center",  
-    alignItems: "center", 
-  
+    justifyContent: "center",
+    alignItems: "center",
   },
   arrow: {
     fontSize: 22,
@@ -431,13 +451,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   bowelContainer: {
-    backgroundColor: "grey",
-    marginLeft: "10",
+    backgroundColor: "white",
+    marginLeft: "3%",
     width: "94%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
-    backgroundColor: "white",
     alignItems: "center",
   },
   bowelContent: {
@@ -446,13 +465,14 @@ const styles = StyleSheet.create({
   addBowel: {
     fontSize: 16,
     fontWeight: "500",
-    marginLeft: 230,
     borderColor: "black",
     borderWidth: 0.2,
     padding: 5,
     borderRadius: 5,
-    width: 80,
+    width: 120,
     textAlign: "center",
+    marginBottom: 10,
+    marginTop: 10,
   },
   WellnessContainer: {
     marginLeft: "10",
@@ -487,6 +507,7 @@ const styles = StyleSheet.create({
   },
   logTitleContainer: {
     flexDirection: "row",
+    marginTop: 5,
   },
   logTitle: {
     fontSize: 16,
