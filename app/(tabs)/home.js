@@ -184,7 +184,7 @@ const Home = () => {
         for (const symptom of selectedSymptoms) {
           await addSymptoms(user.uid, symptom, selectedDate);
         }
-        alert("Symptoms saved successfully!");
+        alert("Symptomer er gemt");
         setSelectedSymptoms([]);
       } catch (error) {
         console.error("Error saving symptoms:", error);
@@ -192,6 +192,17 @@ const Home = () => {
     } else {
       alert("Please select at least one symptom or sign in.");
     }
+  };
+ 
+  // useEffect to mark symptoms that are already in the array in firestore 
+  useEffect(() => {
+    // going through the array of symptoms in firestore
+    const activeSymptoms = symptoms.map(symptom => symptom.symptom);
+    setSelectedSymptoms(activeSymptoms); // Set checked symptoms
+  }, [symptoms]); // effect that runs if symptom changes
+
+  const handleCheckboxChange = (newCheckedValues) => {
+    setSelectedSymptoms(newCheckedValues); // Updating the selected symptoms
   };
 
   const onRefresh = useCallback(() => {
