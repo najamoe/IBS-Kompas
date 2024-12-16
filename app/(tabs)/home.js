@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Button,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,7 +16,6 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -23,7 +23,15 @@ import {
 } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
 import BowelModal from "../components/modal/bowelModal";
-import { addWellnessLog } from "../services/firebase/wellnessService";
+import {
+  addWellnessLog,
+  fetchWellnessLog,
+} from "../services/firebase/wellnessService";
+import {
+  addSymptoms,
+  fetchSymptoms,
+} from "../services/firebase/symptomService";
+import Checkbox from "../components/Checkbox"
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -54,6 +62,8 @@ const Home = () => {
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
+  const [symptoms, setSymptoms] = useState([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
 
   // Check if the user is signed in
   useEffect(() => {
@@ -69,15 +79,32 @@ const Home = () => {
     if (user) {
       const fetchWaterData = async () => {
         try {
+          // Fetch water intake
           const intake = await fetchWaterIntake(user.uid, selectedDate);
+          console.log("Fetched Water Intake:", intake); //LOGS
           setWaterIntake(intake);
+
+          // Fetch wellness log
+          const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
+          console.log("Fetched Wellness Log:", wellnesslog); //LOGS
+          setSelectedMood(wellnesslog?.emoticon || null);
+
+         // Fetch logged symptoms for the selected date
+         const symptoms = await fetchSymptoms(user.uid, selectedDate);
+         console.log("Fetched Symptoms:", symptoms); //LOGS
+         setSymptoms(symptoms);
         } catch (error) {
-          console.error("Error fetching water intake:", error);
+          console.error("Error fetching data:", error); //LOGS
         }
       };
       fetchWaterData();
     }
   }, [user, selectedDate]);
+
+  useEffect(() => {
+    console.log("Updated Water Intake State:", waterIntake);
+    console.log("Updated Selected Mood State:", selectedMood);
+  }, [waterIntake, selectedMood]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -123,8 +150,8 @@ const Home = () => {
     { name: "emoticon-outline", color: "#4CAF50" },
     { name: "emoticon-happy-outline", color: "#4CAF50" },
     { name: "emoticon-neutral-outline", color: "#FFC107" },
-    { name: "emoticon-cry-outline", color: "#4CAF50" },
     { name: "emoticon-sad-outline", color: "#F44336" },
+    { name: "emoticon-cry-outline", color: "#4CAF50" },
     { name: "emoticon-sick-outline", color: "#FFC107" },
   ];
 
@@ -133,21 +160,39 @@ const Home = () => {
       console.error("User not logged in");
       return;
     }
-  
+
     try {
       setSelectedMood(emoticon);
-  
+
       // Call addWellnessLog service to log the emoticon
-      await addWellnessLog(user.uid, {
-        emoticon,
-      });
-  
+      await addWellnessLog(user.uid, emoticon);
+
       console.log("Emoticon saved successfully:", emoticon);
     } catch (error) {
       console.error("Error saving emoticon:", error.message);
     }
   };
-  
+
+  const symptomOptions = [
+    { label: "Krampe", value: "krampe" },
+    { label: "Kvalme", value: "kvalme" },
+    { label: "Oppustethed", value: "oppustethed" },
+  ];
+  const handleSaveSymptoms = async () => {
+    if (user && selectedSymptoms.length > 0) {
+      try {
+        for (const symptom of selectedSymptoms) {
+          await addSymptoms(user.uid, symptom, selectedDate);
+        }
+        alert("Symptoms saved successfully!");
+        setSelectedSymptoms([]);
+      } catch (error) {
+        console.error("Error saving symptoms:", error);
+      }
+    } else {
+      alert("Please select at least one symptom or sign in.");
+    }
+  };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -263,11 +308,24 @@ const Home = () => {
               >
                 <MaterialCommunityIcons
                   name={icon.name}
-                  size={40}
+                  size={selectedMood === icon.name ? 32 : 28} // Increase size if selected
                   color={selectedMood === icon.name ? "blue" : icon.color}
                 />
               </TouchableOpacity>
             ))}
+          </View>
+
+          {/* symptom container */}
+          <View style={styles.symptomContainer}>
+            <Text style={styles.symptomTitle}>Vælg dine symptomer</Text>
+            <View style={styles.symptomButtonsContainer}>
+              <Checkbox
+                options={symptomOptions}
+                checkedValues={selectedSymptoms}
+                onChange={setSelectedSymptoms}
+              />
+              <Button title="Save Symptoms" onPress={handleSaveSymptoms} />
+            </View>
           </View>
 
           <Toast />
@@ -382,12 +440,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emoticonWrapper: {
-    margin: 10,
-    borderRadius: 10, // Round corners for the border
-    padding: 5,       // Add spacing for the icon inside the border
+    margin: 8,
+    borderRadius: 10,
+    padding: 2, // spacing for the icon inside the border
   },
   selectedEmoticon: {
-    borderWidth: 2,   // Thickness of the border
-    borderColor: "blue", // Border color for the selected emoticon
+    size: "30",
+    borderWidth: 2,
+    borderColor: "blue",
+  },
+  symptomContainer: {
+    marginLeft: "10",
+    width: "94%",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    backgroundColor: "white",
+    alignItems: "center",
+  },
+  symptomTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
