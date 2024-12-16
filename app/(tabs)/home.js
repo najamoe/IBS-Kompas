@@ -292,9 +292,8 @@ const Home = () => {
             <View style={styles.bowelContent}>
               <TouchableOpacity
                 onPress={() => {
-                  setIsBowelModalVisible(true); // Open the modal
-                  // Reset to first step when the modal is opened
-                  setBowelStep(1); // Assuming `setBowelStep` is used to track which step is active
+                  setIsBowelModalVisible(true);        
+                  setBowelStep(1);
                 }}
               >
                 <Text style={styles.addBowel}>Tilføj</Text>
