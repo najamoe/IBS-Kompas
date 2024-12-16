@@ -21,10 +21,10 @@ const WaterModal = ({ isVisible, onClose, onAddWater }) => {
       <View style={styles.modalContent}>
         <View style={styles.buttonsContainer}>
           {[
-            { amount: 1, image: require("../../../assets/images/waterxlarge.png") },
-            { amount: 0.75, image: require("../../../assets/images/waterlarge.png") },
+            { amount: 0.25, image: require("../../../assets/images/watersmall.png") },
             { amount: 0.5, image: require("../../../assets/images/watermedium.png") },
-            { amount: 0.25, image: require("../../../assets/images/watersmall.png") }
+            { amount: 0.75, image: require("../../../assets/images/waterlarge.png") },
+            { amount: 1, image: require("../../../assets/images/waterxlarge.png") },            
           ].map((option) => (
             <TouchableOpacity
               key={option.amount}
