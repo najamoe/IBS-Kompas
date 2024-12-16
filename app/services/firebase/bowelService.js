@@ -3,21 +3,35 @@ import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the defaul
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-export const addBowelLog = async (userId, type) => {
+
+export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`); 
-    const bowelRef = doc(bowelLogsRef, date);
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs/${date}/entries`);  // Create a subcollection for each day
 
-    await setDoc(bowelRef, { total: type }, { merge: true });
+    // Create a bowel log entry object with all fields
+    const bowelLog = {
+      bowelType,
+      pain,
+      blood,
+      urgent,
+      notes,
+      timestamp: new Date().toISOString(), // Include timestamp for the log entry
+    };
 
-    console.log("bowel log saved:", type);
+    // Use auto-generated document ID for each new log entry
+    const bowelLogRef = doc(bowelLogsRef);  // This generates a new document ID for each entry
+
+    // Save the bowel log in Firestore
+    await setDoc(bowelLogRef, bowelLog);
+
+    console.log("Bowel log saved:", bowelLog);
   } catch (error) {
-    console.error("Error saving boel log from ADDBOWELLOG:", error);
+    console.error("Error saving bowel log from addBowelLog:", error);
     throw error;
   }
 };
@@ -28,14 +42,14 @@ export const fetchBowelLog = async (userId, date) => {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`); 
+    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`);
     const snapshot = await getDoc(bowelRef);
 
     if (snapshot.exists()) {
-      return snapshot.data().total || 0;
+      return snapshot.data(); // Return all the data from the log
     } else {
       console.log("No bowel log found for this date.");
-      return 0;
+      return null; // No bowel log found for the given date
     }
   } catch (error) {
     console.error("Error fetching bowel log:", error);
@@ -43,30 +57,70 @@ export const fetchBowelLog = async (userId, date) => {
   }
 };
 
-export const removeBowelLog = async (userId, date, type) => {
+export const editBowelLog = async (
+  userId,
+  date,
+  bowelType,
+  pain,
+  blood,
+  urgent,
+  notes
+) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`); 
+    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`);
     const snapshot = await getDoc(bowelRef);
 
     if (snapshot.exists()) {
-      const currentBowelLog = snapshot.data().total || 0;
-      const newBowelLog = currentBowelLog - type;
+      // Update the bowel log with the new values
+      const updatedLog = {
+        bowelType,
+        pain,
+        blood,
+        urgent,
+        notes,
+        timestamp: new Date().toISOString(), // Update the timestamp as well
+      };
 
-      // Update the bowel log in Firestore
-      await setDoc(bowelRef, { total: newBowelLog }, { merge: true });
+      await setDoc(bowelRef, updatedLog, { merge: true });
 
-      console.log("bowel log updated:", newBowelLog);
-      return newBowelLog; // Return the updated log
+      console.log("Bowel log updated:", updatedLog);
+      return updatedLog; // Return the updated log object
     } else {
       console.log("No bowel log found for this date.");
-      return 0;
+      return null;
     }
   } catch (error) {
-    console.error("Error removing bowel lof from daily log:", error);
+    console.error("Error updating bowel log:", error);
     throw error;
   }
 };
+
+export const removeBowelLog = async (userId, date) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`);
+    const snapshot = await getDoc(bowelRef);
+
+    if (snapshot.exists()) {
+      // Remove the bowel log document
+      await setDoc(bowelRef, {}, { merge: true }); // Clears the document content
+
+      console.log("Bowel log removed for date:", date);
+      return null; // Return null to indicate removal
+    } else {
+      console.log("No bowel log found for this date.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error removing bowel log:", error);
+    throw error;
+  }
+};
+
