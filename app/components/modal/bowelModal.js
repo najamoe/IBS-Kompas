@@ -1,24 +1,18 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Button,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
+import Swiper from "react-native-swiper";
 
 const BowelModal = ({ isVisible, onClose }) => {
-    const formatDate = () => {
-        const currentDate = new Date();
-        const day = currentDate.getDate().toString().padStart(2, "0");
-        const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-        const year = currentDate.getFullYear();
-        return `${day}-${month}-${year}`;
-      };
-    
-      const currentDate = formatDate(); 
-    
+  const formatDate = () => {
+    const currentDate = new Date();
+    const day = currentDate.getDate().toString().padStart(2, "0");
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = currentDate.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const currentDate = formatDate();
 
   return (
     <Modal
@@ -32,22 +26,37 @@ const BowelModal = ({ isVisible, onClose }) => {
     >
       <View style={styles.container}>
         <Text style={styles.modalTitle}>Bowel Modal Content</Text>
-        <View style={styles.dateTimeContainer}>
-          <Text style={styles.dateText}>{currentDate}</Text>
-        </View>
-    
 
-      
+        {/* Swiper for paginated pages */}
+        <Swiper
+          style={styles.swiper}
+          showsPagination={true}
+          loop={false}
+          scrollEnabled={true} // Enable scrolling/swiping
+        >
+          <View style={styles.page}>
+            <Text style={styles.dateText}>{currentDate}</Text>
 
-        {/* Buttons for saving or canceling */}
-        <View style={styles.exitButtonContainer}>
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.exitButton}>Afbryd</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.saveButton}>Gem</Text>
-          </TouchableOpacity>
-        </View>
+            
+          </View>
+
+          <View style={styles.page}>
+            <Text style={styles.pageText}>Second Page Content</Text>
+            {/* Buttons for saving or canceling */}
+            <View style={styles.exitButtonContainer}>
+              <TouchableOpacity onPress={onClose}>
+                <Text style={styles.exitButton}>Afbryd</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={onClose}>
+                <Text style={styles.saveButton}>Gem</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.page}>
+            <Text style={styles.pageText}>Third Page Content</Text>
+          </View>
+        </Swiper>
       </View>
     </Modal>
   );
@@ -59,32 +68,38 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: "center",
     alignItems: "center",
+    flex: 1, // Ensure the modal takes up the full screen
   },
   container: {
-    backgroundColor: "#ececeb",
+    backgroundColor: "white",
+    opacity: 0.9,
     width: "95%",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    flex: 1, // Allow the swiper to take up the remaining space
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
   },
-  dateTimeContainer: {
-    borderColor: "black",
-    borderWidth: 0.2,
-    padding: 5,
-    borderRadius: 5,
-    marginTop: 15,
-    width: 140,
-    alignItems: "center",
-  },  
   dateText: {
     fontSize: 24,
     fontWeight: "300",
-
-  
+  },
+  swiper: {
+    width: "100%",
+    height: 250,
+    marginTop: 15,
+  },
+  page: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  pageText: {
+    fontSize: 20,
+    textAlign: "center",
   },
   saveButton: {
     backgroundColor: "white",
@@ -101,7 +116,5 @@ const styles = StyleSheet.create({
   exitButtonContainer: {
     flexDirection: "row",
     marginTop: 20,
-    color: "blue",
-    fontWeight: "bold",
   },
 });
