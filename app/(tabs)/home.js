@@ -235,21 +235,16 @@ const Home = () => {
           <View style={styles.foodContainer}>
             <Text style={styles.logTitle}>Madlog </Text>
             <View style={styles.foodContent}>
-              <FontAwesomeIcon
-                name="cutlery"
-                size={25}
-                color={"#666666"}
-              />
+              <FontAwesomeIcon name="cutlery" size={25} color={"#666666"} />
             </View>
           </View>
 
           <View style={styles.waterContainer}>
             <View style={styles.logTitleContainer}>
-              <Text style={styles.logTitle}>Tilføj væskeindtag <Ionicons
-                name="water"
-                size={22}
-                color="#1591ea"
-              /></Text>
+              <Text style={styles.logTitle}>
+                Tilføj væskeindtag{" "}
+                <Ionicons name="water" size={22} color="#1591ea" />
+              </Text>
             </View>
 
             <View style={styles.waterContent}>
@@ -287,15 +282,12 @@ const Home = () => {
 
           {/* Bowel Container */}
           <View style={styles.bowelContainer}>
-            <Text style={styles.logTitle}>
-              Log toiletbesøg{" "}
-              <FontAwesomeIcons
-                name="toilet"
-                size={20}
-                color={"#8c4c1f"}
-                style={styles.iconContainer}
-              />
-            </Text>
+            <View style={styles.logTitleContainer}>
+              <Text style={styles.logTitle}>
+                Log toiletbesøg
+                <FontAwesomeIcons name="toilet" size={20} color={"#8c4c1f"} />
+              </Text>
+            </View>
 
             <View style={styles.bowelContent}>
               <TouchableOpacity onPress={() => setIsBowelModalVisible(true)}>
@@ -303,6 +295,7 @@ const Home = () => {
               </TouchableOpacity>
             </View>
           </View>
+
           {/* Bowel Modal */}
           <BowelModal
             isVisible={isBowelModalVisible}
@@ -407,7 +400,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
   },
   waterContent: {
-    alignItems: "center", 
+    alignItems: "center",
   },
   waterIntakeText: {
     fontSize: 16,
@@ -436,7 +429,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
-  bowelContent: {},
+  bowelContent: {
+    alignItems: "center",
+  },
   addBowel: {
     fontSize: 16,
     fontWeight: "500",
@@ -460,7 +455,7 @@ const styles = StyleSheet.create({
   emoticonWrapper: {
     margin: 8,
     borderRadius: 10,
-    padding: 2, // spacing for the icon inside the border
+    padding: 2, 
   },
   emoticonContainer: {
     flexDirection: "row",
@@ -480,7 +475,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logTitleContainer: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   logTitle: {
     fontSize: 16,
