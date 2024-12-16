@@ -34,3 +34,23 @@ export const addWellnessLog = async (userId, emoticonType) => {
     throw error;
   }
 };
+
+export const fetchWellnessLog = async (userId, date) => {
+    try {
+        if (!firestore || !userId) {
+            throw new Error ("Fire store instance or userId is missing");
+        }
+        const logRef = doc(firestore, `users/${userId}/wellnessLogs/${date}` );
+        const snapshot = await getDoc(logRef);
+        
+        if(snapshot.exists()) {
+            return snapshot.data().emoticonType;
+        } else {
+            console.log("No wellnesslog found for this date")
+            return 0;
+        }
+    } catch (error) {
+        console.log("Error fetching emoticonType:", error);
+        throw error;
+    }
+};
