@@ -59,10 +59,8 @@ export const removeWaterIntake = async (userId, date, amount) => {
       // Update the water intake value in Firestore
       await setDoc(waterRef, { total: newWaterIntake }, { merge: true });
 
-      console.log("Water intake updated:", newWaterIntake);
       return newWaterIntake; // Return the updated intake value
     } else {
-      console.log("No water log found for this date.");
       return 0;
     }
   } catch (error) {
