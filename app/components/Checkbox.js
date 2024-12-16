@@ -36,16 +36,19 @@ const Checkbox = ({ options, checkedValues, onChange, style }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row", // Change this to row for horizontal layout
+    flexWrap: "wrap", // Allows items to wrap onto the next line if necessary
     width: "100%",
+    height: 50,
   },
   checkbox: {
-    height: 60,
-    width: "100%",
+    height: 40,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
+    marginRight: 10,
     backgroundColor: "#f3f4f6",
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     borderRadius: 10,
   },
   activeCheckbox: {
@@ -53,8 +56,8 @@ const styles = StyleSheet.create({
     borderColor: "blue",
   },
   text: {
-    fontSize: 16,
-    marginLeft: 15,
+    fontSize: 14,
+    marginLeft: 5,
     color: "#6b7280",
   },
   activeText: {
