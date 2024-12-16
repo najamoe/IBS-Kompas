@@ -30,8 +30,9 @@ import {
 import {
   addSymptoms,
   fetchSymptoms,
+  deleteSymptom,
 } from "../services/firebase/symptomService";
-import Checkbox from "../components/Checkbox"
+import Checkbox from "../components/Checkbox";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -89,10 +90,10 @@ const Home = () => {
           console.log("Fetched Wellness Log:", wellnesslog); //LOGS
           setSelectedMood(wellnesslog?.emoticon || null);
 
-         // Fetch logged symptoms for the selected date
-         const symptoms = await fetchSymptoms(user.uid, selectedDate);
-         console.log("Fetched Symptoms:", symptoms); //LOGS
-         setSymptoms(symptoms);
+          // Fetch logged symptoms for the selected date
+          const symptoms = await fetchSymptoms(user.uid, selectedDate);
+          console.log("Fetched Symptoms:", symptoms); //LOGS
+          setSymptoms(symptoms);
         } catch (error) {
           console.error("Error fetching data:", error); //LOGS
         }
@@ -178,33 +179,35 @@ const Home = () => {
     { label: "Kvalme", value: "kvalme" },
     { label: "Oppustethed", value: "oppustethed" },
   ];
-  const handleSaveSymptoms = async () => {
-    if (user && selectedSymptoms.length > 0) {
-      try {
-        for (const symptom of selectedSymptoms) {
-          await addSymptoms(user.uid, symptom, selectedDate);
-        }
-        alert("Symptomer er gemt");
-        setSelectedSymptoms([]);
-      } catch (error) {
-        console.error("Error saving symptoms:", error);
-      }
-    } else {
-      alert("Please select at least one symptom or sign in.");
-    }
-  };
- 
-  // useEffect to mark symptoms that are already in the array in firestore 
+
+  // useEffect to mark symptoms that are already in the array in firestore
   useEffect(() => {
     // going through the array of symptoms in firestore
-    const activeSymptoms = symptoms.map(symptom => symptom.symptom);
+    const activeSymptoms = symptoms.map((symptom) => symptom.symptom);
     setSelectedSymptoms(activeSymptoms); // Set checked symptoms
   }, [symptoms]); // effect that runs if symptom changes
 
-  const handleCheckboxChange = (newCheckedValues) => {
-    setSelectedSymptoms(newCheckedValues); // Updating the selected symptoms
+  //handling deletion of a symptom
+  const handleCheckboxChange = async (symptom, isChecked) => {
+    if (user) {
+      try {
+        if (isChecked) {
+          // If the checkbox is checked, add the symptom
+          setSelectedSymptoms((prev) => [...prev, symptom]);
+          await addSymptoms(user.uid, symptom, selectedDate); // Add the symptom to Firestore
+        } else {
+          // If the checkbox is unchecked, remove the symptom
+          setSelectedSymptoms((prev) =>
+            prev.filter((selectedSymptom) => selectedSymptom !== symptom)
+          );
+          await deleteSymptom(user.uid, symptom, selectedDate); // Remove the symptom from Firestore
+        }
+      } catch (error) {
+        console.error("Error handling checkbox change:", error);
+      }
+    }
   };
-
+  
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -330,12 +333,19 @@ const Home = () => {
           <View style={styles.symptomContainer}>
             <Text style={styles.symptomTitle}>Vælg dine symptomer</Text>
             <View style={styles.symptomButtonsContainer}>
-              <Checkbox
-                options={symptomOptions}
-                checkedValues={selectedSymptoms}
-                onChange={setSelectedSymptoms}
-              />
-              <Button title="Save Symptoms" onPress={handleSaveSymptoms} />
+              {/* Map over symptomOptions and render Checkbox for each symptom */}
+              {symptomOptions.map(({ label, value }) => (
+                <Checkbox
+                  key={value} // Ensures each Checkbox has a unique key
+                  label={label} // Passes the symptom label
+                  value={value} // Passes the value of the symptom
+                  isChecked={selectedSymptoms.includes(value)} // Checks if the symptom is selected
+                  onChange={(isChecked) =>
+                    handleCheckboxChange(value, isChecked)
+                  } // Handle checkbox change
+                />
+              ))}
+          
             </View>
           </View>
 
