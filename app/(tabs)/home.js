@@ -94,7 +94,7 @@ const Home = () => {
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
-
+          console.log("Bowel " + fetchBowelLog);
           // Fetch bowel logs for the selected date
           const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
           setBowelLogs(bowelLogData || []);
@@ -296,8 +296,8 @@ const Home = () => {
 
             <View style={styles.bowelContent}>
               {bowelLogs.length > 0 ? (
-                bowelLogs.map((log, index) => (
-                  <View key={index} style={styles.bowelLogItem}>
+                bowelLogs.map((log) => (
+                  <View key={log.id} style={styles.bowelLogItem}>
                     <MaterialCommunityIcons
                       name="emoticon-poop"
                       size={30}
@@ -307,15 +307,14 @@ const Home = () => {
                   </View>
                 ))
               ) : (
-                <Text>No bowel logs found for this date.</Text>
+                <Text>No bowel logs found for this user.</Text>
               )}
+
               <TouchableOpacity
                 onPress={() => {
                   setIsBowelModalVisible(true);
                   setBowelStep(1);
                 }}
-
-                //Insert poo icon for each bowelLog
               >
                 <Text style={styles.addBowel}>Tilføj</Text>
               </TouchableOpacity>
