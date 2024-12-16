@@ -2,34 +2,24 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const Checkbox = ({ options, checkedValues, onChange, style }) => {
+const Checkbox = ({ label, value, isChecked, onChange, style }) => {
   return (
     <View style={[styles.container, style]}>
-      {options.map((option) => {
-        const active = checkedValues.includes(option.value);
-
-        return (
-          <TouchableOpacity
-            key={option.value}
-            style={active ? [styles.checkbox, styles.activeCheckbox] : styles.checkbox}
-            onPress={() => {
-              const updatedCheckedValues = active
-                ? checkedValues.filter((value) => value !== option.value)
-                : [...checkedValues, option.value];
-              onChange(updatedCheckedValues);
-            }}
-          >
-            <MaterialIcons
-              name={active ? "check-box" : "check-box-outline-blank"}
-              size={24}
-              color={active ? "#06b6d4" : "#64748b"}
-            />
-            <Text style={active ? [styles.text, styles.activeText] : styles.text}>
-              {option.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+      <TouchableOpacity
+        style={isChecked ? [styles.checkbox, styles.activeCheckbox] : styles.checkbox}
+        onPress={() => {
+          onChange(!isChecked); // Toggle checked state
+        }}
+      >
+        <MaterialIcons
+          name={isChecked ? "check-box" : "check-box-outline-blank"}
+          size={24}
+          color={isChecked ? "#06b6d4" : "#64748b"}
+        />
+        <Text style={isChecked ? [styles.text, styles.activeText] : styles.text}>
+          {label}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
