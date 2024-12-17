@@ -1,4 +1,4 @@
-import { doc, collection, setDoc, getDoc } from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, query, where, getDocs } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
@@ -57,25 +57,28 @@ export const addBowelLog = async (
 };
 
 export const fetchBowelLog = async (userId, date) => {
-  try {
-    if (!firestore || !userId) {
-      throw new Error("Firestore instance or userId is missing.");
+    try {
+      if (!firestore || !userId) {
+        throw new Error("Firestore instance or userId is missing.");
+      }
+  
+      // Correctly reference the subcollection
+      const bowelRef = collection(firestore, `users/${userId}/bowelLogs/${date}/timeLogs`);
+      const q = query(bowelRef); // Optionally add query filters here, e.g., where clauses
+      const snapshot = await getDocs(q);
+  
+      if (!snapshot.empty) {
+        const bowelLogs = snapshot.docs.map(doc => doc.data());
+        return bowelLogs; // Return an array of bowel log entries
+      } else {
+        console.log("No bowel log found for this date.");
+        return null; // No bowel log found for the given date
+      }
+    } catch (error) {
+      console.error("Error fetching bowel log:", error);
+      throw error;
     }
-
-    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`);
-    const snapshot = await getDoc(bowelRef);
-
-    if (snapshot.exists()) {
-      return snapshot.data(); // Return all the data from the log
-    } else {
-      console.log("No bowel log found for this date.");
-      return null; // No bowel log found for the given date
-    }
-  } catch (error) {
-    console.error("Error fetching bowel log:", error);
-    throw error;
-  }
-};
+  };
 
 export const editBowelLog = async (
   userId,

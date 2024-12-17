@@ -94,7 +94,7 @@ const Home = () => {
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
-          console.log("Bowel " + fetchBowelLog);
+          
           // Fetch bowel logs for the selected date
           const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
           setBowelLogs(bowelLogData || []);
@@ -303,7 +303,6 @@ const Home = () => {
                       size={30}
                       color="#8c4c1f"
                     />
-                    <Text style={styles.bowelLogText}>{log.bowelType}</Text>
                   </View>
                 ))
               ) : (
@@ -472,6 +471,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
     marginTop: 10,
+  },
+  bowelLogItem: {
+
   },
   WellnessContainer: {
     marginLeft: "10",
