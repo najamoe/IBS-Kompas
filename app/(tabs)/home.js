@@ -146,13 +146,13 @@ const Home = () => {
   };
 
   const emoticons = [
-    { name: "emoticon-excited-outline", color: "#FFC107" },
+    { name: "emoticon-excited-outline", color: "#4CAF50" },
     { name: "emoticon-outline", color: "#4CAF50" },
     { name: "emoticon-happy-outline", color: "#4CAF50" },
     { name: "emoticon-neutral-outline", color: "#FFC107" },
     { name: "emoticon-sad-outline", color: "#F44336" },
-    { name: "emoticon-cry-outline", color: "#4CAF50" },
-    { name: "emoticon-sick-outline", color: "#FFC107" },
+    { name: "emoticon-cry-outline", color: "#F44336" },
+    { name: "emoticon-sick-outline", color: "#F44336" },
   ];
 
   const handleEmoticonPress = async (emoticon) => {
@@ -343,7 +343,7 @@ const Home = () => {
                 >
                   <MaterialCommunityIcons
                     name={icon.name}
-                    size={selectedMood === icon.name ? 32 : 28} // Increase size if selected
+                    size={selectedMood === icon.name ? 32 : 30} // Increase size if selected
                     color={selectedMood === icon.name ? "blue" : icon.color}
                   />
                 </TouchableOpacity>
@@ -384,8 +384,6 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
     width: "100%",
-    justifyContent: "center", // Center content vertically
-    alignItems: "center", // Center content horizontally
   },
   dateContainer: {
     backgroundColor: "white",
@@ -494,7 +492,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emoticonWrapper: {
-    margin: 8,
+    margin: 6,
     borderRadius: 10,
     padding: 2,
   },
