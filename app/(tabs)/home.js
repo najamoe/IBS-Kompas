@@ -94,7 +94,7 @@ const Home = () => {
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
-          
+
           // Fetch bowel logs for the selected date
           const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
           setBowelLogs(bowelLogData || []);
@@ -290,7 +290,10 @@ const Home = () => {
             <View style={styles.logTitleContainer}>
               <Text style={styles.logTitle}>
                 Log toiletbesøg
-                <FontAwesomeIcons name="toilet" size={20} color={"#8c4c1f"} />
+                <FontAwesomeIcons 
+                name="toilet" 
+                size={20} color={"black"} 
+                style={styles.logTitleIcon} />
               </Text>
             </View>
 
@@ -308,16 +311,15 @@ const Home = () => {
               ) : (
                 <Text>No bowel logs found for this user.</Text>
               )}
-
-              <TouchableOpacity
-                onPress={() => {
-                  setIsBowelModalVisible(true);
-                  setBowelStep(1);
-                }}
-              >
-                <Text style={styles.addBowel}>Tilføj</Text>
-              </TouchableOpacity>
             </View>
+            <TouchableOpacity
+              onPress={() => {
+                setIsBowelModalVisible(true);
+                setBowelStep(1);
+              }}
+            >
+              <Text style={styles.addBowel}>Tilføj</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Bowel Modal */}
@@ -376,12 +378,14 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
     alignItems: "center",
+    justifyContent: "center",
   },
   gradient: {
     flex: 1,
     width: "100%",
+    justifyContent: "center", // Center content vertically
+    alignItems: "center", // Center content horizontally
   },
   dateContainer: {
     backgroundColor: "white",
@@ -409,18 +413,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   foodContainer: {
-    marginLeft: "10",
-    width: "94%",
+    width: "90%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
   },
-  foodContent: {},
+  foodContent: {
+
+  },
   waterContainer: {
-    marginLeft: "10",
-    width: "94%",
+    width: "90%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
@@ -450,14 +454,16 @@ const styles = StyleSheet.create({
   },
   bowelContainer: {
     backgroundColor: "white",
-    marginLeft: "3%",
-    width: "94%",
+    width: "90%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     alignItems: "center",
   },
   bowelContent: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   addBowel: {
@@ -473,11 +479,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bowelLogItem: {
-
+    margin: 6,
   },
   WellnessContainer: {
-    marginLeft: "10",
-    width: "94%",
+    width: "90%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
@@ -498,8 +503,7 @@ const styles = StyleSheet.create({
     borderColor: "blue",
   },
   symptomContainer: {
-    marginLeft: "10",
-    width: "94%",
+    width: "90%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
@@ -511,8 +515,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   logTitle: {
+    flexDirection: "row",
+    alignItems: "center",
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
+    marginRight: 10,
+  },
+  logTitleIcon: {
+    position: "absolute",
   },
 });
