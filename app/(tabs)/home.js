@@ -413,6 +413,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   foodContainer: {
+    marginLeft: 20,
     width: "90%",
     padding: 10,
     borderRadius: 5,
@@ -424,6 +425,7 @@ const styles = StyleSheet.create({
 
   },
   waterContainer: {
+    marginLeft: 20,
     width: "90%",
     padding: 10,
     borderRadius: 5,
@@ -453,6 +455,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   bowelContainer: {
+    marginLeft: 20,
     backgroundColor: "white",
     width: "90%",
     padding: 10,
@@ -482,6 +485,7 @@ const styles = StyleSheet.create({
     margin: 6,
   },
   WellnessContainer: {
+    marginLeft: 20,
     width: "90%",
     padding: 10,
     borderRadius: 5,
@@ -503,6 +507,7 @@ const styles = StyleSheet.create({
     borderColor: "blue",
   },
   symptomContainer: {
+    marginLeft: 20,
     width: "90%",
     padding: 10,
     borderRadius: 5,
