@@ -3,17 +3,35 @@ import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the defaul
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-
-export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes, ) => {
+export const addBowelLog = async (
+  userId,
+  bowelType,
+  pain,
+  blood,
+  urgent,
+  notes
+) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const time = new Date().toISOString().split("T")[1].split(".")[0]; 
-       // Reference to the bowelLogs collection under the user
-       const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs/${date}/timeLogs`);// Reference to the bowelLogs subcollection
+    // Get the current local date and time
+    const localDate = new Date();
+
+    // Format the date to 'YYYY-MM-DD' (ISO format)
+    const date = localDate.toISOString().split("T")[0]; // YYYY-MM-DD
+
+    // Format the time to 'HH:MM:SS' (local time format)
+    const time = localDate
+      .toLocaleTimeString("en-GB", { hour12: false })
+      .split(":")
+      .join(":");
+    // Reference to the bowelLogs collection under the user
+    const bowelLogsRef = collection(
+      firestore,
+      `users/${userId}/bowelLogs/${date}/timeLogs`
+    ); // Reference to the bowelLogs subcollection
 
     // Create a bowel log entry object with all fields
     const bowelLog = {
@@ -26,7 +44,7 @@ export const addBowelLog = async (userId, bowelType, pain, blood, urgent, notes,
     };
 
     // Use a document reference with date as the ID
-    const bowelRef = doc(bowelLogsRef, time);   
+    const bowelRef = doc(bowelLogsRef, time);
 
     // Save the bowel log in Firestore
     await setDoc(bowelRef, bowelLog);
@@ -125,4 +143,3 @@ export const removeBowelLog = async (userId, date) => {
     throw error;
   }
 };
-
