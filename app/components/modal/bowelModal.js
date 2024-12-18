@@ -96,6 +96,10 @@ const BowelModal = ({ isVisible, onClose }) => {
     setCurrentStep(1); // Navigate back to the first step
   };
 
+  const handleClose = () => {
+    onClose();
+  };
+
   // Mapping of bowel types to images
   const bowelImages = {
     type1,
@@ -128,6 +132,10 @@ const BowelModal = ({ isVisible, onClose }) => {
       style={styles.modal}
     >
       <View style={styles.container}>
+           {/* Close Button (X) */}
+           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <Entypo name="cross" size={30} color="black" />
+        </TouchableOpacity>
         {currentStep === 1 && (
           <>
             <Text style={styles.modalTitle}>Afførings-dagbog</Text>
@@ -278,7 +286,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: "95%",
-    height: "75%",
+    flex: 1,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 10, 
   },
   modalTitle: {
     fontSize: 24,
