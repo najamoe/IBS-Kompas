@@ -179,12 +179,15 @@ const BowelModal = ({ isVisible, onClose }) => {
                 backgroundColorOff="#ff1f23"
                 backTextLeft="Nej"
                 backTextRight="Ja"
+                type={1}
                 containerStyle={{
-                  marginTop: 16,
-                  width: 90,
+                  marginTop: 10,
+                  marginBottom: 10,
+                  width: 120,
                   height: 40,
                   borderRadius: 25,
                   padding: 5,
+              
                 }}
                 circleStyle={{
                   width: 35,
@@ -207,7 +210,8 @@ const BowelModal = ({ isVisible, onClose }) => {
                 backTextLeft="Nej"
                 backTextRight="Ja"
                 containerStyle={{
-                  marginTop: 16,
+                  marginTop: 10,
+                  marginBottom: 10,
                   width: 90,
                   height: 40,
                   borderRadius: 25,
@@ -235,7 +239,7 @@ const BowelModal = ({ isVisible, onClose }) => {
               >
                 <Text style={styles.backButtonText}>Tilbage</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
                 onPress={handleSaveLog}
                 style={styles.saveButton}
@@ -268,23 +272,24 @@ export default BowelModal;
 
 const styles = StyleSheet.create({
   modal: {
-    justifyContent: "center",
     alignItems: "center",
-    flex: 1,
   },
   container: {
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: "center",
     flex: 1,
-    justifyContent: "center",
-    position: "relative",
     width: "95%",
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
-    marginTop: 10,
+    marginTop: 20,
+    fontWeight: 400,
+  },
+  subtitle: {
+    marginTop: 20,
+    marginBottom: 10,
   },
   dateText: {
     fontSize: 24,
@@ -342,21 +347,6 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: 30,
   },
-  saveButton: {
-    backgroundColor: "white",
-    padding: 5,
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  exitButton: {
-    position: "absolute",
-    bottom: 10,
-    left: 5,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-    padding: 8,
-    borderRadius: 30,
-    fontWeight: "bold",
-  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -371,17 +361,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center', // Center items vertically
-    justifyContent: 'space-between', // SwitchToggle to the right
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
     marginVertical: 8, 
     paddingHorizontal: 20,
   },
   titleText: {
-    flex: 1, // Takes up remaining space on the row
+    flex: 1, 
     fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 20,
+    marginLeft: -10,
+    color: "grey",
   },
   saveandbackbtn: {
     flexDirection: "row",

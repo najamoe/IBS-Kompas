@@ -62,7 +62,7 @@ const Home = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
-  const [bowelStep, setBowelStep] = useState(1); //
+  const [bowelStep, setBowelStep] = useState(1); 
   const [bowelLogs, setBowelLogs] = useState([]);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
