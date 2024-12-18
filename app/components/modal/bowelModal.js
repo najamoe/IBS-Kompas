@@ -183,7 +183,7 @@ const BowelModal = ({ isVisible, onClose }) => {
               <SwitchToggle
                 switchOn={blood}
                 onPress={() => setBlood(!blood)}
-                backgroundColorOn="green"
+                backgroundColorOn="#86C5D8"
                 backgroundColorOff="black"
                 containerStyle={{
                   marginTop: 10,
@@ -206,7 +206,7 @@ const BowelModal = ({ isVisible, onClose }) => {
               <SwitchToggle
                 switchOn={urgent}
                 onPress={() => setUrgent(!urgent)}
-                backgroundColorOn="green"
+                backgroundColorOn="#86C5D8"
                 backgroundColorOff="black"
                 containerStyle={{
                   marginTop: 10,
