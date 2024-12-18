@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     width: "95%",
-    height: "80%",
+    height: "75%",
   },
   modalTitle: {
     fontSize: 24,
@@ -380,6 +380,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 50,
     marginLeft: 0,
+
   },
   saveandbackbtn: {
     flexDirection: "row",
