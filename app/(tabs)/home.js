@@ -62,7 +62,7 @@ const Home = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
-  const [bowelStep, setBowelStep] = useState(1); 
+  const [bowelStep, setBowelStep] = useState(1);
   const [bowelLogs, setBowelLogs] = useState([]);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
@@ -290,10 +290,12 @@ const Home = () => {
             <View style={styles.logTitleContainer}>
               <Text style={styles.logTitle}>
                 Log toiletbesøg
-                <FontAwesomeIcons 
-                name="toilet" 
-                size={20} color={"black"} 
-                style={styles.logTitleIcon} />
+                <FontAwesomeIcons
+                  name="toilet"
+                  size={20}
+                  color={"black"}
+                  style={styles.logTitleIcon}
+                />
               </Text>
             </View>
 
@@ -419,9 +421,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
-  foodContent: {
-
-  },
+  foodContent: {},
   waterContainer: {
     marginLeft: 20,
     width: "90%",
