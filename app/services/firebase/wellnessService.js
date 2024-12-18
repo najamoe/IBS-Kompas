@@ -34,20 +34,31 @@ export const addWellnessLog = async (userId, emoticonType) => {
 };
 
 export const fetchWellnessLog = async (userId, date) => {
-    try {
-        if (!firestore || !userId) {
-            throw new Error ("Fire store instance or userId is missing");
-        }
-        const logRef = doc(firestore, `users/${userId}/wellnessLogs/${date}` );
-        const snapshot = await getDoc(logRef);
-        
-        if(snapshot.exists()) {
-            return snapshot.data().emoticonType;
-        } else {
-            return 0;
-        }
-    } catch (error) {
-        console.log("Error fetching emoticonType:", error);
-        throw error;
-    }
+  try {
+      console.log("Starting fetchWellnessLog function...");
+
+      if (!firestore || !userId) {
+          throw new Error("Fire store instance or userId is missing");
+      }
+
+      console.log(`Fetching wellness log for userId: ${userId} on date: ${date}`);
+
+      const logRef = doc(firestore, `users/${userId}/wellnessLogs/${date}`);
+      console.log(`Document reference created: users/${userId}/wellnessLogs/${date}`);
+
+      const snapshot = await getDoc(logRef);
+      console.log("Snapshot fetched:", snapshot.exists());
+
+      if (snapshot.exists()) {
+          console.log("Emoticon type found:", snapshot.data().emoticonType);
+          return snapshot.data().emoticonType;
+      } else {
+          console.log("No log found for the given date, returning 0");
+          return 0;
+      }
+  } catch (error) {
+      console.log("Error fetching emoticonType:", error);
+      throw error;
+  }
 };
+
