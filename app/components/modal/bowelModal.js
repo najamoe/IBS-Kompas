@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import SwitchToggle from "react-native-switch-toggle";
+import Slider from "@react-native-community/slider";
 import { addBowelLog } from "../../services/firebase/bowelService";
-import { getAuth } from "firebase/auth";
+import { getAuth, validatePassword } from "firebase/auth";
 
 import { Entypo } from "@expo/vector-icons";
 
@@ -161,31 +162,39 @@ const BowelModal = ({ isVisible, onClose }) => {
           <>
             <Text style={styles.modalTitle}>Detaljer</Text>
             <Text style={styles.subtitle}>Udfyld afføringslogdetaljer</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Smerte niveau (0-10)"
-              keyboardType="numeric"
-              value={pain}
-              onChangeText={setPain}
-            />
 
             <View style={styles.toggleContainer}>
-              <Text style = {styles.titleText}>Blod</Text>
+              <Text style={styles.titleText}>
+                Smerter <Text style={styles.painText}>{pain}</Text>
+              </Text>
+
+              <Slider
+                value={pain}
+                onValueChange={(value) => setPain(value)}
+                style={styles.painStyle}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+              />
+            </View>
+
+            <View style={styles.toggleContainer}>
+              <Text style={styles.titleText}>Blod</Text>
               <SwitchToggle
                 switchOn={blood}
                 onPress={() => setBlood(!blood)}
                 backgroundColorOn="green"
-                backgroundColorOff="black"                  
+                backgroundColorOff="black"
                 containerStyle={{
                   marginTop: 10,
                   marginBottom: 10,
-                  width:80,
-                  height: 40,
+                  width: 60,
+                  height: 30,
                   borderRadius: 25,
                 }}
                 circleStyle={{
-                  width: 35,
-                  height: 35,
+                  width: 22,
+                  height: 22,
                   borderRadius: 20,
                 }}
               />
@@ -193,22 +202,22 @@ const BowelModal = ({ isVisible, onClose }) => {
 
             {/* Hastende Toggle */}
             <View style={styles.toggleContainer}>
-              <Text style = {styles.titleText}>Hastende</Text>
+              <Text style={styles.titleText}>Hastende</Text>
               <SwitchToggle
                 switchOn={urgent}
                 onPress={() => setUrgent(!urgent)}
                 backgroundColorOn="green"
-                backgroundColorOff="black"           
+                backgroundColorOff="black"
                 containerStyle={{
                   marginTop: 10,
                   marginBottom: 10,
-                  width: 80,
-                  height: 40,
+                  width: 60,
+                  height: 30,
                   borderRadius: 25,
                 }}
                 circleStyle={{
-                  width: 35,
-                  height: 35,
+                  width: 22,
+                  height: 22,
                   borderRadius: 20,
                 }}
               />
@@ -351,21 +360,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    marginVertical: 8, 
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 8,
     paddingHorizontal: 20,
   },
   titleText: {
-    flex: 1, 
+    flex: 1,
     fontSize: 16,
     marginLeft: -10,
     color: "grey",
   },
+  painText: {
+    fontWeight: "bold",
+    color: "black",
+  },
+  painStyle: {
+    width: 140,
+    height: 50,
+    marginLeft: 0,
+  },
   saveandbackbtn: {
     flexDirection: "row",
-   
   },
   saveButton: {
     backgroundColor: "green",
