@@ -168,26 +168,20 @@ const BowelModal = ({ isVisible, onClose }) => {
               value={pain}
               onChangeText={setPain}
             />
+
             <View style={styles.toggleContainer}>
               <Text style = {styles.titleText}>Blod</Text>
               <SwitchToggle
                 switchOn={blood}
                 onPress={() => setBlood(!blood)}
-                circleColorOff="#C4C4C4"
-                circleColorOn="#00D9D5"
-                backgroundColorOn="#1fa108"
-                backgroundColorOff="#ff1f23"
-                backTextLeft="Nej"
-                backTextRight="Ja"
-                type={1}
+                backgroundColorOn="green"
+                backgroundColorOff="black"                  
                 containerStyle={{
                   marginTop: 10,
                   marginBottom: 10,
-                  width: 120,
+                  width:80,
                   height: 40,
                   borderRadius: 25,
-                  padding: 5,
-              
                 }}
                 circleStyle={{
                   width: 35,
@@ -203,19 +197,14 @@ const BowelModal = ({ isVisible, onClose }) => {
               <SwitchToggle
                 switchOn={urgent}
                 onPress={() => setUrgent(!urgent)}
-                circleColorOff="#C4C4C4"
-                circleColorOn="#00D9D5"
-                backgroundColorOn="#1fa108"
-                backgroundColorOff="#ff1f23"
-                backTextLeft="Nej"
-                backTextRight="Ja"
+                backgroundColorOn="green"
+                backgroundColorOff="black"           
                 containerStyle={{
                   marginTop: 10,
                   marginBottom: 10,
-                  width: 90,
+                  width: 80,
                   height: 40,
                   borderRadius: 25,
-                  padding: 5,
                 }}
                 circleStyle={{
                   width: 35,
@@ -232,6 +221,7 @@ const BowelModal = ({ isVisible, onClose }) => {
               value={notes}
               onChangeText={setNotes}
             />
+
             <View style={styles.saveandbackbtn}>
               <TouchableOpacity
                 onPress={handleGoBack}
@@ -278,8 +268,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     alignItems: "center",
-    flex: 1,
     width: "95%",
+    height: "80%",
   },
   modalTitle: {
     fontSize: 24,
@@ -375,6 +365,7 @@ const styles = StyleSheet.create({
   },
   saveandbackbtn: {
     flexDirection: "row",
+   
   },
   saveButton: {
     backgroundColor: "green",
