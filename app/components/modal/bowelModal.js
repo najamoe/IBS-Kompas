@@ -1,6 +1,15 @@
 import React, { useState, useContext } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+} from "react-native";
 import Modal from "react-native-modal";
+import SwitchToggle from "react-native-switch-toggle";
 import { addBowelLog } from "../../services/firebase/bowelService";
 import { getAuth } from "firebase/auth";
 
@@ -16,7 +25,6 @@ import type6 from "../../../assets/images/bowel/type6.png";
 import type7 from "../../../assets/images/bowel/type7.png";
 
 const BowelModal = ({ isVisible, onClose }) => {
-  
   const formatDate = () => {
     const currentDate = new Date();
     const day = currentDate.getDate().toString().padStart(2, "0");
@@ -39,7 +47,7 @@ const BowelModal = ({ isVisible, onClose }) => {
 
   const handleInfoPress = (type) => {
     setInfoText(bowelTypeInfo[type]);
-    setIsInfoModalVisible(true); 
+    setIsInfoModalVisible(true);
   };
 
   const handleInfoModalClose = () => {
@@ -56,7 +64,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Error", "Please select a bowel type.");
       return;
     }
-  
+
     try {
       // Get the current userId
       const user = getAuth().currentUser; // Get the currently authenticated user
@@ -64,9 +72,17 @@ const BowelModal = ({ isVisible, onClose }) => {
         Alert.alert("Error", "You must be logged in to save a bowel log.");
         return;
       }
-  
+
       // Call the addBowelLog service with the necessary parameters
-      await addBowelLog(user.uid, selectedBowelType, pain, blood, urgent, notes, date);
+      await addBowelLog(
+        user.uid,
+        selectedBowelType,
+        pain,
+        blood,
+        urgent,
+        notes,
+        date
+      );
       Alert.alert("Gemt", "Informationer er gemt");
       onClose(); // Close the modal after saving
     } catch (error) {
@@ -74,7 +90,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Error", "Noget gik galt - prøv igen");
     }
   };
-  
+
   const handleGoBack = () => {
     setCurrentStep(1); // Navigate back to the first step
   };
@@ -121,11 +137,20 @@ const BowelModal = ({ isVisible, onClose }) => {
                 <TouchableOpacity
                   key={type}
                   onPress={() => handleBowelTypeSelect(type)}
-                  style={[styles.imageWrapper, selectedBowelType === type && styles.selectedImage]}
+                  style={[
+                    styles.imageWrapper,
+                    selectedBowelType === type && styles.selectedImage,
+                  ]}
                 >
                   <Image source={bowelImages[type]} style={styles.image} />
                   <Text style={styles.imageLabel}>{`Type ${index + 1}`}</Text>
-                  <Entypo name="info-with-circle" size={15} color="white" style={styles.infoIcon} onPress={handleInfoPress}/>
+                  <Entypo
+                    name="info-with-circle"
+                    size={15}
+                    color="white"
+                    style={styles.infoIcon}
+                    onPress={handleInfoPress}
+                  />
                 </TouchableOpacity>
               ))}
             </View>
@@ -143,36 +168,58 @@ const BowelModal = ({ isVisible, onClose }) => {
               value={pain}
               onChangeText={setPain}
             />
-         <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          onPress={() => setBlood(true)}
-          style={[styles.toggleOption, blood && styles.selectedOption]}
-        >
-          <Text style={[styles.toggleText, blood && styles.selectedText]}>Ja</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setBlood(false)}
-          style={[styles.toggleOption, !blood && styles.selectedOption]}
-        >
-          <Text style={[styles.toggleText, !blood && styles.selectedText]}>Nej</Text>
-        </TouchableOpacity>
-      </View>
+            <View style={styles.toggleContainer}>
+              <Text style = {styles.titleText}>Blod</Text>
+              <SwitchToggle
+                switchOn={blood}
+                onPress={() => setBlood(!blood)}
+                circleColorOff="#C4C4C4"
+                circleColorOn="#00D9D5"
+                backgroundColorOn="#1fa108"
+                backgroundColorOff="#ff1f23"
+                backTextLeft="Nej"
+                backTextRight="Ja"
+                containerStyle={{
+                  marginTop: 16,
+                  width: 90,
+                  height: 40,
+                  borderRadius: 25,
+                  padding: 5,
+                }}
+                circleStyle={{
+                  width: 35,
+                  height: 35,
+                  borderRadius: 20,
+                }}
+              />
+            </View>
 
-      {/* Hastende Toggle */}
-      <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          onPress={() => setUrgent(true)}
-          style={[styles.toggleOption, urgent && styles.selectedOption]}
-        >
-          <Text style={[styles.toggleText, urgent && styles.selectedText]}>Ja</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setUrgent(false)}
-          style={[styles.toggleOption, !urgent && styles.selectedOption]}
-        >
-          <Text style={[styles.toggleText, !urgent && styles.selectedText]}>Nej</Text>
-        </TouchableOpacity>
-        </View>
+            {/* Hastende Toggle */}
+            <View style={styles.toggleContainer}>
+              <Text style = {styles.titleText}>Hastende</Text>
+              <SwitchToggle
+                switchOn={urgent}
+                onPress={() => setUrgent(!urgent)}
+                circleColorOff="#C4C4C4"
+                circleColorOn="#00D9D5"
+                backgroundColorOn="#1fa108"
+                backgroundColorOff="#ff1f23"
+                backTextLeft="Nej"
+                backTextRight="Ja"
+                containerStyle={{
+                  marginTop: 16,
+                  width: 90,
+                  height: 40,
+                  borderRadius: 25,
+                  padding: 5,
+                }}
+                circleStyle={{
+                  width: 35,
+                  height: 35,
+                  borderRadius: 20,
+                }}
+              />
+            </View>
 
             <TextInput
               style={styles.input}
@@ -181,16 +228,24 @@ const BowelModal = ({ isVisible, onClose }) => {
               value={notes}
               onChangeText={setNotes}
             />
-            <TouchableOpacity onPress={handleSaveLog} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Gem Log</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-              <Text style={styles.backButtonText}>Tilbage</Text>
-            </TouchableOpacity>
+            <View style={styles.saveandbackbtn}>
+              <TouchableOpacity
+                onPress={handleGoBack}
+                style={styles.backButton}
+              >
+                <Text style={styles.backButtonText}>Tilbage</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                onPress={handleSaveLog}
+                style={styles.saveButton}
+              >
+                <Text style={styles.saveButtonText}>Gem Log</Text>
+              </TouchableOpacity>
+            </View>
           </>
         )}
       </View>
-  
 
       {/* Info Modal */}
       <Modal
@@ -216,7 +271,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
-
   },
   container: {
     backgroundColor: "white",
@@ -306,23 +360,38 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     marginVertical: 10,
     width: "80%",
+    height: 80,
   },
-  toggle: {
-    marginVertical: 10,
+  toggleContainer: {
+    width: "80%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    flexDirection: 'row', // Align items horizontally
+    alignItems: 'center', // Center items vertically
+    justifyContent: 'space-between', // SwitchToggle to the right
+    marginVertical: 8, 
+    paddingHorizontal: 20,
   },
-  toggleText: {
+  titleText: {
+    flex: 1, // Takes up remaining space on the row
     fontSize: 16,
-    color: "blue",
+    fontWeight: 'bold',
+    marginLeft: 20,
+  },
+  saveandbackbtn: {
+    flexDirection: "row",
   },
   saveButton: {
     backgroundColor: "green",
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 25,
     marginTop: 10,
+    marginLeft: 10,
   },
   saveButtonText: {
     color: "white",
@@ -331,35 +400,10 @@ const styles = StyleSheet.create({
   backButton: {
     backgroundColor: "gray",
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 25,
     marginTop: 10,
   },
   backButtonText: {
     color: "white",
   },
-  toggleContainer: {
-    flexDirection: "row",
-    marginVertical: 10,
-  },
-  toggleOption: {
-    padding: 15,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    marginHorizontal: 5,
-    backgroundColor: "#f0f0f0",
-  },
-  selectedOption: {
-    backgroundColor: "#007BFF",
-    borderColor: "#0056b3",
-  },
-  toggleText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  selectedText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-
 });
