@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   saveButton: {
-    backgroundColor: "green",
+    backgroundColor: "#86C5D8",
     padding: 15,
     borderRadius: 25,
     marginTop: 10,
