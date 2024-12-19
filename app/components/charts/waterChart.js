@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService"; // Your function to fetch weekly intake data
-import moment from "moment"; // Use moment to handle date formatting
+import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService"; 
+import moment from "moment"; 
 
 const WaterIntakeChart = ({ userId, selectedDate }) => {
   const screenWidth = Dimensions.get("window").width;
@@ -56,7 +56,7 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
 
   // Prepare data for the chart
   const chartData = {
-    labels: weeklyData.map((day) => moment(day.date).format("DD MMM")), // Format date for X-axis
+    labels: weeklyData.map((day) => moment(day.date).format("ddd")), //Data on x-axis
     datasets: [
       {
         data: weeklyData.map((day) => day.total), // Water intake amounts for each day
@@ -70,32 +70,54 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
 
   return (
     <View style={styles.chartContainer}>
-      <Text style={styles.title}>Weekly Water Intake</Text>
-
-      {/* Line Chart to display the data */}
-      <LineChart
-        data={chartData}
-        width={screenWidth}
-        height={256}
-        verticalLabelRotation={30}
-        chartConfig={chartConfig}
-        bezier
-      />
+      {/* Centered Title */}
+      <Text style={styles.title}>Ugentligt væskeindtag</Text>
+  
+      {/* LineChart with left margin */}
+      <View style={styles.chartWrapper}>
+        <LineChart
+          data={chartData}
+          width={350}
+          height={240}
+          verticalLabelRotation={0}
+          chartConfig={chartConfig}
+          bezier
+        />
+      </View>
     </View>
   );
 };
 
+export default WaterIntakeChart;
+
+
 const styles = StyleSheet.create({
-  chartContainer: {
+  chartContainer: {  
+    marginTop: 200,
+    backgroundColor: "white",
+    borderRadius: 10,
+    width: "94%",
+    height: 300,
+    marginVertical: 10,
+    marginLeft: "3%", 
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3
+  },
+  chartWrapper: {
+    marginLeft: 0, 
+    alignSelf: "flex-start", 
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
   },
+  
 });
 
-export default WaterIntakeChart;
+

@@ -86,29 +86,17 @@ const Stats = () => {
             </View>
           </View>
 
-          <View style={styles.graphFoodContainer}>
-            <Text>Food</Text>
-          </View>
+          
 
-          <View style={styles.graphWaterContainer}>
+          <View>
           {user ? (
-              <WaterIntakeChart userId={user.uid} selectedDate={selectedDate} />
+              <WaterIntakeChart style={styles.graphContainer} userId={user.uid} selectedDate={selectedDate} />
             ) : (
               <ActivityIndicator size="large" color="#0000ff" />
             )}
           </View>
 
-          <View style={styles.graphBowelContainer}>
-            <Text>Bowel</Text>
-          </View>
 
-          <View style={styles.graphWellnessContainer}>
-            <Text>Wellness</Text>
-          </View>
-
-          <View style={styles.graphSymptomContainer}>
-            <Text>Symptom</Text>
-          </View>
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
@@ -161,54 +149,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "gray", 
   },
-  graphFoodContainer: {
+  graphContainer: {
     backgroundColor: "white",
     borderRadius: 10,
-    width: "94%",
+    width: "100%",
     height: 100,
-    marginTop: 20,
-    marginLeft: 10,
+    marginVertical: 10, // Add consistent spacing between containers
+    marginLeft: "3%", // Center horizontally by balancing left/right
     alignItems: "center",
     justifyContent: "center",
-  },
-  graphWaterContainer: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    width: "94%",
-    height: 100,
-    marginTop: 20,
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  graphBowelContainer: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    width: "94%",
-    height: 100,
-    marginTop: 20,
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  graphWellnessContainer: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    width: "94%",
-    height: 100,
-    marginTop: 20,
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  graphSymptomContainer: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    width: "94%",
-    height: 100,
-    marginTop: 20,
-    marginLeft: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Optional: add shadow for better design
   },
 });
