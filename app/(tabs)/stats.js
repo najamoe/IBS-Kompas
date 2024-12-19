@@ -12,7 +12,7 @@ const Stats = () => {
 
   const handleSelection = (mode) => {
     setSelectedMode(mode);
-    setShowCalendar(mode === "Month" ? false : true); // Don't show calendar for month view
+    setShowCalendar(mode); 
   };
 
   const renderSelectedValue = () => {
@@ -44,23 +44,6 @@ const Stats = () => {
       });
     }
 
-    return (
-      <FlatList
-        data={months}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.monthButton}
-            onPress={() => {
-              setSelectedDate(new Date(item.id)); // Set selected date to the month
-              setShowCalendar(false); // Close month list
-            }}
-          >
-            <Text style={styles.monthButtonText}>{item.title}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    );
   };
 
   return (
