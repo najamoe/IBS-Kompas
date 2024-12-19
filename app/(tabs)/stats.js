@@ -7,21 +7,20 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
-
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { getAuth } from "firebase/auth";
-import moment from "moment"; 
+import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
 
 const Stats = () => {
-   moment.locale("da");
-   
+  moment.locale("da");
+
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(moment())
+  const [selectedDate, setSelectedDate] = useState(moment());
 
   // Check if the user is signed in
   useEffect(() => {
@@ -45,13 +44,12 @@ const Stats = () => {
     }, 200);
   }, []);
 
-
   // Get the start and end of the current week using moment
   const startOfWeek = (selectedDate || moment()).clone().startOf("isoweek");
   const endOfWeek = (selectedDate || moment()).clone().endOf("isoweek");
-  
+
   // Get the current week number
-  const weekNumber = moment(selectedDate || moment()).isoWeek(); 
+  const weekNumber = moment(selectedDate || moment()).isoWeek();
 
   // Format the week range
   const weekRange = `${startOfWeek.format("DD-MM-YYYY")} - ${endOfWeek.format(
@@ -84,17 +82,17 @@ const Stats = () => {
             </View>
           </View>
 
-          
-
           <View>
-          {user ? (
-              <WaterIntakeChart style={styles.graphContainer} userId={user.uid} selectedDate={selectedDate} />
+            {user ? (
+              <WaterIntakeChart
+                style={styles.graphContainer}
+                userId={user.uid}
+                selectedDate={selectedDate}
+              />
             ) : (
               <ActivityIndicator size="large" color="#0000ff" />
             )}
           </View>
-
-
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
@@ -136,16 +134,16 @@ const styles = StyleSheet.create({
   },
   weekInfo: {
     justifyContent: "center",
-    alignItems: "center", 
+    alignItems: "center",
   },
   weekText: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 5, 
+    marginBottom: 5,
   },
   dateRangeText: {
     fontSize: 16,
-    color: "gray", 
+    color: "gray",
   },
   graphContainer: {
     backgroundColor: "white",
