@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 80,
     marginLeft: 15,
-    marginTop: 40,
+    marginTop: 80,
   },
   loginText: {
     fontSize: 30,
@@ -146,13 +146,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     fontWeight: "bold",
     marginLeft: 15,
-    marginTop: 30,
-    marginBottom: 5,
+    marginTop: 120,
+    marginBottom:10,
     paddingHorizontal: 15,
   },
   input: {
     backgroundColor: "white",
-    margin: 5,
     width: "100%",
   },
   registerText: {
@@ -163,9 +162,9 @@ const styles = StyleSheet.create({
   logincontainer: {
     alignItems: "center",
     backgroundColor: "white",
-    marginTop: 30,
+    marginTop: 10,
     padding: 20,
-    borderRadius: 5,
+    borderRadius: 30,
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
@@ -174,11 +173,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Poppins-Regular",
     fontSize: 14,
+    marginLeft:10,
   },
   forgotPasswordText: {
     color: "blue",
     textAlign: "center",
     marginTop: 10,
+    marginBottom:10,
     textDecorationLine: "underline",
   },
   modalContainer: {
@@ -203,4 +204,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "gray",
   },
+  buttonStyle: {
+    marginTop: 30,
+  }
 });

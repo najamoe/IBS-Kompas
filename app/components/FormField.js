@@ -26,13 +26,14 @@ const FormField = ({
           onChangeText={handleChangeText}
           secureTextEntry={title === "Password" && !showpassword}
           style={styles.input}
+          {...props}
         />
 
         {title === "Password" && (
           <TouchableOpacity onPress={() => setShowpassword(!showpassword)}>
             <FontAwesome
               name={!showpassword ? "eye" : "eye-slash"}
-              size={20}
+              size={16}
               color="black"
               style={styles.eyeIcon}
             />
@@ -67,18 +68,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: "grey",
-    borderRadius: 5,
+    borderRadius: 50,
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   input: {
     flex: 1,
-    padding: 8,
     fontSize: 16,
-    backgroundColor: "white",
+    backgroundColor: "white",  // Change this to 'white' or any color you prefer
+    paddingHorizontal: 10,
+    borderRadius: 40,
+    height: 40,  
+    
+    marginTop: 2,
+    marginLeft: 4,
+    marginBottom: 2,
   },
-
   eyeIcon: {
-    marginLeft: 10,
+    marginLEft: 2,
   },
 });
