@@ -16,7 +16,6 @@ export const addWaterIntake = async (userId, amount) => {
 
     await setDoc(waterRef, { total: amount }, { merge: true });
 
-    console.log("Water intake saved:", amount);
   } catch (error) {
     console.error("Error saving water intake:", error);
     throw error;
@@ -75,10 +74,6 @@ export const fetchWeeklyWaterIntake = async (userId, weekStartDate) => {
     throw error;
   }
 };
-
-
-
-
 
 export const removeWaterIntake = async (userId, date, amount) => {
   try {
