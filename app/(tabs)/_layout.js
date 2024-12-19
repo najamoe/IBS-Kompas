@@ -24,9 +24,9 @@ const TabsLayout = () => {
             borderTopWidth: 1,
             borderTopColor: "#C3C8CC",
             height: 60,
-            borderRadius: 30, // Add rounded corners
-            marginHorizontal: 15, // Create space around the tab bar
-            width: "95%", // Adjust the width
+            borderRadius: 30, 
+            marginHorizontal: 15, 
+            width: "95%", 
             alignSelf: "center", // Center the tab bar
             position: "absolute", // Float the tab bar
             bottom: 10, // Distance from the bottom
