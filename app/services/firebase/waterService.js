@@ -43,6 +43,8 @@ export const fetchWaterIntake = async (userId, date) => {
   }
 };
 
+
+
 export const removeWaterIntake = async (userId, date, amount) => {
   try {
     if (!firestore || !userId) {
