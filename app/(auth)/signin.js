@@ -106,19 +106,35 @@ const SignIn = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Nulstil password</Text>
+
             <FormField
+              customStyles={styles.CustomInputStyle}
               title=""
               placeholder="Indtast din email"
               value={resetEmail}
               handleChangeText={setResetEmail}
               keyboardType="email-address"
             />
-            <CustomButton title="Submit" handlePress={handlePasswordReset} />
-            <CustomButton
-              title="Cancel"
-              handlePress={() => setModalVisible(false)}
-              style={styles.cancelButton}
-            />
+
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                title="Afbryd"
+                customStyles={[
+                  styles.modalButtonStyle,
+                  { backgroundColor: "#a60202" },
+                ]}
+                textStyles={styles.buttonTextStyle}
+                handlePress={() => setModalVisible(false)}
+                style={styles.cancelButton}
+              />
+
+              <CustomButton
+                title="Nulstil"
+                customStyles={[styles.modalButtonStyle]}
+                textStyles={styles.buttonTextStyle}
+                handlePress={handlePasswordReset}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -153,6 +169,10 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     width: "100%",
+  },
+  CustomInputStyle: {
+    marginTop: 10,
+    marginBottom: 10,
   },
   registerText: {
     color: "black",
@@ -198,7 +218,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 5,
   },
   cancelButton: {
     marginTop: 10,
@@ -206,5 +226,19 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     marginTop: 30,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+  },
+  modalButtonStyle: {
+    height: 40,
+    width: 90,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+  },
+  buttonTextStyle: {
+    fontSize: 14,
   },
 });
