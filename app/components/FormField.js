@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, Image } from "react-native";
+import { StyleSheet, Text, View, TextInput } from "react-native";
 import React, { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -11,8 +11,11 @@ const FormField = ({
   otherStyles,
   ...props
 }) => {
-  const [showpassword, setShowpassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const isPasswordField = title === "Password";
+  const isConfirmPasswordField = title === "Verificér Password";
 
   return (
     <View>
@@ -24,29 +27,32 @@ const FormField = ({
           placeholder={placeholder}
           placeholderTextColor="grey"
           onChangeText={handleChangeText}
-          secureTextEntry={title === "Password" && !showpassword}
+          secureTextEntry={
+            (isPasswordField && !showPassword) ||
+            (isConfirmPasswordField && !showConfirmPassword)
+          }
           style={styles.input}
           {...props}
         />
 
-        {title === "Password" && (
-          <TouchableOpacity onPress={() => setShowpassword(!showpassword)}>
+        {isPasswordField && (
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <FontAwesome
-              name={!showpassword ? "eye" : "eye-slash"}
+              name={!showPassword ? "eye" : "eye-slash"}
               size={16}
               color="black"
               style={styles.eyeIcon}
             />
           </TouchableOpacity>
         )}
-        
-        {title === "Confirm Password" && (
+
+        {isConfirmPasswordField && (
           <TouchableOpacity
             onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             <FontAwesome
               name={!showConfirmPassword ? "eye" : "eye-slash"}
-              size={20}
+              size={16}
               color="black"
               style={styles.eyeIcon}
             />
@@ -75,16 +81,15 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    backgroundColor: "white",  // Change this to 'white' or any color you prefer
+    backgroundColor: "white",
     paddingHorizontal: 10,
     borderRadius: 40,
-    height: 40,  
-    
+    height: 40,
     marginTop: 2,
     marginLeft: 4,
     marginBottom: 2,
   },
   eyeIcon: {
-    marginLEft: 2,
+    marginLeft: 10,
   },
 });

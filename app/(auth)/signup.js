@@ -78,7 +78,7 @@ const SignUp = () => {
               handleChangeText={setPassword}
             />
             <FormField
-              title="verificér Password"
+              title="Verificér Password"
               value={confirmPassword}
               placeholder="Indtast password igen"
               handleChangeText={setConfirmPassword}
