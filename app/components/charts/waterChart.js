@@ -5,6 +5,7 @@ import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService";
 import moment from "moment"; 
 
 const WaterIntakeChart = ({ userId, selectedDate }) => {
+
   const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
   const [loading, setLoading] = useState(true);
 
