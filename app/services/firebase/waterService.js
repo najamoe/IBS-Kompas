@@ -63,19 +63,19 @@ export const fetchWeeklyWaterIntake = async (userId, weekStartDate) => {
       const waterRef = doc(waterLogsRef, date);
       const snapshot = await getDoc(waterRef);
 
-      if (snapshot.exists()) {
-        dailyWaterIntakes.push(snapshot.data().total || 0); // Add the daily intake to the array
-      } else {
-        dailyWaterIntakes.push(0); // Push 0 if no data is found for the day
-      }
+      dailyWaterIntakes.push({
+        date, // Include the date
+        total: snapshot.exists() ? snapshot.data().total || 0 : 0, // Include the total
+      });
     }
 
-    return dailyWaterIntakes; // Return the array of daily water intakes
+    return dailyWaterIntakes; // Return the array of daily water intakes with dates
   } catch (error) {
     console.error("Error fetching weekly water intake:", error);
     throw error;
   }
 };
+
 
 
 
