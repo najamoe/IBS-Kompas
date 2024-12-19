@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 15,
     marginTop: 120,
-    marginBottom:10,
+    marginBottom: 10,
     paddingHorizontal: 15,
   },
   input: {
@@ -173,13 +173,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Poppins-Regular",
     fontSize: 14,
-    marginLeft:10,
+    marginLeft: 10,
   },
   forgotPasswordText: {
     color: "blue",
     textAlign: "center",
     marginTop: 10,
-    marginBottom:10,
+    marginBottom: 10,
     textDecorationLine: "underline",
   },
   modalContainer: {
@@ -206,5 +206,5 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     marginTop: 30,
-  }
+  },
 });
