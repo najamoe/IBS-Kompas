@@ -1,133 +1,98 @@
-import React, { useCallback, useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import { StyleSheet, RefreshControl, ScrollView, Text, View, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import MonthPicker from "react-native-month-year-picker";
 import moment from "moment";
 
 const Stats = () => {
-  const [selectedMode, setSelectedMode] = useState("Date");
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
 
-  const showPicker = useCallback((value) => {
-    setShow(value);
+  // Format date function to display in DD/MM/YYYY format
+  const formatDateDisplay = (date) => {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`; // Display format
+  };
+
+  const handleDayChange = (days) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    setSelectedDate(formatDateStorage(newDate));
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
   }, []);
-  
-  // Add a delay to ensure MonthPicker has time to initialize properly
-  useEffect(() => {
-    if (show) {
-      const timeoutId = setTimeout(() => {
-        // Just ensure it's ready by delaying it a little
-        console.log('MonthPicker shown');
-      }, 100); // Adjust time delay as necessary
-      return () => clearTimeout(timeoutId);
-    }
-  }, [show]);
-  
-
-  const onValueChange = useCallback(
-    (event, newDate) => {
-      const selectedDate = newDate || date;
-      showPicker(false); // Close the picker after selection
-      setDate(selectedDate);
-    },
-    [date]
-  );
-
-  const handleSelection = (mode) => {
-    setSelectedMode(mode);
-    setShowCalendar(mode);
-  };
-
-  const renderSelectedValue = () => {
-    if (selectedMode === "Date") {
-      return `Valgt dato: ${moment(selectedDate).format("YYYY-MM-DD")}`;
-    } else if (selectedMode === "Week") {
-      const startOfWeek = moment(selectedDate)
-        .startOf("isoWeek")
-        .format("YYYY-MM-DD");
-      const endOfWeek = moment(selectedDate)
-        .endOf("isoWeek")
-        .format("YYYY-MM-DD");
-      return `Valgt Uge: ${startOfWeek} to ${endOfWeek}`;
-    } else if (selectedMode === "Month") {
-      return `Valgt Måned: ${moment(selectedDate).format("MMMM YYYY")}`;
-    }
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || selectedDate;
-    setShowCalendar(false);
-    setSelectedDate(currentDate);
-  };
-
-  
-  // Debug log
-  console.log("MonthPicker Show State:", show);
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
-        <View style={styles.container}>
-          <View style={styles.datePickerContainer}>
-            <Text style={styles.header}>Visning</Text>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleSelection("Date")}
-            >
-              <Text style={styles.buttonText}>Dato</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleSelection("Week")}
-            >
-              <Text style={styles.buttonText}>Uge</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button} onPress={() => showPicker(true)}>
-              <Text style={styles.buttonText}>Måned</Text>
-            </TouchableOpacity>
-            {show && (
-              <MonthPicker
-                onChange={onValueChange}
-                value={date}
-                minimumDate={new Date()}
-                maximumDate={new Date(2025, 5)}
-              />
-            )}
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={styles.dateContainer}>
+            {/* Header with date navigation */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => handleDayChange(-1)}>
+                <Text style={styles.arrow}>◀</Text>
+              </TouchableOpacity>
+              <Text style={styles.dateText}>
+                {formatDateDisplay(selectedDate)}
+              </Text>{" "}
+              {/* Display in DD/MM/YYYY */}
+              <TouchableOpacity onPress={() => handleDayChange(1)}>
+                <Text style={styles.arrow}>▶</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={styles.selectedDateContainer}>
-            <Text style={styles.selectedText}>{renderSelectedValue()}</Text>
-          </View>
+          <View style={styles.graphFoodContainer}>
+            
+          <Text>Food</Text>
 
-          {selectedMode === "Month" && renderMonthList()}
-          {showCalendar && (
-            <DateTimePicker
-              value={selectedDate}
-              mode={selectedMode === "Date" ? "date" : "time"}
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
-        </View>
+
+            </View>
+          <View style={styles.graphWaterContainer}>
+            
+
+
+
+          </View>
+          <View style={styles.graphBowelContainer}>
+            <Text>Bowel</Text>
+
+
+
+            </View>
+
+            <View style={styles.graphWellnessContainer}>
+            <Text>Wellness</Text>
+
+
+
+            </View>
+
+            <View style={styles.graphSymptomContainer}>
+            <Text>Symptom</Text>
+
+
+
+            </View>
+
+            
+        </ScrollView>
       </LinearGradient>
     </SafeAreaView>
   );
 };
-
 
 export default Stats;
 
@@ -135,65 +100,87 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   gradient: {
+    flex: 1,
     width: "100%",
   },
-  datePickerContainer: {
+  dateContainer: {
     backgroundColor: "white",
-    borderColor: "black",
-    borderWidth: 1,
-    borderRadius: 50,
-    width: "80%",
-    height: 40,
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
+    borderRadius: 30,
+    width: "90%",
+    padding: 5,
+    marginTop: 25,
+    marginBottom: 15,
+    alignSelf: "center",
+    justifyContent: "center",
   },
   header: {
-    fontSize: 16,
-    fontWeight: "500",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  button: {
-    borderColor: "black",
-    borderWidth: 1,
-    padding: 5,
-    borderRadius: 8,
-  },
-  buttonText: {
+  arrow: {
+    fontSize: 22,
+    fontWeight: "bold",
     color: "black",
-    fontSize: 14,
+    margin: 10,
   },
-  selectedText: {
-    fontSize: 16,
+  dateText: {
+    fontSize: 18,
     fontWeight: "bold",
   },
-  selectedDateContainer: {
+  graphFoodContainer:{
     backgroundColor: "white",
-    borderColor: "black",
-    borderWidth: 1,
-    borderRadius: 50,
-    width: "80%",
-    height: 40,
+    borderRadius: 10,
+    width: "94%",
+    height: 100,
     marginTop: 20,
+    marginLeft: 10,
     alignItems: "center",
     justifyContent: "center",
   },
-  monthPicker: {
-    backgroundColor: "black",
-    marginTop: 50,
-  },
-  monthButton: {
-    backgroundColor: "#cae9f5",
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 8,
+  graphWaterContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    width: "94%",
+    height: 100,
+    marginTop: 20,
+    marginLeft: 10,
     alignItems: "center",
-    width: "80%",
+    justifyContent: "center",
   },
-  monthButtonText: {
-    fontSize: 16,
-    fontWeight: "500",
+  graphBowelContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    width: "94%",
+    height: 100,
+    marginTop: 20,
+    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
+  graphWellnessContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    width: "94%",
+    height: 100,
+    marginTop: 20,
+    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  graphSymptomContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    width: "94%",
+    height: 100,
+    marginTop: 20,
+    marginLeft: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+
 });
