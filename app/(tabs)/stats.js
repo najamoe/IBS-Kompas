@@ -1,26 +1,64 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import React, { useCallback, useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import MonthPicker from "react-native-month-year-picker";
 import moment from "moment";
 
 const Stats = () => {
-  const [selectedMode, setSelectedMode] = useState("Date"); // Options: Date, Week, Month
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Use Date object
+  const [selectedMode, setSelectedMode] = useState("Date");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+
+  const showPicker = useCallback((value) => {
+    setShow(value);
+  }, []);
+  
+  // Add a delay to ensure MonthPicker has time to initialize properly
+  useEffect(() => {
+    if (show) {
+      const timeoutId = setTimeout(() => {
+        // Just ensure it's ready by delaying it a little
+        console.log('MonthPicker shown');
+      }, 100); // Adjust time delay as necessary
+      return () => clearTimeout(timeoutId);
+    }
+  }, [show]);
+  
+
+  const onValueChange = useCallback(
+    (event, newDate) => {
+      const selectedDate = newDate || date;
+      showPicker(false); // Close the picker after selection
+      setDate(selectedDate);
+    },
+    [date]
+  );
 
   const handleSelection = (mode) => {
     setSelectedMode(mode);
-    setShowCalendar(mode); 
+    setShowCalendar(mode);
   };
 
   const renderSelectedValue = () => {
     if (selectedMode === "Date") {
       return `Valgt dato: ${moment(selectedDate).format("YYYY-MM-DD")}`;
     } else if (selectedMode === "Week") {
-      const startOfWeek = moment(selectedDate).startOf("isoWeek").format("YYYY-MM-DD");
-      const endOfWeek = moment(selectedDate).endOf("isoWeek").format("YYYY-MM-DD");
+      const startOfWeek = moment(selectedDate)
+        .startOf("isoWeek")
+        .format("YYYY-MM-DD");
+      const endOfWeek = moment(selectedDate)
+        .endOf("isoWeek")
+        .format("YYYY-MM-DD");
       return `Valgt Uge: ${startOfWeek} to ${endOfWeek}`;
     } else if (selectedMode === "Month") {
       return `Valgt Måned: ${moment(selectedDate).format("MMMM YYYY")}`;
@@ -33,18 +71,9 @@ const Stats = () => {
     setSelectedDate(currentDate);
   };
 
-  const renderMonthList = () => {
-    const months = [];
-    const currentYear = moment().year(); // Get the current year
-    for (let i = 0; i < 12; i++) {
-      const month = moment().month(i);
-      months.push({
-        id: month.format("YYYY-MM"),
-        title: month.format("MMMM YYYY"),
-      });
-    }
-
-  };
+  
+  // Debug log
+  console.log("MonthPicker Show State:", show);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,24 +96,28 @@ const Stats = () => {
               <Text style={styles.buttonText}>Uge</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => handleSelection("Month")}
-            >
+            <TouchableOpacity style={styles.button} onPress={() => showPicker(true)}>
               <Text style={styles.buttonText}>Måned</Text>
             </TouchableOpacity>
+            {show && (
+              <MonthPicker
+                onChange={onValueChange}
+                value={date}
+                minimumDate={new Date()}
+                maximumDate={new Date(2025, 5)}
+              />
+            )}
           </View>
 
           <View style={styles.selectedDateContainer}>
             <Text style={styles.selectedText}>{renderSelectedValue()}</Text>
           </View>
 
-          {selectedMode === "Month" && renderMonthList()} {/* Display month list if in month view */}
-
+          {selectedMode === "Month" && renderMonthList()}
           {showCalendar && (
             <DateTimePicker
               value={selectedDate}
-              mode={selectedMode === "Date" ? "date" : "time"} // Use "time" for week if needed
+              mode={selectedMode === "Date" ? "date" : "time"}
               display="default"
               onChange={handleDateChange}
             />
@@ -94,6 +127,7 @@ const Stats = () => {
     </SafeAreaView>
   );
 };
+
 
 export default Stats;
 
@@ -145,6 +179,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: "center",
     justifyContent: "center",
+  },
+  monthPicker: {
+    backgroundColor: "black",
+    marginTop: 50,
   },
   monthButton: {
     backgroundColor: "#cae9f5",
