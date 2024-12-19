@@ -7,7 +7,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
-  
+
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,9 +16,10 @@ import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
 
-const Stats = ({ selectedDate }) => {
+const Stats = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
+ const [selectedDate, setSelectedDate] = useState(moment())
   const [weeklyWaterIntake, setWeeklyWaterIntake] = useState(0);
 
   // Check if the user is signed in
