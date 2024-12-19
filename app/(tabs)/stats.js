@@ -19,8 +19,8 @@ import WaterIntakeChart from "../components/charts/waterChart";
 const Stats = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
- const [selectedDate, setSelectedDate] = useState(moment())
-  const [weeklyWaterIntake, setWeeklyWaterIntake] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(moment())
+
 
   // Check if the user is signed in
   useEffect(() => {
