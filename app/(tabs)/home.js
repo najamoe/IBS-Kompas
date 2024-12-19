@@ -223,14 +223,19 @@ const Home = () => {
             {/* Header with date navigation */}
             <View style={styles.header}>
               <TouchableOpacity onPress={() => handleDayChange(-1)}>
-                <Text style={styles.arrow}>◀</Text>
+                <FontAwesomeIcon
+                  style={styles.arrowIcons}
+                  name="arrow-circle-left"
+                />
               </TouchableOpacity>
               <Text style={styles.dateText}>
                 {formatDateDisplay(selectedDate)}
               </Text>{" "}
-              {/* Display in DD/MM/YYYY */}
               <TouchableOpacity onPress={() => handleDayChange(1)}>
-                <Text style={styles.arrow}>▶</Text>
+                <FontAwesomeIcon
+                  style={styles.arrowIcons}
+                  name="arrow-circle-right"
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -402,7 +407,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  arrow: {
+  arrowIcons: {
     fontSize: 22,
     fontWeight: "bold",
     color: "black",
