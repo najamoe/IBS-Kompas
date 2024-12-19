@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image,} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
@@ -9,7 +16,7 @@ import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
 import icon from "../../assets/icon.png";
-import { addUserToFirestore } from '../firebase/firestoreService';
+import { addUserToFirestore } from "../firebase/firestoreService";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -85,14 +92,19 @@ const SignUp = () => {
             />
             <View style={styles.buttonContainer}>
               <CustomButton
-                style={styles.buttonStyle}
-                title={loading ? "Opretter bruger" : "Opret bruger"}
-                handlePress={submitNewUser}
-              />
-              <CustomButton
-                containerStyles={[styles.button, { backgroundColor: "#a60202", marginTop: 5 }]} 
+                customStyles={[
+                  styles.buttonStyle,
+                  { backgroundColor: "#a60202" }, // Red button
+                ]}
+                textStyles={styles.buttonTextStyle}
                 title="Gå tilbage"
                 handlePress={handleGoBack}
+              />
+              <CustomButton
+                customStyles={[styles.buttonStyle]}
+                textStyles={styles.buttonTextStyle} // Ensure consistent usage
+                title={loading ? "Opretter bruger" : "Opret bruger"}
+                handlePress={submitNewUser}
               />
             </View>
           </View>
@@ -113,17 +125,18 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontWeight: "bold",
-    fontSize: 44,
+    fontSize: 40,
     color: "black",
-    marginTop: 200,
+    marginTop: 180,
     textAlign: "center",
+    color: "white",
   },
   signupContainer: {
     alignItems: "center",
     backgroundColor: "white",
     marginTop: 80,
     padding: 20,
-    borderRadius: 5,
+    borderRadius: 20,
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
@@ -137,7 +150,20 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     position: "absolute",
-    top: 40,
-    right: 20,
+    top: 60,
+    right: 30,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+  },
+  buttonStyle: {
+    height: 40,
+    width: 120,
+    marginLeft: 10,
+    marginRight: 10,
+    flexDirection: "row",
+  },
+  buttonTextStyle: {
+    fontSize: 14,
   },
 });

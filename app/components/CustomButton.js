@@ -1,11 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Importing Ionicons from Expo vector icons
+import { Ionicons } from '@expo/vector-icons'; 
 
-const CustomButton = ({ title, handlePress, containerStyles, textStyles, isLoading, iconName }) => {
+const CustomButton = ({ title, handlePress, customStyles, textStyles, isLoading, iconName }) => {
   return (
     <TouchableOpacity
-      style={[styles.button, containerStyles, isLoading && styles.loading]} 
+      style={[styles.button, customStyles, isLoading && styles.loading]} 
       onPress={handlePress}
       activeOpacity={0.7}
       disabled={isLoading} 
@@ -26,13 +26,13 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#86c5d8',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
     borderRadius: 5,
     marginTop: 20,
     marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 200,
+    width: 150,
   },
   buttonText: {
     color: 'white',

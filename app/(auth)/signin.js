@@ -141,13 +141,13 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   loginText: {
-    fontSize: 30,
+    fontSize: 34,
     color: "white",
     fontFamily: "Poppins-Regular",
     fontWeight: "bold",
-    marginLeft: 15,
-    marginTop: 120,
-    marginBottom: 10,
+    marginLeft: 20,
+    marginTop: 90,
+    marginBottom: 60,
     paddingHorizontal: 15,
   },
   input: {
