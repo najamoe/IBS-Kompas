@@ -1,57 +1,18 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 
 const Stats = () => {
   const [selectedMode, setSelectedMode] = useState("Date"); // Options: Date, Week, Month
-  const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Use Date object
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-
-  const renderCalendar = () => {
-    const date = moment(selectedDate);
-    const year = date.year();
-    const month = date.month();
-    const days = daysInMonth(year, month);
-
-    // Generate days for the current month
-    const daysArray = Array.from({ length: days }, (_, i) => {
-      const dayDate = moment([year, month, i + 1]).format("YYYY-MM-DD");
-      return (
-        <TouchableOpacity
-          key={i}
-          style={[
-            styles.calendarDay,
-            dayDate === selectedDate && styles.selectedDay,
-          ]}
-          onPress={() => {
-            setSelectedDate(dayDate);
-            if (selectedMode === "Date") setShowCalendar(false);
-          }}
-        >
-          <Text
-            style={[
-              styles.dayText,
-              dayDate === selectedDate && styles.selectedDayText,
-            ]}
-          >
-            {i + 1}
-          </Text>
-        </TouchableOpacity>
-      );
-    });
-
-    return (
-      <View style={styles.calendarContainer}>
-        <Text style={styles.monthText}>
-          {date.format("MMMM YYYY")}
-        </Text>
-        <View style={styles.daysWrapper}>{daysArray}</View>
-      </View>
-    );
+  const handleSelection = (mode) => {
+    setSelectedMode(mode);
+    setShowCalendar(mode === "Month" ? false : true); // Don't show calendar for month view
   };
 
   const renderSelectedValue = () => {
@@ -66,6 +27,42 @@ const Stats = () => {
     }
   };
 
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || selectedDate;
+    setShowCalendar(false);
+    setSelectedDate(currentDate);
+  };
+
+  const renderMonthList = () => {
+    const months = [];
+    const currentYear = moment().year(); // Get the current year
+    for (let i = 0; i < 12; i++) {
+      const month = moment().month(i);
+      months.push({
+        id: month.format("YYYY-MM"),
+        title: month.format("MMMM YYYY"),
+      });
+    }
+
+    return (
+      <FlatList
+        data={months}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.monthButton}
+            onPress={() => {
+              setSelectedDate(new Date(item.id)); // Set selected date to the month
+              setShowCalendar(false); // Close month list
+            }}
+          >
+            <Text style={styles.monthButtonText}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
@@ -75,30 +72,21 @@ const Stats = () => {
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                setSelectedMode("Date");
-                setShowCalendar(true);
-              }}
+              onPress={() => handleSelection("Date")}
             >
               <Text style={styles.buttonText}>Dato</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                setSelectedMode("Week");
-                setShowCalendar(true);
-              }}
+              onPress={() => handleSelection("Week")}
             >
               <Text style={styles.buttonText}>Uge</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                setSelectedMode("Month");
-                setShowCalendar(true);
-              }}
+              onPress={() => handleSelection("Month")}
             >
               <Text style={styles.buttonText}>Måned</Text>
             </TouchableOpacity>
@@ -108,7 +96,16 @@ const Stats = () => {
             <Text style={styles.selectedText}>{renderSelectedValue()}</Text>
           </View>
 
-          {showCalendar && renderCalendar()}
+          {selectedMode === "Month" && renderMonthList()} {/* Display month list if in month view */}
+
+          {showCalendar && (
+            <DateTimePicker
+              value={selectedDate}
+              mode={selectedMode === "Date" ? "date" : "time"} // Use "time" for week if needed
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
         </View>
       </LinearGradient>
     </SafeAreaView>
@@ -166,36 +163,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  calendarContainer: {
-    marginTop: 20,
+  monthButton: {
+    backgroundColor: "#cae9f5",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 8,
     alignItems: "center",
+    width: "80%",
   },
-  monthText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  daysWrapper: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-  calendarDay: {
-    width: 40,
-    height: 40,
-    margin: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 20,
-  },
-  selectedDay: {
-    backgroundColor: "blue",
-  },
-  dayText: {
-    fontSize: 14,
-  },
-  selectedDayText: {
-    color: "white",
-    fontWeight: "bold",
+  monthButtonText: {
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
