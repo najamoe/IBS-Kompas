@@ -15,8 +15,6 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
       setLoading(true);
       // Fetch the weekly water intake data (daily values)
       const totalWaterIntake = await fetchWeeklyWaterIntake(userId, selectedDate);
-      
-      console.log("Fetched Water Intake Data:", totalWaterIntake);  // Log the raw data
 
       // Prepare the data for the chart
       const formattedData = totalWaterIntake.map((day) => ({
@@ -24,7 +22,6 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
         total: isNaN(day.total) ? 0 : day.total, // Ensure total is a number
       }));
 
-      console.log("Formatted Water Intake Data:", formattedData);  // Log the formatted data
       setWeeklyData(formattedData);
     } catch (error) {
       console.error("Error fetching weekly water intake:", error);
