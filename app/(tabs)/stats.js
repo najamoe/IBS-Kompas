@@ -1,26 +1,36 @@
-import React, { useState, useCallback } from "react";
-import { StyleSheet, RefreshControl, ScrollView, Text, View, TouchableOpacity } from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  StyleSheet,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import moment from "moment";
+import { getAuth } from "firebase/auth";
+import moment from "moment"; // Import moment
+import WaterIntakeChart from "../components/charts/waterChart";
 
 const Stats = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [user, setUser] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(moment());
 
-  // Format date function to display in DD/MM/YYYY format
-  const formatDateDisplay = (date) => {
-    const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, "0");
-    const month = (d.getMonth() + 1).toString().padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`; // Display format
-  };
+  // Check if the user is signed in
+  useEffect(() => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser); // Store user info
+    }
+  }, []);
 
-  const handleDayChange = (days) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + days);
-    setSelectedDate(formatDateStorage(newDate));
+  // Handle week navigation (back and forward)
+  const handleWeekChange = (weeks) => {
+    const newDate = moment(selectedDate).add(weeks, "weeks");
+    setSelectedDate(newDate);
   };
 
   const onRefresh = useCallback(() => {
@@ -29,6 +39,20 @@ const Stats = () => {
       setRefreshing(false);
     }, 200);
   }, []);
+
+  moment.locale("da");
+
+  // Get the start and end of the current week using moment
+  const startOfWeek = selectedDate.clone().startOf("isoweek");
+  const endOfWeek = selectedDate.clone().endOf("isoweek");
+
+  // Get the current week number
+  const weekNumber = selectedDate.isoWeek();
+
+  // Format the week range
+  const weekRange = `${startOfWeek.format("DD-MM-YYYY")} - ${endOfWeek.format(
+    "DD-MM-YYYY"
+  )}`;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,55 +63,42 @@ const Stats = () => {
           }
         >
           <View style={styles.dateContainer}>
-            {/* Header with date navigation */}
+            {/* Header with week navigation */}
             <View style={styles.header}>
-              <TouchableOpacity onPress={() => handleDayChange(-1)}>
+              <TouchableOpacity onPress={() => handleWeekChange(-1)}>
                 <Text style={styles.arrow}>◀</Text>
               </TouchableOpacity>
-              <Text style={styles.dateText}>
-                {formatDateDisplay(selectedDate)}
-              </Text>{" "}
-              {/* Display in DD/MM/YYYY */}
-              <TouchableOpacity onPress={() => handleDayChange(1)}>
+              <View style={styles.weekInfo}>
+                {/* Week number display */}
+                <Text style={styles.weekText}>Uge {weekNumber}</Text>
+                {/* Week range display */}
+                <Text style={styles.dateRangeText}>{weekRange}</Text>
+              </View>
+              <TouchableOpacity onPress={() => handleWeekChange(1)}>
                 <Text style={styles.arrow}>▶</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.graphFoodContainer}>
-            
-          <Text>Food</Text>
-
-
-            </View>
-          <View style={styles.graphWaterContainer}>
-            
-
-
-
+            <Text>Food</Text>
           </View>
+
+          <View style={styles.graphWaterContainer}>
+            <WaterIntakeChart />
+          </View>
+
           <View style={styles.graphBowelContainer}>
             <Text>Bowel</Text>
+          </View>
 
-
-
-            </View>
-
-            <View style={styles.graphWellnessContainer}>
+          <View style={styles.graphWellnessContainer}>
             <Text>Wellness</Text>
+          </View>
 
-
-
-            </View>
-
-            <View style={styles.graphSymptomContainer}>
+          <View style={styles.graphSymptomContainer}>
             <Text>Symptom</Text>
-
-
-
-            </View>
-
-            
+          </View>
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
@@ -127,11 +138,20 @@ const styles = StyleSheet.create({
     color: "black",
     margin: 10,
   },
-  dateText: {
+  weekInfo: {
+    justifyContent: "center",
+    alignItems: "center", // Center align both texts
+  },
+  weekText: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 5, // Add some space between week and date range
   },
-  graphFoodContainer:{
+  dateRangeText: {
+    fontSize: 16,
+    color: "gray", // Optional: to distinguish date range visually
+  },
+  graphFoodContainer: {
     backgroundColor: "white",
     borderRadius: 10,
     width: "94%",
@@ -181,6 +201,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
-
 });
