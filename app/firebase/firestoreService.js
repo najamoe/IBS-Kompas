@@ -1,4 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; // Modular Firestore imports
+import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore"; // Modular Firestore imports
 import { getAuth } from "firebase/auth";
 import firebaseConfig from "./FirebaseConfig";
 
@@ -37,5 +37,3 @@ export const updateUserDetails = async (uid, updates) => {
     throw error;
   }
 };
-
-
