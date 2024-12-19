@@ -17,10 +17,11 @@ import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
 
 const Stats = () => {
+   moment.locale("da");
+   
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(null);
   const [selectedDate, setSelectedDate] = useState(moment())
-
 
   // Check if the user is signed in
   useEffect(() => {
@@ -44,16 +45,13 @@ const Stats = () => {
     }, 200);
   }, []);
 
-  moment.locale("da");
 
   // Get the start and end of the current week using moment
   const startOfWeek = (selectedDate || moment()).clone().startOf("isoweek");
   const endOfWeek = (selectedDate || moment()).clone().endOf("isoweek");
   
-
   // Get the current week number
   const weekNumber = moment(selectedDate || moment()).isoWeek(); 
-
 
   // Format the week range
   const weekRange = `${startOfWeek.format("DD-MM-YYYY")} - ${endOfWeek.format(
