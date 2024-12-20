@@ -92,7 +92,7 @@ export default WaterIntakeChart;
 
 const styles = StyleSheet.create({
   chartContainer: {  
-    marginTop: 200,
+    marginTop: 100, //Edit margin when foodGraph is added
     backgroundColor: "white",
     borderRadius: 10,
     width: "100%",
