@@ -25,7 +25,7 @@ const TabsLayout = () => {
             borderTopColor: "#C3C8CC",
             height: 60,
             borderRadius: 30, 
-            marginHorizontal: 15, 
+            marginHorizontal: 10, 
             width: "95%", 
             alignSelf: "center", // Center the tab bar
             position: "absolute", // Float the tab bar
@@ -109,5 +109,3 @@ const TabsLayout = () => {
 }
 
 export default TabsLayout
-
-const styles = StyleSheet.create({})
