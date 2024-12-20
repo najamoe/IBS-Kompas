@@ -1,4 +1,4 @@
-import { doc, collection, setDoc, getDoc } from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig"; 
 import moment from "moment";
 
@@ -16,17 +16,22 @@ export const addWellnessLog = async (userId, emoticonType) => {
 
     // Check if today's log exists
     const logDoc = await getDoc(logRef);
+
     if (logDoc.exists()) {
-      return; // Optionally handle updates if needed
+      // If a log exists for today, update the emoticonType
+      await updateDoc(logRef, {
+        emoticonType: emoticonType,
+        updatedAt: new Date(), // Optional: Track when the log was updated
+      });
+    } else {
+      // If no log exists for today, create a new one
+      const logData = {
+        timestamp: new Date(),
+        emoticonType: emoticonType,
+      };
+
+      await setDoc(logRef, logData);
     }
-
-    // Create a new log entry with the emoticon type
-    const logData = {
-      timestamp: new Date(),
-      emoticonType: emoticonType, // Store emoticonType for the day
-    };
-
-    await setDoc(logRef, logData);
   } catch (error) {
     console.error("Error adding wellness log:", error.message);
     throw error;
