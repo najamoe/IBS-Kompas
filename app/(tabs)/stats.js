@@ -130,7 +130,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  
   dateContainer: {
     borderRadius: 30,
     width: "90%",
@@ -169,7 +168,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     height: 100,
-    marginVertical: 10, // Add consistent spacing between containers
+
     marginLeft: "3%", // Center horizontally by balancing left/right
     alignItems: "center",
     justifyContent: "center",
