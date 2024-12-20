@@ -64,6 +64,7 @@ const Stats = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          contentContainerStyle={{ paddingBottom: 100 }}
         >
           <View style={styles.dateContainer}>
             {/* Header with week navigation */}

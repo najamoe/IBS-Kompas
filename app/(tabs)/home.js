@@ -218,6 +218,7 @@ const Home = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={styles.dateContainer}>
           {/* Header with date navigation */}
