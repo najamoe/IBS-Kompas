@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
+import { AntDesign } from "@expo/vector-icons";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 import "moment/locale/da";
@@ -68,7 +68,11 @@ const Stats = () => {
             {/* Header with week navigation */}
             <View style={styles.header}>
               <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-                <Text style={styles.arrow}>◀</Text>
+              <AntDesign
+                style={styles.arrowIcons}
+                name="left"
+                size={22}
+              />
               </TouchableOpacity>
               <View style={styles.weekInfo}>
                 {/* Week number display */}
@@ -77,7 +81,11 @@ const Stats = () => {
                 <Text style={styles.dateRangeText}>{weekRange}</Text>
               </View>
               <TouchableOpacity onPress={() => handleWeekChange(1)}>
-                <Text style={styles.arrow}>▶</Text>
+              <AntDesign
+                style={styles.arrowIcons}
+                name="right"
+                size={22}
+              />
               </TouchableOpacity>
             </View>
           </View>
@@ -110,12 +118,11 @@ const styles = StyleSheet.create({
   },
   
   dateContainer: {
-    backgroundColor: "white",
     borderRadius: 30,
     width: "90%",
     padding: 5,
     marginTop: 25,
-    marginBottom: 15,
+    marginBottom: 10,
     alignSelf: "center",
     justifyContent: "center",
   },
@@ -124,7 +131,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  arrow: {
+  arrowIcons: {
     fontSize: 22,
     fontWeight: "bold",
     color: "black",
