@@ -212,9 +212,6 @@ const Home = () => {
     }, 200);
   }, []);
 
-  useEffect(() => {
-    console.log("Selected mood updated:", selectedMood); // Debugging
-  }, [selectedMood]);
 
   return (
     <SafeAreaView style={styles.container}>
