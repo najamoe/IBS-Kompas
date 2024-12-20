@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
+    elevation: 5, // Shadow for Android    
   },
   signupStyle: {
     fontWeight: "bold",
