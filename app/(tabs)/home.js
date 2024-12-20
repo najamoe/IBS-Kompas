@@ -146,12 +146,12 @@ const Home = () => {
   };
 
   const emoticons = [
-    { name: "emoticon-excited-outline", color: "#4CAF50" },
-    { name: "emoticon-outline", color: "#4CAF50" },
+    { name: "emoticon-excited-outline", color: "#006147" },
+    { name: "emoticon-outline", color: "#03a137" },
     { name: "emoticon-happy-outline", color: "#4CAF50" },
-    { name: "emoticon-neutral-outline", color: "#FFC107" },
-    { name: "emoticon-sad-outline", color: "#F44336" },
-    { name: "emoticon-cry-outline", color: "#F44336" },
+    { name: "emoticon-neutral-outline", color: "#3228ed" },
+    { name: "emoticon-sad-outline", color: "#ed8505" },
+    { name: "emoticon-cry-outline", color: "#a65c02" },
     { name: "emoticon-sick-outline", color: "#F44336" },
   ];
 
