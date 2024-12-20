@@ -15,6 +15,7 @@ import { getAuth } from "firebase/auth";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   addWaterIntake,
@@ -222,18 +223,20 @@ const Home = () => {
           {/* Header with date navigation */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => handleDayChange(-1)}>
-              <FontAwesomeIcon
+              <AntDesign
                 style={styles.arrowIcons}
-                name="arrow-circle-left"
+                name="left"
+                size={22}
               />
             </TouchableOpacity>
             <Text style={styles.dateText}>
               {formatDateDisplay(selectedDate)}
             </Text>{" "}
             <TouchableOpacity onPress={() => handleDayChange(1)}>
-              <FontAwesomeIcon
+              <AntDesign
                 style={styles.arrowIcons}
-                name="arrow-circle-right"
+                name="right"
+                size={22}
               />
             </TouchableOpacity>
           </View>
@@ -389,16 +392,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  gradient: {
-    flex: 1,
-    width: "100%",
-  },
   dateContainer: {
     borderRadius: 30,
     width: "90%",
     padding: 5,
     marginTop: 25,
-    marginBottom: 15,
+    marginBottom: 10,
     alignSelf: "center",
     justifyContent: "center",
   },
@@ -408,21 +407,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   arrowIcons: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "black",
     margin: 10,
   },
   dateText: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: 600,
   },
   foodContainer: {
     marginLeft: 20,
     width: "90%",
     padding: 10,
     borderRadius: 20,
-    marginTop: 10,
+    marginTop: 5,
     backgroundColor: "white",
     alignItems: "center",
   },
