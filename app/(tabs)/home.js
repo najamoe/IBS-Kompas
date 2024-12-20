@@ -350,7 +350,7 @@ const Home = () => {
                 >
                   <MaterialCommunityIcons
                     name={icon.name}
-                    size={selectedMood === icon.name ? 32 : 30} // Increase size if selected
+                    size={selectedMood === icon.name ? 36 : 30} // Increase size if selected
                     color={selectedMood === icon.name ? "blue" : icon.color}
                   />
                 </TouchableOpacity>
@@ -497,17 +497,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emoticonWrapper: {
-    margin: 6,
+    margin: 8,
     borderRadius: 10,
-    padding: 2,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50, 
+  
   },
   emoticonContainer: {
     flexDirection: "row",
   },
   selectedEmoticon: {
-    size: "30",
-    borderWidth: 2,
-    borderColor: "blue",
+    backgroundColor: "#fccfe3",
+    elevation: 3, // Shadow for Android
+    shadowColor: "#fccfe3", 
   },
   symptomContainer: {
     marginLeft: 20,
