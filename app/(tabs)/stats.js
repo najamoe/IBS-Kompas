@@ -14,6 +14,7 @@ import { getAuth } from "firebase/auth";
 import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
+import WellnessChart from "../components/charts/wellnessChart";
 
 const Stats = () => {
   moment.locale("da");
@@ -101,6 +102,18 @@ const Stats = () => {
               <ActivityIndicator size="large" color="#0000ff" />
             )}
           </View>
+          <View>
+            {user ? (
+              <WellnessChart
+                style={styles.graphContainer}
+                userId={user.uid}
+                selectedDate={selectedDate}
+              />
+            ) : (
+              <ActivityIndicator size="large" color="#0000ff" />
+            )}
+          </View>
+
         </ScrollView>
     
     </SafeAreaView>
