@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 35,
     justifyContent: "space-between",
   },
   fieldLabel: {
