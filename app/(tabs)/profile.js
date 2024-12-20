@@ -31,6 +31,7 @@ import {
 } from "../firebase/firestoreService";
 import ResetPasswordModal from "../components/modal/passwordReset";
 import icon from "../../assets/icon.png";
+import { Poppins_600SemiBold_Italic } from "@expo-google-fonts/poppins";
 
 const { auth } = firebaseConfig;
 
@@ -191,6 +192,7 @@ const Profile = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <Image source={icon} style={styles.icon} />
+        <Text style={styles.profileHeader}>PROFIL</Text>
         <View style={styles.profileContainer}>
           <Text style={styles.fieldLabel}>Navn</Text>
           <View style={styles.fieldContainer}>
@@ -202,7 +204,9 @@ const Profile = () => {
                 placeholder="Navn"
               />
             ) : (
-              <Text>{userData?.name || "Ikke indtastet"}</Text>
+              <Text style={styles.profileText}>
+                {userData?.name || "Ikke indtastet"}
+              </Text>
             )}
             {editingField === "name" ? (
               <Button title="Gem" onPress={handleSave} />
@@ -225,7 +229,9 @@ const Profile = () => {
                 placeholder="Email"
               />
             ) : (
-              <Text>{userData?.email || "Ikke indtastet"}</Text>
+              <Text style={styles.profileText}>
+                {userData?.email || "Ikke indtastet"}
+              </Text>
             )}
             {editingField === "email" ? (
               <Button title="Gem" onPress={handleSave} />
@@ -273,17 +279,15 @@ const Profile = () => {
           </View>
           <Text style={styles.fieldLabel}>Fødselsdato</Text>
           <View style={styles.fieldContainer}>
-            <View style={styles.birthdayContainer}>
-              <Text style={styles.profileText}>
-                {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setPickerVisible(true)}
-                style={styles.iconContainer}
-              >
-                <Icon name="edit" size={20} color="#000" />
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.profileText}>
+              {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setPickerVisible(true)}
+              style={styles.iconContainer}
+            >
+              <Icon name="edit" size={20} color="#000" />
+            </TouchableOpacity>
           </View>
 
           {pickerVisible && (
@@ -495,19 +499,28 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     right: 20,
+    borderRadius: 20,
+    elevation: 10,
+  },
+  profileHeader: {
+    fontSize: 26,
+    fontWeight: 600,
+    marginTop: 40,
+    marginLeft: 20,
+    color: "white",
   },
   profileContainer: {
     backgroundColor: "white",
     width: "95%",
-    marginTop: 80,
+    marginTop: 20,
     marginLeft: 10,
     padding: 30,
-    borderRadius: 5,
+    borderRadius: 30,
   },
   fieldContainer: {
     flexDirection: "row",
     padding: 10,
-    alignItems: "left",
+    alignItems: "center",
     marginBottom: 15,
     backgroundColor: "white",
     borderColor: "#ccc",
@@ -521,6 +534,7 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "left",
     marginBottom: 5,
+    marginLeft: 10,
   },
   inputField: {
     flex: 2,
@@ -528,7 +542,6 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 20,
     marginRight: 10,
-    backgroundColor: "white",
   },
   pickerContainer: {
     width: 260,
@@ -537,9 +550,6 @@ const styles = StyleSheet.create({
   placeholderText: {
     color: "#888",
     fontSize: 10,
-  },
-  iconContainer: {
-    marginLeft: 10,
   },
   allergyFieldContainer: {
     padding: 10,
@@ -618,11 +628,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 5,
   },
-  birthdayContainer: {
-    flexDirection: "row",
-  },
   iconContainer: {
     marginLeft: 10,
+    padding: 5,
   },
   waterText: {
     marginLeft: 120,
@@ -632,6 +640,7 @@ const styles = StyleSheet.create({
   profileText: {
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: 15,
   },
   modalContainerDelete: {
     flex: 1,
