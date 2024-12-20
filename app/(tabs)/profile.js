@@ -173,7 +173,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+     
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -431,7 +431,7 @@ const Profile = () => {
           </View>
         </ScrollView>
         <StatusBar backgroundColor="#161622" style="light" />
-      </LinearGradient>
+    
 
       <Modal
         visible={modalVisible}
@@ -467,16 +467,14 @@ export default Profile;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#cae9f5",
     flex: 1,
     width: "100%",
     position: "relative",
     alignItems: "center",
     justifyContent: "center",
   },
-  gradient: {
-    flex: 1,
-    width: "100%",
-  },
+
   icon: {
     width: 40,
     height: 40,

@@ -58,7 +58,7 @@ const Stats = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -94,7 +94,7 @@ const Stats = () => {
             )}
           </View>
         </ScrollView>
-      </LinearGradient>
+    
     </SafeAreaView>
   );
 };
@@ -103,14 +103,12 @@ export default Stats;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#cae9f5",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  gradient: {
-    flex: 1,
-    width: "100%",
-  },
+  
   dateContainer: {
     backgroundColor: "white",
     borderRadius: 30,

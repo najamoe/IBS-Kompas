@@ -213,7 +213,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
+      
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -375,7 +375,7 @@ const Home = () => {
 
           <Toast />
         </ScrollView>
-      </LinearGradient>
+      
     </SafeAreaView>
   );
 };
@@ -384,6 +384,7 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#cae9f5",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
