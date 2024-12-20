@@ -421,7 +421,7 @@ const Profile = () => {
             />
 
             <CustomButton
-              title="Nulstil"
+              title="Nulstil password"
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#AFDCEB" },
@@ -667,7 +667,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonStyle: {
-    width: 140,
+    width: 200,
     height: 40,
     marginTop: 2,
     marginBottom: 6,
