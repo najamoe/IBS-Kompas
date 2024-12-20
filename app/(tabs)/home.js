@@ -421,6 +421,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: "white",
     alignItems: "center",
+    elevation: 10,
   },
   foodContent: {},
   waterContainer: {
@@ -432,6 +433,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
     alignContent: "center",
+    elevation: 10,
   },
   waterContent: {
     alignItems: "center",
@@ -461,6 +463,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginTop: 10,
     alignItems: "center",
+    elevation: 10,
   },
   bowelContent: {
     flexDirection: "row",
@@ -491,6 +494,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+    elevation: 10,
   },
   emoticonWrapper: {
     margin: 8,
@@ -501,6 +505,7 @@ const styles = StyleSheet.create({
   },
   emoticonContainer: {
     flexDirection: "row",
+    elevation: 10,
   },
   selectedEmoticon: {
     backgroundColor: "#fccfe3",
@@ -515,6 +520,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+    elevation: 10,
   },
   symptomListContainer: {
     flexDirection: "row",
