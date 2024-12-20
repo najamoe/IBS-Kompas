@@ -42,24 +42,27 @@ const WellnessChart = ({ userId, selectedDate }) => {
     fetchWellnessData();
   }, [userId, selectedDate]);
 
-  // Map emoticons to numeric values for Y-axis
-  const emoticonValues = [
-    "sick", "cry", "sad", "neutral", "happy", "excited", "outline"
-  ];
 
-  // Prepare chart data
-  const chartData = {
-    labels: weeklyData.map((day) => moment(day.date).format("ddd")),
-    datasets: [
-      {
-        data: weeklyData.map((day) => {
-          return emoticons.indexOf(emoticons.find(e => e.name === day.emoticonType)); // Get the index of emoticon type
-        }),
-      },
-    ],
-  };
+// Prepare chart data
+const chartData = {
+  labels: weeklyData.map((day) => moment(day.date).format("ddd")),
+  datasets: [
+    {
+      data: weeklyData.map((day) => {
+        // Find the index of the emoticon in the emoticons array
+        const emoticonIndex = emoticons.findIndex((e) => e.name === day.emoticonType);
+        return emoticonIndex >= 0 ? emoticonIndex : 0; // Default to 0 (excited) if not found
+      }),
+    },
+  ],
+};
+// Format the Y-axis label to show the emoticon name
+const formatYLabel = (yValue) => {
+  const emoticon = emoticons[yValue];
+  return emoticon ? emoticon.name : 'Unknown';
+};
 
-  const screenWidth = Dimensions.get("window").width; // Calculate screen width dynamically
+  const screenWidth = Dimensions.get("window").width; 
 
   return (
     <View style={styles.chartContainer}>
@@ -74,7 +77,7 @@ const WellnessChart = ({ userId, selectedDate }) => {
         <View style={styles.chartWrapper}>
           <LineChart
             data={chartData}
-            width={screenWidth - 40} // Responsive width
+            width={screenWidth - 40} 
             height={240}
             chartConfig={{
               backgroundGradientFrom: "#f7f7f7",
@@ -86,7 +89,7 @@ const WellnessChart = ({ userId, selectedDate }) => {
             fromZero={true}
             verticalLabelRotation={0}
             yAxisLabel="Emotion"
-            formatYLabel={(yValue) => emoticons[yValue].name} // Map numeric value to emoticon name
+            formatYLabel={formatYLabel} 
           />
         </View>
       )}
@@ -98,7 +101,7 @@ export default WellnessChart;
 
 const styles = StyleSheet.create({
   chartContainer: {
-    marginTop: 200,
+    marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
     width: "96%",

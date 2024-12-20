@@ -42,6 +42,7 @@ export const fetchWaterIntake = async (userId, date) => {
     throw error;
   }
 };
+
 //For the chart
 export const fetchWeeklyWaterIntake = async (userId, weekStartDate) => {
   try {
