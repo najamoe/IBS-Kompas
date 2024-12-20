@@ -177,6 +177,7 @@ const Profile = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <Image source={icon} style={styles.icon} />
         <View style={styles.profileContainer}>
@@ -231,6 +232,7 @@ const Profile = () => {
             <View style={styles.pickerContainer}>
               <RNPickerSelect
                 value={gender}
+                useNativeAndroidPickerStyle={false}
                 onValueChange={(value) => {
                   if (userData) {
                     if (value !== gender) {
@@ -250,10 +252,7 @@ const Profile = () => {
                   { label: "Andet", value: "andet" },
                   { label: "Ønsker ikke at oplyse", value: "ikkeoplyst" },
                 ]}
-                style={{
-                  inputAndroid: styles.pickerInput,
-                  placeholder: styles.placeholderText,
-                }}
+                style={pickerSelectStyles}
                 placeholder={{
                   label: "Vælg køn",
                   value: null,
@@ -334,11 +333,12 @@ const Profile = () => {
             </View>
           </View>
 
-          <Text style={styles.fieldLabel}>IBS Type:</Text>
+          <Text style={styles.fieldLabel}>IBS Type</Text>
           <View style={styles.fieldContainer}>
             <View style={styles.pickerContainer}>
               <RNPickerSelect
                 value={ibsType}
+                useNativeAndroidPickerStyle={false}
                 onValueChange={(value) => {
                   if (userData) {
                     if (value !== ibsType) {
@@ -358,10 +358,7 @@ const Profile = () => {
                   { label: "IBS-M", value: "IBS-M" },
                   { label: "Ved ikke", value: "Ved ikke" },
                 ]}
-                style={{
-                  inputAndroid: styles.pickerInput,
-                  placeholder: styles.placeholderText,
-                }}
+                style={pickerSelectStyles}
                 placeholder={{
                   label: "Vælg IBS Type",
                   value: null,
@@ -369,7 +366,7 @@ const Profile = () => {
               />
             </View>
           </View>
-          <Text style={styles.fieldLabel}>Dagligt Vandmål (liter):</Text>
+          <Text style={styles.fieldLabel}>Dagligt Vandmål (liter)</Text>
           <View style={styles.fieldContainer}>
             {editingField === "waterGoal" ? (
               <TextInput
@@ -400,29 +397,19 @@ const Profile = () => {
             <CustomButton
               title="Log ud"
               style={styles.signOutButton}
+              customStyles={[styles.buttonStyle]}
               handlePress={() => {
                 signOutUser();
-              }}
-              containerStyles={{
-                paddingVertical: 15,
-                width: 180,
-                marginTop: 10,
-                marginBottom: 15,
               }}
             />
             <CustomButton
               title="Slet konto"
               style={styles.DeleteButton}
+              customStyles={[styles.buttonStyle, {backgroundColor: "#a60202"},]}
               handlePress={() => {
                 setModalVisible(true);
               }}
               iconName="trash"
-              containerStyles={{
-                backgroundColor: "#f44336",
-                paddingVertical: 15,
-                width: 180,
-                marginTop: 0,
-              }}
             />
           </View>
         </View>
@@ -492,7 +479,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 15,
     justifyContent: "space-between",
   },
   fieldLabel: {
@@ -506,22 +493,14 @@ const styles = StyleSheet.create({
     flex: 2,
     borderWidth: 1,
     borderColor: "#ccc",
-
     borderRadius: 20,
     marginRight: 10,
     backgroundColor: "white",
   },
   pickerContainer: {
-    width: 270,
+    width: 260,
+    borderRadius: 40,
   },
-  pickerInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "pink",
-    borderRadius: 20,
-    height: 40,
-  },
-
   placeholderText: {
     color: "#888",
     fontSize: 10,
@@ -641,7 +620,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 1,
   },
-  buttonContainer: {
-    flexDirection: "row",
+  buttonContainer: {   
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  buttonStyle: {
+    width: 140,
+    height: 40,
+   marginTop: 2,
+   marginBottom: 6,
+  }
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputAndroid: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: "black",
+    height: 35,
+   
   },
 });
