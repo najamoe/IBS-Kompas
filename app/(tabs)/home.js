@@ -90,7 +90,7 @@ const Home = () => {
 
           // Fetch wellness log
           const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
-          setSelectedMood(wellnesslog?.emoticon || null);
+          setSelectedMood(wellnesslog || null);
 
           // Fetch logged symptoms for the selected date
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
@@ -211,6 +211,10 @@ const Home = () => {
       setRefreshing(false);
     }, 200);
   }, []);
+
+  useEffect(() => {
+    console.log("Selected mood updated:", selectedMood); // Debugging
+  }, [selectedMood]);
 
   return (
     <SafeAreaView style={styles.container}>
