@@ -213,154 +213,154 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <View style={styles.dateContainer}>
-            {/* Header with date navigation */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => handleDayChange(-1)}>
-                <FontAwesomeIcon
-                  style={styles.arrowIcons}
-                  name="arrow-circle-left"
-                />
-              </TouchableOpacity>
-              <Text style={styles.dateText}>
-                {formatDateDisplay(selectedDate)}
-              </Text>{" "}
-              <TouchableOpacity onPress={() => handleDayChange(1)}>
-                <FontAwesomeIcon
-                  style={styles.arrowIcons}
-                  name="arrow-circle-right"
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Daily Stats */}
-
-          <View style={styles.foodContainer}>
-            <Text style={styles.logTitle}>Madlog </Text>
-            <View style={styles.foodContent}>
-              <FontAwesomeIcon name="cutlery" size={25} color={"#666666"} />
-            </View>
-          </View>
-
-          <View style={styles.waterContainer}>
-            <View style={styles.logTitleContainer}>
-              <Text style={styles.logTitle}>
-                Tilføj væskeindtag{" "}
-                <Ionicons name="water" size={22} color="#1591ea" />
-              </Text>
-            </View>
-
-            <View style={styles.waterContent}>
-              <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
-              <View style={styles.waterIconContainer}>
-                <Ionicons
-                  name="remove-circle-outline"
-                  size={34}
-                  color="red"
-                  onPress={() => {
-                    setIsWaterModalVisible(true);
-                    setIsAdding(false);
-                  }}
-                />
-                <Ionicons
-                  name="add-circle-outline"
-                  size={34}
-                  marginLeft={10}
-                  color="green"
-                  onPress={() => {
-                    setIsWaterModalVisible(true);
-                    setIsAdding(true);
-                  }}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* modal when isWaterModalVisible is true */}
-          <WaterModal
-            isVisible={isWaterModalVisible}
-            onClose={() => setIsWaterModalVisible(false)}
-            onAddWater={isAdding ? handleAddWater : handleRemoveWater}
-          />
-
-          {/* Bowel Container */}
-          <View style={styles.bowelContainer}>
-            <View style={styles.logTitleContainer}>
-              <Text style={styles.logTitle}>
-                Log toiletbesøg
-                <FontAwesomeIcons
-                  name="toilet"
-                  size={20}
-                  color={"black"}
-                  style={styles.logTitleIcon}
-                />
-              </Text>
-            </View>
-
-            <View style={styles.bowelContent}>
-              {bowelLogs.length > 0 ? (
-                bowelLogs.map((log) => (
-                  <View key={log.id} style={styles.bowelLogItem}>
-                    <MaterialCommunityIcons
-                      name="emoticon-poop"
-                      size={30}
-                      color="#8c4c1f"
-                    />
-                  </View>
-                ))
-              ) : (
-                <Text>No bowel logs found for this user.</Text>
-              )}
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setIsBowelModalVisible(true);
-                setBowelStep(1);
-              }}
-            >
-              <Text style={styles.addBowel}>Tilføj</Text>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.dateContainer}>
+          {/* Header with date navigation */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => handleDayChange(-1)}>
+              <FontAwesomeIcon
+                style={styles.arrowIcons}
+                name="arrow-circle-left"
+              />
+            </TouchableOpacity>
+            <Text style={styles.dateText}>
+              {formatDateDisplay(selectedDate)}
+            </Text>{" "}
+            <TouchableOpacity onPress={() => handleDayChange(1)}>
+              <FontAwesomeIcon
+                style={styles.arrowIcons}
+                name="arrow-circle-right"
+              />
             </TouchableOpacity>
           </View>
+        </View>
 
-          {/* Bowel Modal */}
-          <BowelModal
-            isVisible={isBowelModalVisible}
-            onClose={() => setIsBowelModalVisible(false)}
-          />
+        {/* Daily Stats */}
 
-          {/* Wellness container */}
-          <View style={styles.WellnessContainer}>
-            <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
-            <View style={styles.emoticonContainer}>
-              {emoticons.map((icon) => (
-                <TouchableOpacity
-                  key={icon.name}
-                  onPress={() => handleEmoticonPress(icon.name)}
-                  style={[
-                    styles.emoticonWrapper,
-                    selectedMood === icon.name && styles.selectedEmoticon,
-                  ]}
-                >
-                  <MaterialCommunityIcons
-                    name={icon.name}
-                    size={selectedMood === icon.name ? 36 : 30} // Increase size if selected
-                    color={selectedMood === icon.name ? "blue" : icon.color}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
+        <View style={styles.foodContainer}>
+          <Text style={styles.logTitle}>Madlog </Text>
+          <View style={styles.foodContent}>
+            <FontAwesomeIcon name="cutlery" size={25} color={"#666666"} />
+          </View>
+        </View>
+
+        <View style={styles.waterContainer}>
+          <View style={styles.logTitleContainer}>
+            <Text style={styles.logTitle}>
+              Tilføj væskeindtag{" "}
+              <Ionicons name="water" size={22} color="#1591ea" />
+            </Text>
           </View>
 
-          {/* symptom container */}
-          <View style={styles.symptomContainer}>
-            <Text style={styles.logTitle}>Vælg dine symptomer</Text>
+          <View style={styles.waterContent}>
+            <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
+            <View style={styles.waterIconContainer}>
+              <Ionicons
+                name="remove-circle-outline"
+                size={34}
+                color="red"
+                onPress={() => {
+                  setIsWaterModalVisible(true);
+                  setIsAdding(false);
+                }}
+              />
+              <Ionicons
+                name="add-circle-outline"
+                size={34}
+                marginLeft={10}
+                color="green"
+                onPress={() => {
+                  setIsWaterModalVisible(true);
+                  setIsAdding(true);
+                }}
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* modal when isWaterModalVisible is true */}
+        <WaterModal
+          isVisible={isWaterModalVisible}
+          onClose={() => setIsWaterModalVisible(false)}
+          onAddWater={isAdding ? handleAddWater : handleRemoveWater}
+        />
+
+        {/* Bowel Container */}
+        <View style={styles.bowelContainer}>
+          <View style={styles.logTitleContainer}>
+            <Text style={styles.logTitle}>
+              Log toiletbesøg
+              <FontAwesomeIcons
+                name="toilet"
+                size={20}
+                color={"black"}
+                style={styles.logTitleIcon}
+              />
+            </Text>
+          </View>
+
+          <View style={styles.bowelContent}>
+            {bowelLogs.length > 0 ? (
+              bowelLogs.map((log) => (
+                <View key={log.id} style={styles.bowelLogItem}>
+                  <MaterialCommunityIcons
+                    name="emoticon-poop"
+                    size={30}
+                    color="#8c4c1f"
+                  />
+                </View>
+              ))
+            ) : (
+              <Text>No bowel logs found for this user.</Text>
+            )}
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              setIsBowelModalVisible(true);
+              setBowelStep(1);
+            }}
+          >
+            <Text style={styles.addBowel}>Tilføj</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Bowel Modal */}
+        <BowelModal
+          isVisible={isBowelModalVisible}
+          onClose={() => setIsBowelModalVisible(false)}
+        />
+
+        {/* Wellness container */}
+        <View style={styles.WellnessContainer}>
+          <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
+          <View style={styles.emoticonContainer}>
+            {emoticons.map((icon) => (
+              <TouchableOpacity
+                key={icon.name}
+                onPress={() => handleEmoticonPress(icon.name)}
+                style={[
+                  styles.emoticonWrapper,
+                  selectedMood === icon.name && styles.selectedEmoticon,
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={icon.name}
+                  size={selectedMood === icon.name ? 36 : 30} // Increase size if selected
+                  color={selectedMood === icon.name ? "blue" : icon.color}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* symptom container */}
+        <View style={styles.symptomContainer}>
+          <Text style={styles.logTitle}>Vælg dine symptomer</Text>
+          <View style={styles.symptomListContainer}>
             {/* Map over symptomOptions and render Checkbox for each symptom */}
             {symptomOptions.map(({ label, value }) => (
               <Checkbox
@@ -372,10 +372,10 @@ const Home = () => {
               />
             ))}
           </View>
+        </View>
 
-          <Toast />
-        </ScrollView>
-      
+        <Toast />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -501,8 +501,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 50, 
-  
+    borderRadius: 50,
   },
   emoticonContainer: {
     flexDirection: "row",
@@ -510,7 +509,7 @@ const styles = StyleSheet.create({
   selectedEmoticon: {
     backgroundColor: "#fccfe3",
     elevation: 3, // Shadow for Android
-    shadowColor: "#fccfe3", 
+    shadowColor: "#fccfe3",
   },
   symptomContainer: {
     marginLeft: 20,
@@ -520,6 +519,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
+  },
+  symptomListContainer: {
+    flexDirection: "row",
   },
   logTitleContainer: {
     flexDirection: "row",
