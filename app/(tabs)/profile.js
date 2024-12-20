@@ -11,23 +11,26 @@ import {
   Button,
   Image,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Dropdown, MultiSelect } from "react-native-element-dropdown";
+import { MultiSelect } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { signOutUser, deleteUserAccount } from "../firebase/auth";
+import {
+  signOutUser,
+  deleteUserAccount,
+  resetPassword,
+} from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
 import firebaseConfig from "../firebase/FirebaseConfig";
 import {
   fetchUserDetails,
   updateUserDetails,
 } from "../firebase/firestoreService";
+import ResetPasswordModal from "../components/modal/passwordReset";
 import icon from "../../assets/icon.png";
-import { ref } from "firebase/storage";
 
 const { auth } = firebaseConfig;
 
@@ -55,7 +58,7 @@ const Profile = () => {
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
-
+  const [resetEmail, setResetEmail] = useState("");
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
@@ -65,6 +68,14 @@ const Profile = () => {
       setRefreshing(false);
     }, 200);
   }, []);
+  const handlePasswordReset = async () => {
+    try {
+      await resetPassword(resetEmail);
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Password reset error:", error);
+    }
+  };
 
   useEffect(() => {
     const getUserData = async () => {
@@ -396,16 +407,31 @@ const Profile = () => {
           <View style={styles.buttonContainer}>
             <CustomButton
               title="Log ud"
-              style={styles.signOutButton}
-              customStyles={[styles.buttonStyle]}
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#86C5D8" },
+              ]}
               handlePress={() => {
                 signOutUser();
               }}
             />
+
+            <CustomButton
+              title="Nulstil"
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#AFDCEB" },
+              ]}
+              textStyles={styles.buttonTextStyle}
+              handlePress={handlePasswordReset}
+            />
+
             <CustomButton
               title="Slet konto"
-              style={styles.DeleteButton}
-              customStyles={[styles.buttonStyle, {backgroundColor: "#a60202"},]}
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#a60202" },
+              ]}
               handlePress={() => {
                 setModalVisible(true);
               }}
@@ -414,6 +440,13 @@ const Profile = () => {
           </View>
         </View>
       </ScrollView>
+      <ResetPasswordModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        handlePasswordReset={handlePasswordReset}
+        resetEmail={resetEmail}
+        setResetEmail={setResetEmail}
+      />
       <StatusBar backgroundColor="#161622" style="light" />
 
       <Modal
@@ -567,7 +600,6 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   item: {
-    alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
   },
@@ -620,7 +652,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 1,
   },
-  buttonContainer: {   
+  buttonContainer: {
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
@@ -628,9 +660,9 @@ const styles = StyleSheet.create({
   buttonStyle: {
     width: 140,
     height: 40,
-   marginTop: 2,
-   marginBottom: 6,
-  }
+    marginTop: 2,
+    marginBottom: 6,
+  },
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -639,6 +671,5 @@ const pickerSelectStyles = StyleSheet.create({
     marginLeft: 10,
     color: "black",
     height: 35,
-   
   },
 });
