@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Button,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
@@ -18,7 +17,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { addFoodIntake } from "../services/firebase/foodService";
-import SearchField from "../components/searchfield";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -63,7 +61,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
-  const [isFoodModalVisible, setIsFoodModalVisible] = useState(second)
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState(false);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -112,9 +110,6 @@ const Home = () => {
   }, [user, selectedDate]);
 
   useEffect(() => {}, [waterIntake, selectedMood]);
-
-  const openFoodModal = () => setIsFoodModalVisible(true);
-  const closeFoodModal = () => setIsFoodModalVisible(false);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -248,37 +243,15 @@ const Home = () => {
           <Text style={styles.logTitle}> Madlog </Text>
 
           <View style={styles.foodContent}>
-            <FontAwesomeIcon name="cutlery" size={25} color={"#666666"} />
+            <Text style={styles.foodTitle}>Morgenmad</Text>
+            <SearchField />
+          </View>
 
-            <View style={styles.BreakfastContent}>
-              <SearchField />
-             
-            </View>
-
-            <View style={styles.LunchContent}>
-              <SearchField />
-             
-            </View>
-
-            <View style={styles.DinnerContent}>
-              <SearchField />
-             
-            </View>
-
-            <View style={styles.SnackContent}>
-              <SearchField />
-              
-            </View>
+          <View style={styles.foodContent}>
+            <Text style={styles.foodTitle}>Frokost</Text>
+            <SearchField />
           </View>
         </View>
-        {/* Food Modal */}
-        <Modal
-          visible={isFoodModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={closeFoodModal}
-          onClose={closeFoodModal}
-        />
 
         <View style={styles.waterContainer}>
           <View style={styles.logTitleContainer}>
@@ -453,7 +426,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 10,
   },
-  foodContent: {},
+  foodTitle: {
+    fontSize: 14,
+    marginLeft: 10,
+    marginTop: 10,
+    fontWeight: 600,
+  },
+  foodContent: {
+    borderColor: "grey", 
+    borderWidth: 0.3, 
+    borderRadius: 10, 
+    backgroundColor: "white",
+    marginTop: 10, 
+    marginBottom: 10,
+    width: "95%", 
+    padding: 10, 
+    elevation: 8,
+  },
   waterContainer: {
     marginLeft: 20,
     width: "90%",
@@ -478,6 +467,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 140,
     textAlign: "center",
+    
   },
   waterIconContainer: {
     flexDirection: "row",
