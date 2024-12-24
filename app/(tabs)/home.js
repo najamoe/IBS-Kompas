@@ -17,6 +17,8 @@ import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { addFoodIntake } from "../services/firebase/foodService";
+import SearchField from "../components/searchfield";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -35,6 +37,7 @@ import {
   deleteSymptom,
 } from "../services/firebase/symptomService";
 import Checkbox from "../components/Checkbox";
+import SearchField from "../components/searchfield";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -60,6 +63,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState(second)
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -108,6 +112,9 @@ const Home = () => {
   }, [user, selectedDate]);
 
   useEffect(() => {}, [waterIntake, selectedMood]);
+
+  const openFoodModal = () => setIsFoodModalVisible(true);
+  const closeFoodModal = () => setIsFoodModalVisible(false);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -212,7 +219,6 @@ const Home = () => {
     }, 200);
   }, []);
 
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -225,21 +231,13 @@ const Home = () => {
           {/* Header with date navigation */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => handleDayChange(-1)}>
-              <AntDesign
-                style={styles.arrowIcons}
-                name="left"
-                size={22}
-              />
+              <AntDesign style={styles.arrowIcons} name="left" size={22} />
             </TouchableOpacity>
             <Text style={styles.dateText}>
               {formatDateDisplay(selectedDate)}
             </Text>{" "}
             <TouchableOpacity onPress={() => handleDayChange(1)}>
-              <AntDesign
-                style={styles.arrowIcons}
-                name="right"
-                size={22}
-              />
+              <AntDesign style={styles.arrowIcons} name="right" size={22} />
             </TouchableOpacity>
           </View>
         </View>
@@ -247,16 +245,45 @@ const Home = () => {
         {/* Daily Stats */}
 
         <View style={styles.foodContainer}>
-          <Text style={styles.logTitle}>Madlog </Text>
+          <Text style={styles.logTitle}> Madlog </Text>
+
           <View style={styles.foodContent}>
             <FontAwesomeIcon name="cutlery" size={25} color={"#666666"} />
+
+            <View style={styles.BreakfastContent}>
+              <SearchField />
+             
+            </View>
+
+            <View style={styles.LunchContent}>
+              <SearchField />
+             
+            </View>
+
+            <View style={styles.DinnerContent}>
+              <SearchField />
+             
+            </View>
+
+            <View style={styles.SnackContent}>
+              <SearchField />
+              
+            </View>
           </View>
         </View>
+        {/* Food Modal */}
+        <Modal
+          visible={isFoodModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={closeFoodModal}
+          onClose={closeFoodModal}
+        />
 
         <View style={styles.waterContainer}>
           <View style={styles.logTitleContainer}>
             <Text style={styles.logTitle}>
-              Tilføj væskeindtag{" "}
+              Tilføj væskeindtag
               <Ionicons name="water" size={22} color="#1591ea" />
             </Text>
           </View>
@@ -323,6 +350,7 @@ const Home = () => {
               <Text>No bowel logs found for this user.</Text>
             )}
           </View>
+
           <TouchableOpacity
             onPress={() => {
               setIsBowelModalVisible(true);
