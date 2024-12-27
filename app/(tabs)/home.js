@@ -18,7 +18,6 @@ import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import foodModal from "../components/modal/foodModal";
 import {
-  addFoodIntake,
   fetchFoodIntake,
 } from "../services/firebase/foodService";
 import {
@@ -197,6 +196,7 @@ const Home = () => {
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
     { label: "Oppustethed", value: "oppustethed" },
+    { label: "Halsbrand", value: "halsbrand" },
   ];
 
   // useEffect to mark symptoms that are already in the array in firestore
@@ -264,6 +264,7 @@ const Home = () => {
 
           <View style={styles.foodContent}>
             <Text style={styles.foodTitle}>Morgenmad</Text>
+            <foodModal />
             <SearchField
               onSearch={(query) => {
                 console.log("Search query in Home:", query); // Debugging in Home
