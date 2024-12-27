@@ -9,7 +9,7 @@ import {
   Text,
 } from "react-native";
 import { debounce } from "lodash"; // Import debounce from lodash
-import { addFoodIntake, removeFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
+import { addFoodIntake, deleteFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
 
 const SearchField = ({ userId }) => {
   // Pass userId as a prop
@@ -33,10 +33,10 @@ const SearchField = ({ userId }) => {
   }, 500);
 
   // Handle item selection and add to Firestore
-  const handleSelectItem = async (item) => {
+  const handleSelectItem = async (item, type) => {
     try {
-      // Add selected food item to Firestore
-      await addFoodIntake(userId, item, "meal"); // Assuming 'meal' is the type of food entry
+      // Add selected food item to Firestore with the specified type
+      await addFoodIntake(userId, item, type);
 
       // Update the local state with the added item
       setAddedItems((prevItems) => [...prevItems, item]);
@@ -44,17 +44,34 @@ const SearchField = ({ userId }) => {
       console.error("Error adding food item:", error);
     }
   };
-    const handleRemoveItem = async (item) => {
-      try {
-        // Remove selected food item from Firestore
-        await removeFoodIntake(userId, item);
-        setAddedItems((prevItems) =>
-          prevItems.filter((addedItem) => addedItem.id !== item.id)
-        );
-      } catch (error) {
-        console.error("Error removing food item:", error);
-      }
+
+  const handleBreakfastSelect = (item) => {
+    handleSelectItem(item, "breakfast");
+  };
+
+  const handleLunchSelect = (item) => {
+    handleSelectItem(item, "lunch");
+  };
+
+    const handleDinnerSelect = (item) => {
+      handleSelectItem(item, "dinner");
     };
+
+  const handleSnackSelect = (item) => {
+    handleSelectItem(item, "snack");
+  };
+
+  const handleRemoveItem = async (item) => {
+    try {
+      // Remove selected food item from Firestore
+      await deleteFoodIntake(userId, item);
+      setAddedItems((prevItems) =>
+        prevItems.filter((addedItem) => addedItem.id !== item.id)
+      );
+    } catch (error) {
+      console.error("Error removing food item:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -101,7 +118,7 @@ const SearchField = ({ userId }) => {
                 <Text>{`${item.name} - ${item.brand}`}</Text>
                 <TouchableOpacity
                   style={styles.deleteButton}
-                  onPress={() => handleRemoveItem(item)} // Remove item from Firestore and local state
+                  onPress={() => handleRemoveItem(item)} // Remove from Firestore and update UI
                 >
                   <Text style={styles.deleteText}>X</Text>
                 </TouchableOpacity>
@@ -172,18 +189,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#F0F8FF",
-    borderBottomWidth: 1, // add a border at the bottom
+    borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     padding: 5,
   },
   deleteButton: {
-    backgroundColor: "red",
-    borderRadius: 15,
-    padding: 5,
-    marginLeft: 50,
+    backgroundColor: "#d5d7db",
+    borderRadius: 100,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 50, 
   },
   deleteText: {
-    color: "grey",
+    color: "white",
     fontWeight: "bold",
+    fontSize: 10,
   },
 });
