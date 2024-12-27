@@ -8,17 +8,19 @@ import {
   StyleSheet,
   Text,
   Button,
-  FlatList,
   Image,
   TouchableOpacity,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import debounce from "lodash.debounce";
+
 
 const SearchField = () => {
   const [food, setFood] = useState("");
   const [barcodePermission, setBarcodePermission] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [scanned, setScanned] = useState(false);
-  const [cameraVisible, setCameraVisible] = useState(false); // State to toggle camera visibility
+  const [cameraVisible, setCameraVisible] = useState(false);
   const [cameraRef, setCameraRef] = useState(null);
 
   // Request camera permission when the component mounts
@@ -32,26 +34,24 @@ const SearchField = () => {
   }, []);
 
   // Handle food search input and call the API if the input is longer than 2 characters
-  const handleFoodSearch = async (event) => {
-    const query = event.target.value;
+  const handleSearch = debounce(async (query) => {
     setFood(query);
-
-    if (query.length > 2) {
+    if (query.length >= 3) {
       try {
-        const results = await searchProducts(query);
-        setSearchResults(results);
+        const products = await searchProducts(query);
+        setSearchResults(products);
       } catch (error) {
-        console.error("Error searching for food:", error);
         setSearchResults([]);
       }
+    } else {
+      setSearchResults([]);
     }
-  };
+  }, 500);
 
   // Handle barcode scanning
   const handleBarcodeScan = ({ type, data }) => {
     setScanned(true);
     console.log("Scanned barcode data:", data);
-    // Optionally, fetch the product info by barcode here
   };
 
   // Reset the scanned state
@@ -66,9 +66,27 @@ const SearchField = () => {
         <TextInput
           style={styles.searchInput}
           value={food}
-          onChange={handleFoodSearch}
+          onChangeText={handleSearch}
           placeholder="søg efter madvare"
         />
+
+        {/* Dropdown with search results */}
+        {searchResults.length > 0 && (
+          <Picker
+            selectedValue={food}
+            onValueChange={(itemValue) => setFood(itemValue)}
+            style={styles.picker}
+          >
+            {searchResults.map((item, index) => (
+              <Picker.Item
+                key={index}
+                label={`${item.name} - ${item.brand}`}
+                value={item.name}
+              />
+            ))}
+          </Picker>
+        )}
+
         <TouchableOpacity
           onPress={() => setCameraVisible(!cameraVisible)}
           style={styles.barcodeIconContainer}
@@ -98,32 +116,6 @@ const SearchField = () => {
           </View>
         )}
       {scanned && <Button title={"Scan Again"} onPress={handleScanAgain} />}
-
-      {/* Search results display */}
-      <View>
-        {searchResults.length > 0 && (
-          <FlatList
-            data={searchResults}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.resultItem}>
-                {item.image && (
-                  <Image
-                    source={{ uri: item.image }}
-                    style={styles.resultImage}
-                  />
-                )}
-                <View style={styles.resultTextContainer}>
-                  <Text>
-                    {item.name} - {item.brand}
-                  </Text>
-                  <Text>{item.ingredients}</Text>
-                </View>
-              </View>
-            )}
-          />
-        )}
-      </View>
     </View>
   );
 };
@@ -141,7 +133,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
     borderColor: "grey",
-   
   },
   searchInput: {
     height: 40,
@@ -155,6 +146,13 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: "#f0f0f0",
     borderRadius: 50,
+    marginLeft: 5,
+  },
+  picker: {
+    height: 40,
+    width: "100%",
+    backgroundColor: "#f0f0f0",
+    marginTop: 10,
   },
   cameraContainer: {
     marginTop: 10,
@@ -167,16 +165,5 @@ const styles = StyleSheet.create({
   scanInstruction: {
     backgroundColor: "white",
     padding: 5,
-  },
-  resultItem: {
-    flexDirection: "row",
-    marginBottom: 10,
-  },
-  resultImage: {
-    width: 50,
-    height: 50,
-  },
-  resultTextContainer: {
-    marginLeft: 10,
   },
 });
