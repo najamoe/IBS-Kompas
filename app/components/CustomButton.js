@@ -12,7 +12,7 @@ const CustomButton = ({ title, handlePress, customStyles, textStyles, isLoading,
     >
       <View style={styles.buttonContent}>
         {iconName && (
-          <Ionicons name={iconName} size={20} color="white" style={styles.icon} /> // Icon with size and color
+          <Ionicons name={iconName} size={16} color="white" style={styles.icon} /> // Icon with size and color
         )}
         <Text style={[styles.buttonText, textStyles]}>{title}</Text>
       </View>
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#86c5d8',
     paddingVertical: 10,
     paddingHorizontal: 5,
-    borderRadius: 5,
+    borderRadius: 40,
     marginTop: 20,
     marginBottom: 20,
     alignItems: 'center',

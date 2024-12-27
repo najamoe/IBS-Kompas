@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService"; 
 import moment from "moment"; 
 
 const WaterIntakeChart = ({ userId, selectedDate }) => {
-
   const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
   const [loading, setLoading] = useState(true);
 
   const fetchWaterData = async () => {
-    console.log(userId)
     try {
       setLoading(true);
       // Fetch the weekly water intake data (daily values)
@@ -39,15 +37,16 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
     backgroundGradientFrom: "#fff",
     backgroundGradientTo: "#fff",
     decimalPlaces: 2,
+
     color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     style: {
       borderRadius: 16,
     },
     propsForDots: {
-      r: "6",
+      r: "4",
       strokeWidth: "2",
-      stroke: "#ffa726",
+      stroke: "blue",
     },
   };
 
@@ -61,52 +60,53 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
     ],
   };
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
   return (
     <View style={styles.chartContainer}>
       {/* Centered Title */}
       <Text style={styles.title}>Ugentligt væskeindtag</Text>
-  
-      {/* LineChart with left margin */}
-      <View style={styles.chartWrapper}>
-        <LineChart
-          data={chartData}
-          width={350}
-          height={240}
-          verticalLabelRotation={0}
-          chartConfig={chartConfig}
-          bezier
-        />
-      </View>
+
+      {/* Loading Indicator or LineChart */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Loading...</Text>
+        </View>
+      ) : (
+        <View style={styles.chartWrapper}>
+          <LineChart
+            data={chartData}
+            width={310}
+            height={240}
+            verticalLabelRotation={0}
+            chartConfig={chartConfig}
+            yAxisLabel="L " 
+            bezier
+          />
+        </View>
+      )}
     </View>
   );
 };
 
 export default WaterIntakeChart;
 
-
 const styles = StyleSheet.create({
   chartContainer: {  
-    marginTop: 200,
+    marginTop: 100, //Edit margin when foodGraph is added
     backgroundColor: "white",
     borderRadius: 10,
-    width: "94%",
+    width: "100%",
     height: 300,
     marginVertical: 10,
-    marginLeft: "3%", 
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3
+    elevation: 5,
   },
   chartWrapper: {
-    marginLeft: 0, 
     alignSelf: "flex-start", 
   },
   title: {
@@ -114,7 +114,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  
+  loadingContainer: {
+    alignItems: "center",  
+    justifyContent: "center",
+    flex: 1,  
+    height: 240,  
+  },
 });
-
-

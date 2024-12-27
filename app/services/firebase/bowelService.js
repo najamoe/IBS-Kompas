@@ -49,7 +49,6 @@ export const addBowelLog = async (
     // Save the bowel log in Firestore
     await setDoc(bowelRef, bowelLog);
 
-    console.log("Bowel log saved:", bowelLog);
   } catch (error) {
     console.error("Error saving bowel log from addBowelLog:", error);
     throw error;
@@ -57,28 +56,32 @@ export const addBowelLog = async (
 };
 
 export const fetchBowelLog = async (userId, date) => {
-    try {
-      if (!firestore || !userId) {
-        throw new Error("Firestore instance or userId is missing.");
-      }
-  
-      // Correctly reference the subcollection
-      const bowelRef = collection(firestore, `users/${userId}/bowelLogs/${date}/timeLogs`);
-      const q = query(bowelRef); // Optionally add query filters here, e.g., where clauses
-      const snapshot = await getDocs(q);
-  
-      if (!snapshot.empty) {
-        const bowelLogs = snapshot.docs.map(doc => doc.data());
-        return bowelLogs; // Return an array of bowel log entries
-      } else {
-        console.log("No bowel log found for this date.");
-        return null; // No bowel log found for the given date
-      }
-    } catch (error) {
-      console.error("Error fetching bowel log:", error);
-      throw error;
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
     }
-  };
+
+    // Correctly reference the subcollection
+    const bowelRef = collection(firestore, `users/${userId}/bowelLogs/${date}/timeLogs`);
+    const q = query(bowelRef); // Optionally add query filters here, e.g., where clauses
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      const bowelLogs = snapshot.docs.map(doc => ({
+        id: doc.id, // Add the document ID to each bowel log entry
+        ...doc.data(), // Spread the rest of the document data
+      }));
+      return bowelLogs; // Return an array of bowel log entries with unique IDs
+    } else {
+      console.log("No bowel log found for this date.");
+      return null; // No bowel log found for the given date
+    }
+  } catch (error) {
+    console.error("Error fetching bowel log:", error);
+    throw error;
+  }
+};
+
 
 export const editBowelLog = async (
   userId,

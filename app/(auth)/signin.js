@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { signInUser, resetPassword } from "../firebase/auth";
-
+import ResetPasswordModal from "../components/modal/passwordReset";
 import logo from "../../assets/images/logo.png";
 import CustomButton from "../components/CustomButton";
 import FormField from "../components/FormField";
@@ -47,7 +47,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View>
           <Image source={logo} style={styles.logo} resizeMode="cover" />
           <Text style={styles.loginText}>Log ind</Text>
@@ -97,47 +97,13 @@ const SignIn = () => {
         <Toast />
       </ScrollView>
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nulstil password</Text>
-
-            <FormField
-              customStyles={styles.CustomInputStyle}
-              title=""
-              placeholder="Indtast din email"
-              value={resetEmail}
-              handleChangeText={setResetEmail}
-              keyboardType="email-address"
-            />
-
-            <View style={styles.buttonContainer}>
-              <CustomButton
-                title="Afbryd"
-                customStyles={[
-                  styles.modalButtonStyle,
-                  { backgroundColor: "#a60202" },
-                ]}
-                textStyles={styles.buttonTextStyle}
-                handlePress={() => setModalVisible(false)}
-                style={styles.cancelButton}
-              />
-
-              <CustomButton
-                title="Nulstil"
-                customStyles={[styles.modalButtonStyle]}
-                textStyles={styles.buttonTextStyle}
-                handlePress={handlePasswordReset}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <ResetPasswordModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        handlePasswordReset={handlePasswordReset}
+        resetEmail={resetEmail}
+        setResetEmail={setResetEmail}
+      />
     </SafeAreaView>
   );
 };
@@ -188,6 +154,7 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
+    elevation: 5, // Shadow for Android    
   },
   signupStyle: {
     fontWeight: "bold",

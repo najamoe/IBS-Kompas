@@ -9,11 +9,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
+import { AntDesign } from "@expo/vector-icons";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
+import WellnessChart from "../components/charts/wellnessChart";
+import BowelChart from "../components/charts/bowelChart";
+import SymptomChart from "../components/charts/symptomChart";
+import FoodChart from "../components/charts/foodChart";
 
 const Stats = () => {
   moment.locale("da");
@@ -58,43 +62,89 @@ const Stats = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <View style={styles.dateContainer}>
-            {/* Header with week navigation */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-                <Text style={styles.arrow}>◀</Text>
-              </TouchableOpacity>
-              <View style={styles.weekInfo}>
-                {/* Week number display */}
-                <Text style={styles.weekText}>Uge {weekNumber}</Text>
-                {/* Week range display */}
-                <Text style={styles.dateRangeText}>{weekRange}</Text>
-              </View>
-              <TouchableOpacity onPress={() => handleWeekChange(1)}>
-                <Text style={styles.arrow}>▶</Text>
-              </TouchableOpacity>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <View style={styles.dateContainer}>
+          {/* Header with week navigation */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => handleWeekChange(-1)}>
+              <AntDesign style={styles.arrowIcons} name="left" size={22} />
+            </TouchableOpacity>
+            <View style={styles.weekInfo}>
+              {/* Week number display */}
+              <Text style={styles.weekText}>Uge {weekNumber}</Text>
+              {/* Week range display */}
+              <Text style={styles.dateRangeText}>{weekRange}</Text>
             </View>
+            <TouchableOpacity onPress={() => handleWeekChange(1)}>
+              <AntDesign style={styles.arrowIcons} name="right" size={22} />
+            </TouchableOpacity>
           </View>
+        </View>
 
-          <View>
-            {user ? (
-              <WaterIntakeChart
-                style={styles.graphContainer}
-                userId={user.uid}
-                selectedDate={selectedDate}
-              />
-            ) : (
-              <ActivityIndicator size="large" color="#0000ff" />
-            )}
-          </View>
-        </ScrollView>
-      </LinearGradient>
+        <View>
+          {user ? (
+            <FoodChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
+        <View>
+          {user ? (
+            <WaterIntakeChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
+        <View>
+          {user ? (
+            <BowelChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+        <View>
+          {user ? (
+            <WellnessChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
+        <View>
+          {user ? (
+            <SymptomChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -103,21 +153,17 @@ export default Stats;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#cae9f5",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  gradient: {
-    flex: 1,
-    width: "100%",
-  },
   dateContainer: {
-    backgroundColor: "white",
     borderRadius: 30,
     width: "90%",
     padding: 5,
     marginTop: 25,
-    marginBottom: 15,
+    marginBottom: 10,
     alignSelf: "center",
     justifyContent: "center",
   },
@@ -126,7 +172,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  arrow: {
+  arrowIcons: {
     fontSize: 22,
     fontWeight: "bold",
     color: "black",
@@ -150,7 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     height: 100,
-    marginVertical: 10, // Add consistent spacing between containers
+
     marginLeft: "3%", // Center horizontally by balancing left/right
     alignItems: "center",
     justifyContent: "center",

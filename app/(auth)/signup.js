@@ -67,7 +67,7 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]}>
+     
         <ScrollView contentContainerStyle={{ height: "100%" }}>
           <Image source={icon} style={styles.icon} />
           <Text style={styles.signUpText}>Opret bruger</Text>
@@ -111,7 +111,7 @@ const SignUp = () => {
           <Toast />
         </ScrollView>
         <StatusBar backgroundColor="#161622" style="light" />
-      </LinearGradient>
+   
     </SafeAreaView>
   );
 };
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: "relative",
+    backgroundColor: "#cae9f5",
   },
   signUpText: {
     fontWeight: "bold",
@@ -140,6 +141,7 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
+    elevation: 10, 
   },
   label: {
     fontSize: 16,
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     flexDirection: "row",
+    
   },
   buttonTextStyle: {
     fontSize: 14,

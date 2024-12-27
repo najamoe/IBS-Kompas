@@ -1,19 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import { SplashScreen } from "expo-splash-screen";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import CustomButton from "./components/CustomButton";
-
 
 import logo from "../assets/images/logo.png";
 
@@ -58,10 +51,13 @@ export default function App() {
             Se tilbage og opdag, hvad der kan have udløst ubehaget
           </Text>
 
-          <CustomButton title="FORTSÆT" handlePress={() => router.push('/signin')} />
+          <CustomButton
+            title="FORTSÆT"
+            handlePress={() => router.push("/signin")}
+          />
         </View>
       </ScrollView>
-      <Toast/>
+      <Toast />
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
@@ -79,6 +75,8 @@ const styles = StyleSheet.create({
     height: 160,
     marginTop: 70,
     alignSelf: "center",
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
   },
   mainText: {
     fontSize: 30,
@@ -106,5 +104,7 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: "center",
     width: 350,
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
   },
 });

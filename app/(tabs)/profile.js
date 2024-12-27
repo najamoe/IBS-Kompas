@@ -11,23 +11,27 @@ import {
   Button,
   Image,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Dropdown, MultiSelect } from "react-native-element-dropdown";
+import { MultiSelect } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { signOutUser, deleteUserAccount } from "../firebase/auth";
+import {
+  signOutUser,
+  deleteUserAccount,
+  resetPassword,
+} from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
 import firebaseConfig from "../firebase/FirebaseConfig";
 import {
   fetchUserDetails,
   updateUserDetails,
 } from "../firebase/firestoreService";
+import ResetPasswordModal from "../components/modal/passwordReset";
 import icon from "../../assets/icon.png";
-import { ref } from "firebase/storage";
+import { Poppins_600SemiBold_Italic } from "@expo-google-fonts/poppins";
 
 const { auth } = firebaseConfig;
 
@@ -55,7 +59,7 @@ const Profile = () => {
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
-
+  const [resetEmail, setResetEmail] = useState("");
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
@@ -65,6 +69,14 @@ const Profile = () => {
       setRefreshing(false);
     }, 200);
   }, []);
+  const handlePasswordReset = async () => {
+    try {
+      await resetPassword(resetEmail);
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Password reset error:", error);
+    }
+  };
 
   useEffect(() => {
     const getUserData = async () => {
@@ -173,265 +185,273 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#cae9f5", "white"]} style={styles.gradient}>
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <Image source={icon} style={styles.icon} />
-          <View style={styles.profileContainer}>
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Name:</Text>
-              {editingField === "name" ? (
-                <TextInput
-                  style={styles.inputField}
-                  value={editedValue}
-                  onChangeText={setEditedValue}
-                  placeholder="Navn"
-                />
-              ) : (
-                <Text>{userData?.name || "Ikke indtastet"}</Text>
-              )}
-              {editingField === "name" ? (
-                <Button title="Gem" onPress={handleSave} />
-              ) : (
-                <TouchableOpacity
-                  style={styles.iconContainer}
-                  onPress={() => handleFieldEdit("name")}
-                >
-                  <Icon name="edit" size={20} color="#000" />
-                </TouchableOpacity>
-              )}
-            </View>
-
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Email:</Text>
-              {editingField === "email" ? (
-                <TextInput
-                  style={styles.inputField}
-                  value={editedValue}
-                  onChangeText={setEditedValue}
-                  placeholder="Email"
-                />
-              ) : (
-                <Text>{userData?.email || "Ikke indtastet"}</Text>
-              )}
-              {editingField === "email" ? (
-                <Button title="Gem" onPress={handleSave} />
-              ) : (
-                <TouchableOpacity
-                  style={styles.iconContainer}
-                  onPress={() => handleFieldEdit("email")}
-                >
-                  <Icon name="edit" size={20} color="#000" />
-                </TouchableOpacity>
-              )}
-            </View>
-
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Køn:</Text>
-              <View style={styles.pickerContainer}>
-                <RNPickerSelect
-                  value={gender}
-                  onValueChange={(value) => {
-                    if (userData) {
-                      if (value !== gender) {
-                        updateUserDetails(userData.uid, { gender: value })
-                          .then(() => {
-                            setGender(value);
-                          })
-                          .catch((error) => {
-                            console.error("Error updating gender:", error);
-                          });
-                      }
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <Image source={icon} style={styles.icon} />
+        <Text style={styles.profileHeader}>PROFIL</Text>
+        <View style={styles.profileContainer}>
+          <Text style={styles.fieldLabel}>Navn</Text>
+          <View style={styles.fieldContainer}>
+            {editingField === "name" ? (
+              <TextInput
+                style={styles.inputField}
+                value={editedValue}
+                onChangeText={setEditedValue}
+                placeholder="Navn"
+              />
+            ) : (
+              <Text style={styles.profileText}>
+                {userData?.name || "Ikke indtastet"}
+              </Text>
+            )}
+            {editingField === "name" ? (
+              <Button title="Gem" onPress={handleSave} />
+            ) : (
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => handleFieldEdit("name")}
+              >
+                <Icon name="edit" size={20} color="#000" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <Text style={styles.fieldLabel}>Email</Text>
+          <View style={styles.fieldContainer}>
+            {editingField === "email" ? (
+              <TextInput
+                style={styles.inputField}
+                value={editedValue}
+                onChangeText={setEditedValue}
+                placeholder="Email"
+              />
+            ) : (
+              <Text style={styles.profileText}>
+                {userData?.email || "Ikke indtastet"}
+              </Text>
+            )}
+            {editingField === "email" ? (
+              <Button title="Gem" onPress={handleSave} />
+            ) : (
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => handleFieldEdit("email")}
+              >
+                <Icon name="edit" size={20} color="#000" />
+              </TouchableOpacity>
+            )}
+          </View>
+          <Text style={styles.fieldLabel}>Køn</Text>
+          <View style={styles.fieldContainer}>
+            <View style={styles.pickerContainer}>
+              <RNPickerSelect
+                value={gender}
+                useNativeAndroidPickerStyle={false}
+                onValueChange={(value) => {
+                  if (userData) {
+                    if (value !== gender) {
+                      updateUserDetails(userData.uid, { gender: value })
+                        .then(() => {
+                          setGender(value);
+                        })
+                        .catch((error) => {
+                          console.error("Error updating gender:", error);
+                        });
                     }
-                  }}
-                  items={[
-                    { label: "Mand", value: "mand" },
-                    { label: "Kvinde", value: "kvinde" },
-                    { label: "Andet", value: "andet" },
-                    { label: "Ønsker ikke at oplyse", value: "ikkeoplyst" },
-                  ]}
-                  style={{
-                    inputAndroid: styles.pickerInput,
-                    placeholder: styles.placeholderText,
-                  }}
-                  placeholder={{
-                    label: "Vælg køn",
-                    value: null,
-                  }}
-                />
-              </View>
-            </View>
-
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Fødselsdato:</Text>
-              <View style={styles.birthdayContainer}>
-                <Text style={styles.profileText}>
-                  {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setPickerVisible(true)}
-                  style={styles.iconContainer}
-                >
-                  <Icon name="edit" size={20} color="#000" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {pickerVisible && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="spinner"
-                onChange={(event, selectedDate) => {
-                  if (selectedDate) {
-                    setPickerVisible(false);
-                    setDate(selectedDate);
-                    saveBirthdayToFirestore(selectedDate);
-                  } else {
-                    setPickerVisible(false);
                   }
                 }}
+                items={[
+                  { label: "Mand", value: "mand" },
+                  { label: "Kvinde", value: "kvinde" },
+                  { label: "Andet", value: "andet" },
+                  { label: "Ønsker ikke at oplyse", value: "ikkeoplyst" },
+                ]}
+                style={pickerSelectStyles}
+                placeholder={{
+                  label: "Vælg køn",
+                  value: null,
+                }}
               />
-            )}
+            </View>
+          </View>
+          <Text style={styles.fieldLabel}>Fødselsdato</Text>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.profileText}>
+              {loading ? "Henter Fødselsdato..." : getUserField("birthday")}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setPickerVisible(true)}
+              style={styles.iconContainer}
+            >
+              <Icon name="edit" size={20} color="#000" />
+            </TouchableOpacity>
+          </View>
 
-            <View style={styles.allergyFieldContainer}>
-              <Text style={styles.fieldLabel}>
-                Kendte allergier & intolerancer:
-              </Text>
-              <View style={styles.dropdownContainer}>
-                <MultiSelect
-                  style={styles.dropdown}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={allergyOptions}
-                  labelField="label"
-                  valueField="value"
-                  placeholder="Vælg allergi"
-                  value={selectedAllergies}
-                  search
-                  searchPlaceholder="Søg..."
-                  onChange={handleAllergyChange}
-                  renderItem={(item) => (
-                    <View style={styles.item}>
-                      <Text style={styles.selectedTextStyle}>{item.label}</Text>
+          {pickerVisible && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="spinner"
+              onChange={(event, selectedDate) => {
+                if (selectedDate) {
+                  setPickerVisible(false);
+                  setDate(selectedDate);
+                  saveBirthdayToFirestore(selectedDate);
+                } else {
+                  setPickerVisible(false);
+                }
+              }}
+            />
+          )}
+
+          <Text style={styles.fieldLabel}>
+            Kendte allergier & intolerancer:
+          </Text>
+          <View style={styles.allergyFieldContainer}>
+            <View style={styles.dropdownContainer}>
+              <MultiSelect
+                style={styles.dropdown}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={allergyOptions}
+                labelField="label"
+                valueField="value"
+                placeholder="Vælg allergi"
+                value={selectedAllergies}
+                search
+                searchPlaceholder="Søg..."
+                onChange={handleAllergyChange}
+                renderItem={(item) => (
+                  <View style={styles.item}>
+                    <Text style={styles.selectedTextStyle}>{item.label}</Text>
+                  </View>
+                )}
+                renderSelectedItem={(item, unSelect) => (
+                  <TouchableOpacity onPress={() => unSelect && unSelect(item)}>
+                    <View style={styles.selectedItem}>
+                      <Text style={styles.selectedText}>{item.label}</Text>
+                      <AntDesign
+                        color="black"
+                        name="delete"
+                        size={16}
+                        marginLeft="8"
+                      />
                     </View>
-                  )}
-                  renderSelectedItem={(item, unSelect) => (
-                    <TouchableOpacity
-                      onPress={() => unSelect && unSelect(item)}
-                    >
-                      <View style={styles.selectedItem}>
-                        <Text style={styles.selectedText}>{item.label}</Text>
-                        <AntDesign
-                          color="black"
-                          name="delete"
-                          size={16}
-                          marginLeft="8"
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  )}
-                />
-              </View>
+                  </TouchableOpacity>
+                )}
+              />
             </View>
+          </View>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>IBS Type:</Text>
-              <View style={styles.pickerContainer}>
-                <RNPickerSelect
-                  value={ibsType}
-                  onValueChange={(value) => {
-                    if (userData) {
-                      if (value !== ibsType) {
-                        updateUserDetails(userData.uid, { ibsType: value })
-                          .then(() => {
-                            setIbsType(value);
-                          })
-                          .catch((error) => {
-                            console.error("Error updating ibsType:", error);
-                          });
-                      }
+          <Text style={styles.fieldLabel}>IBS Type</Text>
+          <View style={styles.fieldContainer}>
+            <View style={styles.pickerContainer}>
+              <RNPickerSelect
+                value={ibsType}
+                useNativeAndroidPickerStyle={false}
+                onValueChange={(value) => {
+                  if (userData) {
+                    if (value !== ibsType) {
+                      updateUserDetails(userData.uid, { ibsType: value })
+                        .then(() => {
+                          setIbsType(value);
+                        })
+                        .catch((error) => {
+                          console.error("Error updating ibsType:", error);
+                        });
                     }
-                  }}
-                  items={[
-                    { label: "IBS-D", value: "IBS-D" },
-                    { label: "IBS-C", value: "IBS-C" },
-                    { label: "IBS-M", value: "IBS-M" },
-                    { label: "Ved ikke", value: "Ved ikke" },
-                  ]}
-                  style={{
-                    inputAndroid: styles.pickerInput,
-                    placeholder: styles.placeholderText,
-                  }}
-                  placeholder={{
-                    label: "Vælg IBS Type",
-                    value: null,
-                  }}
-                />
-              </View>
+                  }
+                }}
+                items={[
+                  { label: "IBS-D", value: "IBS-D" },
+                  { label: "IBS-C", value: "IBS-C" },
+                  { label: "IBS-M", value: "IBS-M" },
+                  { label: "Ved ikke", value: "Ved ikke" },
+                ]}
+                style={pickerSelectStyles}
+                placeholder={{
+                  label: "Vælg IBS Type",
+                  value: null,
+                }}
+              />
             </View>
+          </View>
+          <Text style={styles.fieldLabel}>Dagligt Vandmål (liter)</Text>
+          <View style={styles.fieldContainer}>
+            {editingField === "waterGoal" ? (
+              <TextInput
+                style={styles.inputField}
+                value={editedValue}
+                onChangeText={setEditedValue}
+                keyboardType="numeric"
+                placeholder="Dagligt mål i liter"
+              />
+            ) : (
+              <Text style={styles.waterText}>
+                {userData?.waterGoal || "Ikke indtastet"}
+              </Text>
+            )}
+            {editingField === "waterGoal" ? (
+              <Button title="Gem" onPress={handleSave} />
+            ) : (
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => handleFieldEdit("waterGoal")}
+              >
+                <Icon name="edit" size={20} color="#000" />
+              </TouchableOpacity>
+            )}
+          </View>
 
-            <View style={styles.fieldContainer}>
-              <Text style={styles.fieldLabel}>Dagligt Vandmål (liter):</Text>
-              {editingField === "waterGoal" ? (
-                <TextInput
-                  style={styles.inputField}
-                  value={editedValue}
-                  onChangeText={setEditedValue}
-                  keyboardType="numeric"
-                  placeholder="Dagligt mål i liter"
-                />
-              ) : (
-                <Text>{userData?.waterGoal || "Ikke indtastet"}</Text>
-              )}
-              {editingField === "waterGoal" ? (
-                <Button title="Gem" onPress={handleSave} />
-              ) : (
-                <TouchableOpacity
-                  style={styles.iconContainer}
-                  onPress={() => handleFieldEdit("waterGoal")}
-                >
-                  <Icon name="edit" size={20} color="#000" />
-                </TouchableOpacity>
-              )}
-            </View>
-
+          <View style={styles.buttonContainer}>
             <CustomButton
               title="Log ud"
-              style={styles.signOutButton}
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#86C5D8" },
+              ]}
               handlePress={() => {
                 signOutUser();
               }}
-              containerStyles={{
-                paddingVertical: 15,
-                width: 180,
-                marginTop: 10,
-                marginBottom: 15,
-              }}
             />
+
+            <CustomButton
+              title="Nulstil password"
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#AFDCEB" },
+              ]}
+              textStyles={styles.buttonTextStyle}
+              handlePress={handlePasswordReset}
+            />
+
             <CustomButton
               title="Slet konto"
-              style={styles.DeleteButton}
+              customStyles={[
+                styles.buttonStyle,
+                { backgroundColor: "#a60202" },
+              ]}
               handlePress={() => {
                 setModalVisible(true);
               }}
               iconName="trash"
-              containerStyles={{
-                backgroundColor: "#f44336",
-                paddingVertical: 15,
-                width: 180,
-                marginTop: 0,
-              }}
             />
           </View>
-        </ScrollView>
-        <StatusBar backgroundColor="#161622" style="light" />
-      </LinearGradient>
+        </View>
+      </ScrollView>
+      <ResetPasswordModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        handlePasswordReset={handlePasswordReset}
+        resetEmail={resetEmail}
+        setResetEmail={setResetEmail}
+      />
+      <StatusBar backgroundColor="#161622" style="light" />
 
       <Modal
         visible={modalVisible}
@@ -467,15 +487,11 @@ export default Profile;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#cae9f5",
     flex: 1,
     width: "100%",
-    position: "relative",
     alignItems: "center",
     justifyContent: "center",
-  },
-  gradient: {
-    flex: 1,
-    width: "100%",
   },
   icon: {
     width: 40,
@@ -483,80 +499,75 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     right: 20,
+    borderRadius: 20,
+    elevation: 10,
+  },
+  profileHeader: {
+    fontSize: 26,
+    fontWeight: 600,
+    marginTop: 40,
+    marginLeft: 20,
+    color: "white",
   },
   profileContainer: {
     backgroundColor: "white",
-    width: "90%",
-    marginTop: 80,
-    marginLeft: 20,
-    padding: 20,
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
+    width: "95%",
+    marginTop: 20,
+    marginLeft: 10,
+    padding: 30,
+    borderRadius: 30,
   },
   fieldContainer: {
     flexDirection: "row",
     padding: 10,
     alignItems: "center",
     marginBottom: 15,
-    width: "100%",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "white",
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 35,
     justifyContent: "space-between",
   },
   fieldLabel: {
-    flex: 1,
     fontWeight: "bold",
     fontSize: 16,
     color: "#333",
+    textAlign: "left",
+    marginBottom: 5,
+    marginLeft: 10,
   },
   inputField: {
     flex: 2,
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
+    borderRadius: 20,
     marginRight: 10,
-    backgroundColor: "#fff",
   },
   pickerContainer: {
-    flex: 1,
-    height: 50,
-  },
-  pickerInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fafafa",
-    borderRadius: 5,
-    paddingHorizontal: 4,
-    height: 50,
+    width: 260,
+    borderRadius: 40,
   },
   placeholderText: {
     color: "#888",
-    fontSize: 16,
-  },
-  iconContainer: {
-    marginLeft: 10,
+    fontSize: 10,
   },
   allergyFieldContainer: {
     padding: 10,
     alignItems: "center",
     marginBottom: 15,
     width: "100%",
-    backgroundColor: "#f5f5f5",
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 20,
     justifyContent: "space-between",
   },
   selectedItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#e0e0e0",
     borderRadius: 15,
     padding: 5,
+    borderColor: "black",
+    borderWidth: "1",
   },
   selectedItemText: {
     fontSize: 14,
@@ -582,11 +593,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   dropdownContainer: {
-    marginTop: 10,
+    marginTop: 8,
   },
   placeholderStyle: {
     fontSize: 16,
-    color: "#bbb",
+    color: "black",
   },
   inputSearchStyle: {
     height: 40,
@@ -599,7 +610,6 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   item: {
-    alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
   },
@@ -618,16 +628,19 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 5,
   },
-  birthdayContainer: {
-    flexDirection: "row",
-    alignItems: "end",
-  },
   iconContainer: {
     marginLeft: 10,
+    padding: 5,
+  },
+  waterText: {
+    marginLeft: 120,
+    fontSize: 18,
+    fontWeight: 500,
   },
   profileText: {
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: 15,
   },
   modalContainerDelete: {
     flex: 1,
@@ -647,5 +660,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 1,
+  },
+  buttonContainer: {
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  buttonStyle: {
+    width: 200,
+    height: 40,
+    marginTop: 2,
+    marginBottom: 6,
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputAndroid: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: "black",
+    height: 35,
   },
 });

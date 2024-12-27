@@ -6,7 +6,9 @@ const Checkbox = ({ label, value, isChecked, onChange, style }) => {
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity
-        style={isChecked ? [styles.checkbox, styles.activeCheckbox] : styles.checkbox}
+        style={
+          isChecked ? [styles.checkbox, styles.activeCheckbox] : styles.checkbox
+        }
         onPress={() => {
           onChange(!isChecked); // Toggle checked state
         }}
@@ -16,7 +18,9 @@ const Checkbox = ({ label, value, isChecked, onChange, style }) => {
           size={24}
           color={isChecked ? "#06b6d4" : "#64748b"}
         />
-        <Text style={isChecked ? [styles.text, styles.activeText] : styles.text}>
+        <Text
+          style={isChecked ? [styles.text, styles.activeText] : styles.text}
+        >
           {label}
         </Text>
       </TouchableOpacity>
@@ -25,19 +29,17 @@ const Checkbox = ({ label, value, isChecked, onChange, style }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-   
-    width: "100%", // Make the container full width
-  },
+  container: {},
   checkbox: {
     height: 40,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    marginRight: 10, 
+    marginRight: 10,
+    marginLeft: 10,
     backgroundColor: "#f3f4f6",
-    paddingHorizontal: 10,
-    borderRadius: 10,
+    paddingHorizontal: 8,
+    borderRadius: 20,
   },
   activeCheckbox: {
     backgroundColor: "#06b6d4" + "11", // Lighter background when active
