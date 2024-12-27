@@ -35,4 +35,26 @@ export const addFoodIntake = async (userId, foodData, type) => {
   }
 };
 
+export const fetchFoodIntake = async (userId, date, type) => {
+
+  try {
+    if (!firestore || !userId || !date || !type) {
+      throw new Error("Firestore instance, userId, date, or type is missing.");
+    }
+
+    // Reference to the user's food log for the specific type
+    const foodLogRef = collection(firestore, `users/${userId}/foodLog/${date}/${type}`);
+
+    // Fetch food data from the collection
+    const snapshot = await getDocs(foodLogRef);
+    const foodData = snapshot.docs.map((doc) => doc.data());
+
+    console.log(`Successfully fetched ${type} log for ${date}.`);
+
+    return foodData;
+  } catch (error) {
+    console.error("Error fetching food intake:", error);
+  }
+};
+
 export default addFoodIntake;
