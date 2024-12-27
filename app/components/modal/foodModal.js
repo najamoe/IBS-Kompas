@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import { Entypo } from "@expo/vector-icons"; // Ensure you import the necessary icon library
+import SearchField from "../searchfield";
 
 const FoodModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,6 +43,8 @@ const FoodModal = () => {
           placeholder={{ label: "Vælg måltidstype", value: null }}
           style={pickerSelectStyles}
         />
+
+        <SearchField />
       </View>
     </Modal>
   );
