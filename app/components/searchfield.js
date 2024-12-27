@@ -9,7 +9,7 @@ import {
   Text,
 } from "react-native";
 import { debounce } from "lodash"; // Import debounce from lodash
-import { addFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
+import { addFoodIntake, removeFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
 
 const SearchField = ({ userId }) => {
   // Pass userId as a prop
@@ -44,6 +44,17 @@ const SearchField = ({ userId }) => {
       console.error("Error adding food item:", error);
     }
   };
+    const handleRemoveItem = async (item) => {
+      try {
+        // Remove selected food item from Firestore
+        await removeFoodIntake(userId, item);
+        setAddedItems((prevItems) =>
+          prevItems.filter((addedItem) => addedItem.id !== item.id)
+        );
+      } catch (error) {
+        console.error("Error removing food item:", error);
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -80,17 +91,26 @@ const SearchField = ({ userId }) => {
 
       {/* Display added items */}
       <View style={styles.addedItemsContainer}>
-        <Text>Added Food Items:</Text>
+        <Text>Tilføjede madvarer:</Text>
         {addedItems.length > 0 ? (
           <FlatList
             data={addedItems}
+            style={styles.addedItemsList}
             renderItem={({ item }) => (
-              <Text>{`${item.name} - ${item.brand}`}</Text>
+              <View style={styles.addedItem}>
+                <Text>{`${item.name} - ${item.brand}`}</Text>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleRemoveItem(item)} // Remove item from Firestore and local state
+                >
+                  <Text style={styles.deleteText}>X</Text>
+                </TouchableOpacity>
+              </View>
             )}
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
-          <Text>No items added yet.</Text>
+          <Text style={styles.addedItemText}>Ingen varer tilføjet.</Text>
         )}
       </View>
     </View>
@@ -138,5 +158,32 @@ const styles = StyleSheet.create({
   },
   addedItemsContainer: {
     marginTop: 20,
+  },
+  addedItemText: {
+    fontStyle: "italic",
+    fontWeight: "bold",
+  },
+  addedItemsList: {
+    marginTop: 10,
+    flexDirection: "row",
+  },
+  addedItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F0F8FF",
+    borderBottomWidth: 1, // add a border at the bottom
+    borderBottomColor: "#ddd",
+    padding: 5,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    borderRadius: 15,
+    padding: 5,
+    marginLeft: 50,
+  },
+  deleteText: {
+    color: "grey",
+    fontWeight: "bold",
   },
 });
