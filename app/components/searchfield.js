@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { searchProducts } from "../services/api/openFoodFactsApi";
 import {
   View,
   TextInput,
   StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Text,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import debounce from "lodash.debounce";
+import { debounce } from "lodash"; // Import debounce from lodash
+import { addFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
 
-const SearchField = () => {
+const SearchField = ({ userId }) => {
+  // Pass userId as a prop
   const [food, setFood] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [addedItems, setAddedItems] = useState([]);
 
   // Handle food search input and call the API if the input is longer than 2 characters
   const handleSearch = debounce(async (query) => {
@@ -28,6 +32,19 @@ const SearchField = () => {
     }
   }, 500);
 
+  // Handle item selection and add to Firestore
+  const handleSelectItem = async (item) => {
+    try {
+      // Add selected food item to Firestore
+      await addFoodIntake(userId, item, "meal"); // Assuming 'meal' is the type of food entry
+
+      // Update the local state with the added item
+      setAddedItems((prevItems) => [...prevItems, item]);
+    } catch (error) {
+      console.error("Error adding food item:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Food search input */}
@@ -43,21 +60,39 @@ const SearchField = () => {
       {/* Dropdown with search results */}
       {searchResults.length > 0 && (
         <View style={styles.pickerWrapper}>
-          <Picker
-            selectedValue={food}
-            onValueChange={(itemValue) => setFood(itemValue)}
-            style={styles.picker}
-          >
-            {searchResults.map((item, index) => (
-              <Picker.Item
-                key={index}
-                label={`${item.name} - ${item.brand}`}
-                value={item.name}
-              />
-            ))}
-          </Picker>
+          <Text style={styles.resultText}>Søge resultater:</Text>
+          <FlatList
+            data={searchResults}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => handleSelectItem(item)} // Add to Firestore and update UI
+              >
+                <Text>{`${item.name} - ${item.brand}`}</Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.pickerList}
+            contentContainerStyle={{ maxHeight: 200 }}
+          />
         </View>
       )}
+
+      {/* Display added items */}
+      <View style={styles.addedItemsContainer}>
+        <Text>Added Food Items:</Text>
+        {addedItems.length > 0 ? (
+          <FlatList
+            data={addedItems}
+            renderItem={({ item }) => (
+              <Text>{`${item.name} - ${item.brand}`}</Text>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <Text>No items added yet.</Text>
+        )}
+      </View>
     </View>
   );
 };
@@ -84,14 +119,24 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 20,
   },
+  resultText: {
+    marginLeft: 10,
+  },
   pickerWrapper: {
-    borderRadius: 40,
+    borderRadius: 20,
     overflow: "hidden",
   },
-  picker: {
-    height: 50,
-    width: "100%",
-    backgroundColor: "#f0f0f0",
+  pickerList: {
     borderRadius: 20,
+    backgroundColor: "#f0f0f0",
+    maxHeight: 200,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  addedItemsContainer: {
+    marginTop: 20,
   },
 });
