@@ -14,7 +14,6 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import debounce from "lodash.debounce";
 
-
 const SearchField = () => {
   const [food, setFood] = useState("");
   const [barcodePermission, setBarcodePermission] = useState(null);
@@ -69,9 +68,17 @@ const SearchField = () => {
           onChangeText={handleSearch}
           placeholder="søg efter madvare"
         />
+        <TouchableOpacity
+          onPress={() => setCameraVisible(!cameraVisible)}
+          style={styles.barcodeIconContainer}
+        >
+          <Ionicons name="barcode-sharp" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
 
-        {/* Dropdown with search results */}
-        {searchResults.length > 0 && (
+      {/* Dropdown with search results */}
+      {searchResults.length > 0 && (
+        <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={food}
             onValueChange={(itemValue) => setFood(itemValue)}
@@ -85,15 +92,8 @@ const SearchField = () => {
               />
             ))}
           </Picker>
-        )}
-
-        <TouchableOpacity
-          onPress={() => setCameraVisible(!cameraVisible)}
-          style={styles.barcodeIconContainer}
-        >
-          <Ionicons name="barcode-sharp" size={30} color="black" />
-        </TouchableOpacity>
-      </View>
+        </View>
+      )}
 
       {/* Display barcode scanner if permission is granted */}
       {barcodePermission === null && (
@@ -128,15 +128,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   searchContainer: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 10,
     borderColor: "grey",
+    flexDirection: "row",
   },
   searchInput: {
     height: 40,
-    borderColor: "gray",
+    borderColor: "grey",
     borderWidth: 1,
     flex: 1,
     paddingLeft: 10,
@@ -149,10 +149,14 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   picker: {
-    height: 40,
+    height: 50,
     width: "100%",
     backgroundColor: "#f0f0f0",
-    marginTop: 10,
+    borderRadius: 20,
+  },
+  pickerWrapper: {
+    borderRadius: 40, 
+    overflow: "hidden", 
   },
   cameraContainer: {
     marginTop: 10,
