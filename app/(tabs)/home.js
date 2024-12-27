@@ -17,9 +17,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodModal from "../components/modal/foodModal";
-import {
-  fetchFoodIntake,
-} from "../services/firebase/foodService";
+import { fetchFoodIntake } from "../services/firebase/foodService";
 import {
   addWaterIntake,
   fetchWaterIntake,

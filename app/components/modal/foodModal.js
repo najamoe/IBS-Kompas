@@ -40,13 +40,22 @@ const FoodModal = ({ isVisible, closeModal }) => {
 
         <SearchField />
 
-
-
-        {/* Add Food Button */}
-        <CustomButton title="Tilføj mad" onPress={() => {}} />
-
-        {/* Cancel Button */}
-        <CustomButton title="Annuller" onPress={closeModal} />
+        <View style={styles.buttonContainer}>
+          {/* Cancel Button */}
+          <CustomButton
+            title="Annuller"
+            handlePress={closeModal}
+            customStyles={styles.cancelButton}
+            textStyles={styles.buttonText}
+          />
+          {/* Add Food Button */}
+          <CustomButton
+            title="Tilføj mad"
+            customStyles={styles.addButton}
+            textStyles={styles.buttonText}
+            handlePress={() => {}}
+          />
+        </View>
       </View>
     </Modal>
   );
@@ -75,7 +84,37 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     marginTop: 20,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center", // Center the buttons horizontally
+    alignItems: "center", // Align items in the row vertically
+    position: "absolute",
+    bottom: 20,
+    width: "90%",
+    gap: 10, // Add space between buttons
+  },
+  cancelButton: {
+    backgroundColor: "red",
+    paddingVertical: 8,
+    alignItems: "center", 
+    justifyContent: "center",
+    width: 100, 
+  },
+  addButton: {
+    backgroundColor: "green",
+    paddingVertical: 8,
+    alignItems: "center", // Center text inside the button
+    justifyContent: "center",
+    width: 100, 
+  },
+  buttonText: {
+    fontSize: 14, // Smaller font size
+    color: "white",
+    fontWeight: "600",
+  },
 });
+
+
 
 const pickerSelectStyles = StyleSheet.create({
   inputAndroid: {
