@@ -16,6 +16,7 @@ import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import foodModal from "../components/modal/foodModal";
 import {
   addFoodIntake,
   fetchFoodIntake,
@@ -272,18 +273,7 @@ const Home = () => {
           </View>
 
           <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Frokost</Text>
-            <SearchField />
-          </View>
-
-          <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Aftensmad</Text>
-            <SearchField />
-          </View>
-
-          <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Snack</Text>
-            <SearchField />
+           <foodModal />
           </View>
         </View>
 
