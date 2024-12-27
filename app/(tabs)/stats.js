@@ -15,6 +15,9 @@ import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
 import WellnessChart from "../components/charts/wellnessChart";
+import BowelChart from "../components/charts/bowelChart";
+import SymptomChart from "../components/charts/symptomChart";
+import FoodChart from "../components/charts/foodChart";
 
 const Stats = () => {
   moment.locale("da");
@@ -59,64 +62,89 @@ const Stats = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-
-        <ScrollView
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
-          <View style={styles.dateContainer}>
-            {/* Header with week navigation */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-              <AntDesign
-                style={styles.arrowIcons}
-                name="left"
-                size={22}
-              />
-              </TouchableOpacity>
-              <View style={styles.weekInfo}>
-                {/* Week number display */}
-                <Text style={styles.weekText}>Uge {weekNumber}</Text>
-                {/* Week range display */}
-                <Text style={styles.dateRangeText}>{weekRange}</Text>
-              </View>
-              <TouchableOpacity onPress={() => handleWeekChange(1)}>
-              <AntDesign
-                style={styles.arrowIcons}
-                name="right"
-                size={22}
-              />
-              </TouchableOpacity>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <View style={styles.dateContainer}>
+          {/* Header with week navigation */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => handleWeekChange(-1)}>
+              <AntDesign style={styles.arrowIcons} name="left" size={22} />
+            </TouchableOpacity>
+            <View style={styles.weekInfo}>
+              {/* Week number display */}
+              <Text style={styles.weekText}>Uge {weekNumber}</Text>
+              {/* Week range display */}
+              <Text style={styles.dateRangeText}>{weekRange}</Text>
             </View>
+            <TouchableOpacity onPress={() => handleWeekChange(1)}>
+              <AntDesign style={styles.arrowIcons} name="right" size={22} />
+            </TouchableOpacity>
           </View>
+        </View>
 
-          <View>
-            {user ? (
-              <WaterIntakeChart
-                style={styles.graphContainer}
-                userId={user.uid}
-                selectedDate={selectedDate}
-              />
-            ) : (
-              <ActivityIndicator size="large" color="#0000ff" />
-            )}
-          </View>
-          <View>
-            {user ? (
-              <WellnessChart
-                style={styles.graphContainer}
-                userId={user.uid}
-                selectedDate={selectedDate}
-              />
-            ) : (
-              <ActivityIndicator size="large" color="#0000ff" />
-            )}
-          </View>
+        <View>
+          {user ? (
+            <FoodChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
 
-        </ScrollView>
-    
+        <View>
+          {user ? (
+            <WaterIntakeChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
+        <View>
+          {user ? (
+            <BowelChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+        <View>
+          {user ? (
+            <WellnessChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
+        <View>
+          {user ? (
+            <SymptomChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
