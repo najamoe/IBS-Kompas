@@ -16,7 +16,10 @@ import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { addFoodIntake } from "../services/firebase/foodService";
+import {
+  addFoodIntake,
+  fetchFoodIntake,
+} from "../services/firebase/foodService";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -61,7 +64,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
-  const [isFoodModalVisible, setIsFoodModalVisible] = useState(false);
+  const [foodIntake, setFoodIntake] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -86,6 +89,10 @@ const Home = () => {
     if (user) {
       const fetchWaterData = async () => {
         try {
+          //Fetch food intake
+          //const foodData = await fetchFoodIntake(user.uid, selectedDate);
+          //setFoodIntake(foodData);
+
           // Fetch water intake
           const intake = await fetchWaterIntake(user.uid, selectedDate);
           setWaterIntake(intake);
@@ -115,6 +122,18 @@ const Home = () => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(formatDateStorage(newDate));
+  };
+
+  const handleSearch = async (query) => {
+    console.log(`Searching for: ${query}`); // Debug search trigger
+    if (query.length >= 3) {
+      try {
+        const results = await api.search(query); // Replace with actual API call
+        console.log("API Results:", results); // Debug API response
+      } catch (error) {
+        console.error("Error during search:", error);
+      }
+    }
   };
 
   const handleAddWater = async (amount) => {
@@ -244,11 +263,26 @@ const Home = () => {
 
           <View style={styles.foodContent}>
             <Text style={styles.foodTitle}>Morgenmad</Text>
-            <SearchField />
+            <SearchField
+              onSearch={(query) => {
+                console.log("Search query in Home:", query); // Debugging in Home
+                handleSearch(query); // Your API search logic
+              }}
+            />
           </View>
 
           <View style={styles.foodContent}>
             <Text style={styles.foodTitle}>Frokost</Text>
+            <SearchField />
+          </View>
+
+          <View style={styles.foodContent}>
+            <Text style={styles.foodTitle}>Aftensmad</Text>
+            <SearchField />
+          </View>
+
+          <View style={styles.foodContent}>
+            <Text style={styles.foodTitle}>Snack</Text>
             <SearchField />
           </View>
         </View>
@@ -433,14 +467,14 @@ const styles = StyleSheet.create({
     fontWeight: 600,
   },
   foodContent: {
-    borderColor: "grey", 
-    borderWidth: 0.3, 
-    borderRadius: 10, 
+    borderColor: "grey",
+    borderWidth: 0.3,
+    borderRadius: 10,
     backgroundColor: "white",
-    marginTop: 10, 
+    marginTop: 10,
     marginBottom: 10,
-    width: "95%", 
-    padding: 10, 
+    width: "95%",
+    padding: 10,
     elevation: 8,
   },
   waterContainer: {
@@ -467,7 +501,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 140,
     textAlign: "center",
-    
   },
   waterIconContainer: {
     flexDirection: "row",
