@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import SearchField from "../searchfield";
 import { Entypo } from "@expo/vector-icons";
+import CustomButton from "../CustomButton";
 
 const FoodModal = ({ isVisible, closeModal }) => {
   const [selectedType, setSelectedType] = useState(null);
@@ -38,6 +39,14 @@ const FoodModal = ({ isVisible, closeModal }) => {
         />
 
         <SearchField />
+
+
+
+        {/* Add Food Button */}
+        <CustomButton title="Tilføj mad" onPress={() => {}} />
+
+        {/* Cancel Button */}
+        <CustomButton title="Annuller" onPress={closeModal} />
       </View>
     </Modal>
   );
