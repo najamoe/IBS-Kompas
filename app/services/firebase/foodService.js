@@ -1,4 +1,4 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, deleteDoc } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 import moment from "moment";
 
@@ -57,4 +57,32 @@ export const fetchFoodIntake = async (userId, date, type) => {
   }
 };
 
-export default addFoodIntake;
+
+export const deleteFoodIntake = async (userId, foodData, type) => {
+  try {
+    if (!firestore || !userId || !foodData || !type) {
+      throw new Error(
+        "Firestore instance, userId, foodData, or type is missing."
+      );
+    }
+
+    const date = moment().format("YYYY-MM-DD");
+    const foodLogRef = collection(
+      firestore,
+      `users/${userId}/foodLog/${date}/${type}`
+    );
+
+    // Query for the document by its name or other unique identifier
+    const q = query(foodLogRef, where("name", "==", foodData.name));
+
+    const snapshot = await getDocs(q);
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
+    console.log(`Successfully deleted food item from ${type} log.`);
+  } catch (error) {
+    console.error("Error deleting food intake:", error);
+  }
+};
+
