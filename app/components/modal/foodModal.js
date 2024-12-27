@@ -2,28 +2,21 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import SearchField from "../searchfield";
+import { Entypo } from "@expo/vector-icons";
 
-const FoodModal = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+const FoodModal = ({ isVisible, closeModal }) => {
   const [selectedType, setSelectedType] = useState(null);
-
-  const handleClose = () => {
-    setModalVisible(false); // Close the modal
-  };
 
   return (
     <Modal
-      isVisible={modalVisible}
-      animationIn="fadeIn"
-      animationOut="fadeOut"
-      backdropColor="rgba(0, 0, 0, 0.6)"
-      onBackdropPress={handleClose}
-      onRequestClose={handleClose}
-      style={styles.modal}
+      visible={isVisible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={closeModal}
     >
       <View style={styles.container}>
         {/* Close Button (X) */}
-        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
           <Entypo name="cross" size={30} color="black" />
         </TouchableOpacity>
 
@@ -53,15 +46,14 @@ const FoodModal = () => {
 export default FoodModal;
 
 const styles = StyleSheet.create({
-  modal: {
-    alignItems: "center",
-  },
   container: {
     backgroundColor: "white",
     borderRadius: 20,
     alignItems: "center",
     width: "95%",
     flex: 1,
+    marginTop: "20%",
+    alignSelf: "center",
   },
   closeButton: {
     position: "absolute",
