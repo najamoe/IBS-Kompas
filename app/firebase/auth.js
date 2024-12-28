@@ -70,13 +70,6 @@ export const signOutUser = () => {
     auth.signOut()
     .then(() => {
       router.replace('/');  
-      Toast.show({
-        type: 'success',
-        text1: 'Logget ud',
-        text2: 'Du er nu logget ud af din konto',
-        visibilityTime: 5000,  
-        position: 'top',  
-      });
     })
     .catch((error) => {
       console.error("Sign out error:", error.message);
@@ -118,41 +111,19 @@ export const resetPassword = (email) => {
       });
 };
 
-export const updatePassword = (newPassword) => {
+export const updateUserPassword = (newPassword) => {
   const user = auth.currentUser; // Get the currently authenticated user
   if (!user) {
-      Toast.show({
-        type: 'error',
-        text1: 'Opdatering mislykkedes',
-        text2: 'Brugeren er ikke godkendt',  
-        visibilityTime: 5000,
-        position: 'top',
-      });
       return Promise.reject("User is not authenticated");
   }
 
   // Update the password for the currently authenticated user
   return updatePassword(user, newPassword)
       .then(() => {
-          // Password updated successfully
-          Toast.show({
-            type: 'success',
-            text1: 'Password opdateret',
-            text2: 'Dit password er opdateret',  
-            visibilityTime: 5000,
-            position: 'top',
-          });
+          console.log("Password updated successfully");
       })
       .catch((error) => {
-          // Handle errors (e.g., user is not signed in or other issues)
           console.error("Error updating password:", error.message);
-          Toast.show({
-            type: 'error',
-            text1: 'Opdatering mislykkedes',
-            text2: error.message,  
-            visibilityTime: 5000,
-            position: 'top',
-          });
           throw error;
       });
 }
