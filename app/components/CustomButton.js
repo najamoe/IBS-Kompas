@@ -15,6 +15,7 @@ const CustomButton = ({ title, handlePress, customStyles, textStyles, isLoading,
           <Ionicons name={iconName} size={16} color="white" style={styles.icon} /> // Icon with size and color
         )}
         <Text style={[styles.buttonText, textStyles]}>{title}</Text>
+        {isLoading ? (loadingText || 'Loading...') : title}
       </View>
     </TouchableOpacity>
   );
