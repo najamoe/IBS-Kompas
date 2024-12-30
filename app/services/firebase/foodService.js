@@ -22,14 +22,14 @@ export const addFoodIntake = async (userId, foodData, type) => {
 
     // Determine the current date
     const date = moment().format("YYYY-MM-DD");
-    
+
     const time = moment().format("HH:mm:ss");
 
     // Generate the timestamp to use as the document ID
     const timestamp = time;
     const foodLogRef = doc(
       firestore,
-      `users/${userId}/foodLog/${date}/${type}/${timestamp}`
+      `users/${userId}/foodLogs/${date}/${type}/${timestamp}`
     ); // Set the document ID to timestamp
 
     // Set food data to the document with timestamp as the ID
