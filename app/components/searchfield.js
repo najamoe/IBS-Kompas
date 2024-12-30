@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
-    borderColor: "grey",
+    borderColor: "#cfc9c8",
     borderWidth: 1,
     flex: 1,
     paddingLeft: 10,
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     height: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 50, 
+    marginLeft: 50,
   },
   deleteText: {
     color: "white",
