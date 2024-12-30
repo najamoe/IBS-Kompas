@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: "90%",
-    height: "60%",
+    height: "90%",
   },
   modalTitle: {
     fontSize: 24,
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
+    marginTop: 80,
     backgroundColor: "#ffffff",
     width: "100%",
     alignContent: "center",
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
   },
   saveandbackbtn: {
     flexDirection: "row",
-    marginTop: 30,
+    
   },
   saveButton: {
     backgroundColor: "#86C5D8",
