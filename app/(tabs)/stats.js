@@ -121,6 +121,7 @@ const Stats = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           )}
         </View>
+        
         <View>
           {user ? (
             <WellnessChart
