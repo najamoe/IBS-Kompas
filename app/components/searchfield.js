@@ -110,31 +110,42 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
       )}
 
       {/* List of selected items */}
-      {selectedItems.length > 0 && (
-        <View style={styles.selectedItemsContainer}>
-          <Text>Tilføjede varer</Text>
+
+      <View style={styles.selectedItemsContainer}>
+        <Text style={styles.addItemTitle}>Tilføjede varer</Text>
+
+        {/* Conditionally render message if no items are present */}
+        {selectedItems.length === 0 ? (
+          <Text style={styles.noItemsText}>Ingen varer tilføjet</Text>
+        ) : (
           <FlatList
             data={selectedItems}
             renderItem={({ item }) => (
               <View style={styles.selectedItem}>
-                <Text>{item.name}</Text>
-                <Text>{item.brand}</Text>
-                <Text>
-                  {item.quantity} {item.unit}
-                </Text>
-                <MaterialCommunityIcons
-                  name="delete-outline"
-                  onPress={() => handleDeleteItem(item)} // Handle delete
-                  size={24}
+                {/* Left part: Item name, quantity, and unit */}
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ marginRight: 10 }}>{item.name}</Text>
+                  <Text style={{ marginRight: 10 }}>{item.quantity}</Text>
+                  <Text>{item.unit}</Text>
+                </View>
+
+                {/* Right part: Delete icon */}
+                <TouchableOpacity
+                  onPress={() => handleDeleteItem(item)}
+                  style={styles.deleteIcon}
                 >
-        
-                </MaterialCommunityIcons>
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
               </View>
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key
           />
-        </View>
-      )}
+        )}
+      </View>
 
       {/* Modal for quantity and unit input */}
       {showModal && (
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   searchbar: {
-    width: "100%",
+    backgroundColor: "black",
     flexDirection: "row",
   },
   dropdownContainer: {
@@ -205,36 +216,46 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     borderWidth: 0.5,
     position: "absolute",
-    top: 26, // Adjust based on search bar position
-    left: 30,
+    top: 2,
+    left: 0,
     right: 0,
     zIndex: 1,
   },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+  addItemTitle: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  noItemsText: {
+    fontSize: 16,
+    color: "gray",
+    textAlign: "center",
+    marginTop: 20,
   },
   selectedItemsContainer: {
-    marginTop: 30,
+    width: "90%",
+    marginTop: 50,
     marginBottom: 20,
-    width: "100%",
-    height: 100,
-    backgroundColor: "#f5f5f5",
+    height: 300,
+    backgroundColor: "#ffffff",
+    elevation: 5,
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: "grey",
     padding: 10,
   },
   selectedItem: {
+    flexDirection: "row", // Place items in a row
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 8,
+    marginLeft: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
-  deleteButton: {
-    backgroundColor: "red",
+  deleteIcon: {
     padding: 5,
     borderRadius: 5,
+    marginLeft: 10,
   },
   modalContainer: {
     flex: 1,
