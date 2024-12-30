@@ -18,8 +18,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   const [unit, setUnit] = useState(null);
   const [foodName, setFoodName] = useState("");
 
-
-
   // Reset when modalVisibility changes
   useEffect(() => {
     if (!modalVisible) {
@@ -27,6 +25,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       setQuantity("");
       setUnit(null);
       setFoodName("");
+      setSelectedItems([]);
     }
   }, [modalVisible]);
 

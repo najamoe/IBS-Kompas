@@ -54,6 +54,15 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
     return () => clearTimeout(timer); //Cleanup on unmount
   }, [query]);
 
+  // Function to handle modal close for resetting inputs
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedItems([]); // Clear selected items
+    setItemName(""); // Reset item name
+    setQuantity(""); // Reset quantity
+    setUnit(""); // Reset unit
+  };
+
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
     console.log("Selected item in searchfield:", item);
@@ -162,7 +171,7 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
           animationType="slide"
           transparent={true}
           visible={showModal}
-          onRequestClose={() => setShowModal(false)}
+          onRequestClose={handleCloseModal}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
