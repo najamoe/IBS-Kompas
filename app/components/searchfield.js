@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   FlatList,
@@ -13,6 +13,7 @@ const SearchField = () => {
   const [query, setQuery] = useState(""); // Search query
   const [searchResults, setSearchResults] = useState([]); // Search results
   const [loading, setLoading] = useState(false); // Loading state
+  const [selectedItems, setSelectedItems] = useState([]); // Selected items
   const [page, setPage] = useState(1); // Current page for pagination
 
   // Function to handle search input
@@ -37,7 +38,12 @@ const SearchField = () => {
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
     console.log("Selected item:", item);
-    // Handle item selection, e.g., navigating to a product details page
+
+    // Add the selected item to the selectedItems list
+    setSelectedItems((prevItems) => [...prevItems, item]);
+
+    // Close the dropdown by clearing search results
+    setSearchResults([]);
   };
 
   return (
@@ -69,21 +75,41 @@ const SearchField = () => {
           />
         </View>
       )}
+
+      {/* List of selected items */}
+      {selectedItems.length > 0 && (
+        <View style={styles.selectedItemsContainer}>
+          <Text>Tilføjede varer</Text>
+          <FlatList
+            data={selectedItems}
+            renderItem={({ item }) => (
+              <View style={styles.selectedItem}>
+                <Text>{item.name}</Text>
+                <Text>{item.brand}</Text>
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()} // Use index as key
+          />
+        </View>
+      )}
     </View>
   );
 };
+
+export default SearchField;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
     alignItems: "center",
-    flexDirection: "row",
+
+    width: "100%",
   },
   searchbar: {
-    marginBottom: 10,
     width: "100%",
-  }, 
+    flexDirection: "row",
+  },
   dropdownContainer: {
     marginTop: 10,
     maxHeight: 200,
@@ -91,9 +117,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     borderColor: "grey",
-    borderWidth:0.5,
+    borderWidth: 0.5,
     position: "absolute",
-    top: 26, 
+    top: 26, // Adjust based on search bar position
     left: 30,
     right: 0,
     zIndex: 1,
@@ -103,6 +129,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
+  selectedItemsContainer: {
+    marginTop: 20,
+    width: "100%",
+    height: 200,
+    padding: 10,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: "grey",
+  },
+  selectedItem: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
 });
 
-export default SearchField;
+
