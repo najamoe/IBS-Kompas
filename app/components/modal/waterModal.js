@@ -41,24 +41,27 @@ const WaterModal = ({ isVisible, onClose, onAddWater }) => {
   );
 };
 
+export default WaterModal;
+
 const styles = StyleSheet.create({
   modal: {
-    justifyContent: "center", 
-    alignItems: "center", 
+    justifyContent: "center",
+    alignItems: "center",
+    
   },
   modalContent: {
     width: 250,
     height: 250,
     padding: 20,
     backgroundColor: "white",
-    borderRadius: 180, 
+    borderRadius: 180,
     alignItems: "center",
   },
   buttonsContainer: {
     marginTop: 8,
-    flexDirection: "row", 
+    flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center", 
+    justifyContent: "center",
   },
   button: {
     padding: 10,
@@ -74,8 +77,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   image: {
-    width: 30, 
-    height: 30, 
+    width: 30,
+    height: 30,
   },
   closeButton: {
     backgroundColor: "#f44336",
@@ -91,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WaterModal;
+

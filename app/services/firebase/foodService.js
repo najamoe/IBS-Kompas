@@ -1,4 +1,12 @@
-import { collection, addDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  setDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+} from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 import moment from "moment";
 
@@ -14,19 +22,22 @@ export const addFoodIntake = async (userId, foodData, type) => {
 
     // Determine the current date
     const date = moment().format("YYYY-MM-DD");
+    
+    const time = moment().format("HH:mm:ss");
 
-    // Reference to the user's food log for the specific type
-    const foodLogRef = collection(
+    // Generate the timestamp to use as the document ID
+    const timestamp = time;
+    const foodLogRef = doc(
       firestore,
-      `users/${userId}/foodLog/${date}/${type}`
-    );
+      `users/${userId}/foodLog/${date}/${type}/${timestamp}`
+    ); // Set the document ID to timestamp
 
-    // Add food data to the collection
-    await addDoc(foodLogRef, {
+    // Set food data to the document with timestamp as the ID
+    await setDoc(foodLogRef, {
       ...foodData,
       type,
       date,
-      timestamp: foodData.timestamp || moment().toISOString(), // Ensure timestamp exists
+      timestamp, // Ensure timestamp exists
     });
 
     console.log(`Successfully added food to ${type} log.`);
@@ -36,14 +47,16 @@ export const addFoodIntake = async (userId, foodData, type) => {
 };
 
 export const fetchFoodIntake = async (userId, date, type) => {
-
   try {
     if (!firestore || !userId || !date || !type) {
       throw new Error("Firestore instance, userId, date, or type is missing.");
     }
 
     // Reference to the user's food log for the specific type
-    const foodLogRef = collection(firestore, `users/${userId}/foodLog/${date}/${type}`);
+    const foodLogRef = collection(
+      firestore,
+      `users/${userId}/foodLog/${date}/${type}`
+    );
 
     // Fetch food data from the collection
     const snapshot = await getDocs(foodLogRef);
@@ -56,7 +69,6 @@ export const fetchFoodIntake = async (userId, date, type) => {
     console.error("Error fetching food intake:", error);
   }
 };
-
 
 export const deleteFoodIntake = async (userId, foodData, type) => {
   try {
@@ -85,4 +97,3 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
     console.error("Error deleting food intake:", error);
   }
 };
-
