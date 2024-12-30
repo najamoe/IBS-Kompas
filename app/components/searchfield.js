@@ -166,7 +166,8 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text>Indtast mængde</Text>
+              <Text style={styles.addItemTitle}>Indtast mængde</Text>
+              <View style={{ flexDirection: "row" }}>
               <TextInput
                 placeholder="Mængde"
                 keyboardType="numeric"
@@ -193,6 +194,7 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
                   value: null,
                 }}
               />
+              </View>
 
               <View style={{ flexDirection: "row" }}>
                  <CustomButton
@@ -303,8 +305,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    width: "100%",
+    width: "40%",
+    marginTop: 20,
+    marginRight: 20,
     padding: 10,
+    textAlign: "center",
+    justifyContent: "center",
     marginVertical: 5,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -337,5 +343,6 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+    marginTop: 20,
   },
 });
