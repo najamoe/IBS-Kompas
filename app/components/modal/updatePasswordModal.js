@@ -54,7 +54,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
     <Modal
       visible={visible}
       animationType="fade"
-      transparent={true} // Make the modal transparent
+      transparent={true} 
       onRequestClose={closeModal}
     >
       <View style={styles.modalBackdrop}>
@@ -64,6 +64,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
 
           {/* Form Fields */}
           <FormField
+          title={"Password"}
             label="Nuværende password"
             placeholder="Indtast nuværende password"
             secureTextEntry={true}
@@ -72,6 +73,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
             otherStyles={styles.customField}
           />
           <FormField
+            title={"Password"}
             label="Nyt password"
             placeholder="Indtast nyt password"
             secureTextEntry={true}
@@ -80,6 +82,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
             otherStyles={styles.customField}
           />
           <FormField
+          title={"Verificér Password"}
             label="Bekræft nyt password"
             placeholder="Bekræft nyt password"
             secureTextEntry={true}
@@ -128,6 +131,9 @@ const styles = StyleSheet.create({
     width: "80%", // Control the width of the modal
     maxWidth: 400, // Prevent it from being too wide on larger screens
   },
+  customField: {
+    marginTop: 5,
+  },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
@@ -136,9 +142,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between", // Distribute buttons evenly
+    justifyContent: "center", // Distribute buttons evenly
     alignItems: "center",
-    marginTop: 20,
+    margin: 10,
   },
   cancelButton: {
     backgroundColor: "red",
@@ -152,6 +158,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "50%",
+    marginLeft: 10,
   },
   buttonText: {
     fontSize: 14,

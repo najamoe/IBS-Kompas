@@ -19,7 +19,7 @@ const FormField = ({
 
   return (
     <View>
-      <Text>{title}</Text>
+      
 
       <View style={styles.form}>
         <TextInput
@@ -38,7 +38,7 @@ const FormField = ({
         {isPasswordField && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <FontAwesome
-              name={!showPassword ? "eye" : "eye-slash"}
+              name={!showPassword ? "eye-slash" : "eye"}
               size={16}
               color="black"
               style={styles.eyeIcon}
@@ -51,7 +51,7 @@ const FormField = ({
             onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             <FontAwesome
-              name={!showConfirmPassword ? "eye" : "eye-slash"}
+              name={!showConfirmPassword ? "eye-slash" : "eye"}
               size={16}
               color="black"
               style={styles.eyeIcon}
@@ -75,19 +75,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "grey",
     borderRadius: 50,
-    marginTop: 10,
-    marginBottom: 15,
+    marginVertical: 10,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    backgroundColor: "white",
-    paddingHorizontal: 10,
-    borderRadius: 40,
+    fontSize: 14,
+    
     height: 40,
-    marginTop: 2,
-    marginLeft: 4,
-    marginBottom: 2,
+    marginLeft: 10,
+   
   },
   eyeIcon: {
     marginLeft: 10,
