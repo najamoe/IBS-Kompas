@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc",
   },
   selectedItemsContainer: {
-    marginTop: 20,
+    marginTop: 30,
     marginBottom: 20,
     width: "100%",
     height: 100,

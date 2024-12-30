@@ -100,30 +100,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
             />
           </View>
 
-          {/* Input fields for quantity and unit */}
-          <View style={styles.quantityContainer}>
-            <TextInput
-              style={styles.quantityInput}
-              placeholder="Mængde"
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={(text) => setQuantity(text)}
-            />
-            <RNPickerSelect
-              useNativeAndroidPickerStyle={false}
-              value={unit}
-              onValueChange={(value) => setUnit(value)}
-              items={[
-                { label: "ml", value: "ml" },
-                { label: "dl", value: "dl" },
-                { label: "L", value: "L" },
-                { label: "gram", value: "gram" },
-                { label: "kg", value: "kg" },
-              ]}
-              placeholder={{ label: "Enhed", value: null }}
-              style={pickerSelectStyles.unit}
-            />
-          </View>
+  
 
           {/* Save and back buttons */}
           <View style={styles.saveandbackbtn}>
@@ -158,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between", // Add this to distribute space
     width: "90%",
     height: "90%",
   },
@@ -174,31 +151,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 50,
   },
-  quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    marginTop: 80,
-    backgroundColor: "#ffffff",
-    width: "100%",
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  quantityInput: {
-    marginRight: 10,
-    borderWidth: 0.5,
-    borderColor: "#cfc9c8",
-    borderRadius: 8,
-    height: 35,
-    width: 60,
-    alignContent: "center",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   saveandbackbtn: {
     flexDirection: "row",
-    
+    justifyContent: "center", 
+    width: "100%",
+    marginTop: "auto", 
   },
   saveButton: {
     backgroundColor: "#86C5D8",
@@ -224,6 +181,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
 
 const pickerSelectStyles = StyleSheet.create({
   selectedType: {
