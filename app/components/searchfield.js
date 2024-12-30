@@ -11,6 +11,7 @@ import {
   Button,
   Alert,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
 import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
@@ -56,7 +57,6 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   const handleAddItem = () => {
     console.log("item from searchfield:", quantity, unit, itemName);
 
-
     if (itemName && quantity && unit) {
       const newItem = { ...selectedItem, quantity, unit };
       setSelectedItems((prevItems) => {
@@ -70,6 +70,13 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
     } else {
       alert("Please enter both quantity and unit.");
     }
+  };
+
+  // Function to handle deleting an item from the selected items list
+  const handleDeleteItem = (itemToDelete) => {
+    setSelectedItems((prevItems) => {
+      return prevItems.filter((item) => item !== itemToDelete);
+    });
   };
 
   return (
@@ -115,6 +122,13 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
                 <Text>
                   {item.quantity} {item.unit}
                 </Text>
+                <MaterialCommunityIcons
+                  name="delete-outline"
+                  onPress={() => handleDeleteItem(item)} // Handle delete
+                  size={24}
+                >
+        
+                </MaterialCommunityIcons>
               </View>
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key
@@ -216,6 +230,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    padding: 5,
+    borderRadius: 5,
   },
   modalContainer: {
     flex: 1,
