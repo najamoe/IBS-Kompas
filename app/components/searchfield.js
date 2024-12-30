@@ -212,26 +212,31 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   searchbar: {
-    width: "90%",
-    backgroundColor: "#333", // Background color of the Searchbar
+    flexDirection: "row",
+    alignItems: "center", // Vertically align the icon and input field
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
     borderRadius: 10, // Rounded corners
+    borderColor: "grey",
+    borderWidth: 0.5,
     elevation: 3, // Shadow for Android
     shadowColor: "#000", // Shadow color for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    paddingHorizontal: 10, // Add padding for inner elements
+    height: 50,
   },
   dropdownContainer: {
     maxHeight: 200,
-    width: "90%",
     backgroundColor: "white",
     borderColor: "grey",
     borderWidth: 0.5,
     elevation: 5,
     position: "absolute",
-    top: 26,
-    left: 30,
-    right: 0,
+    top: 66,
+    left: 10,
+    right: 10,
     zIndex: 1,
   },
   addItemTitle: {
