@@ -200,13 +200,13 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
                  <CustomButton
                   customStyles={[styles.cancelButton]}
                   title="Afbryd"
-                  onPress={() => setShowModal(false)}
+                  handlePress={() => setShowModal(false)}
                 />
                 
                 <CustomButton
                   customStyles={[styles.addButton]}
                   title="Tilføj til liste"
-                  onPress={handleAddItem}
+                  handlePress={handleAddItem}
                 />
                
               </View>
