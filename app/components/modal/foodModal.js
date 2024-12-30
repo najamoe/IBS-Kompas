@@ -37,7 +37,14 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   };
 
   const handleClose = () => {
-    setModalVisible(false); // Close the modal
+    setModalVisible(false);
+  };
+
+  const handleBackdropPress = (e) => {
+    // Only close the modal if the backdrop (outside the modal content) is clicked
+    if (e.target === e.currentTarget) {
+      setModalVisible(false);
+    }
   };
 
   return (
@@ -47,8 +54,11 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       transparent={true}
       onRequestClose={handleClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.container}>
+      <View style={styles.modalOverlay} onTouchStart={handleBackdropPress}>
+        <View
+          style={styles.container}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           {/* Modal Title */}
           <Text style={styles.modalTitle}>Tilføj mad</Text>
 
@@ -62,7 +72,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               { label: "Snack", value: "snack" },
             ]}
             placeholder={{ label: "Vælg måltidstype", value: null }}
-            style={styles.mealType}
+            style={pickerSelectStyles}
           />
 
           <View style={styles.searchContainer}>
@@ -91,7 +101,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
                 { label: "kg", value: "kg" },
               ]}
               placeholder={{ label: "Enhed", value: null }}
-              style={styles.unitPicker}
+              style={pickerSelectStyles}
             />
           </View>
 
@@ -136,24 +146,6 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     marginTop: 10,
   },
-  mealType: {
-    inputIOS: {
-      color: "black",
-      padding: 10,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 5,
-      backgroundColor: "#f0f0f0",
-      width: "80%",
-    },
-    inputAndroid: {
-      padding: 10,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 5,
-      width: "65%",
-    },
-  },
   searchContainer: {
     width: "100%",
     marginBottom: 15,
@@ -161,37 +153,17 @@ const styles = StyleSheet.create({
   },
   quantityContainer: {
     flexDirection: "row",
-    alignItems: "center", 
-    justifyContent: "space-between", 
+    alignItems: "center",
+    justifyContent: "space-between",
     width: "60%",
-
   },
   quantityInput: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
     borderRadius: 5,
-    width: "40%", 
-    marginRight: 10, 
-  },
-  unitPicker: {
-    inputIOS: {
-      color: "black",
-      padding: 10,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 5,
-      backgroundColor: "#f0f0f0",
-    },
-    inputAndroid: {
-      width: "140%",
-      height: 40,
-      padding: 10,
-      borderWidth: 1,
-      borderColor: "#ccc",
-      borderRadius: 5,
-      backgroundColor: "pink",
-    },
+    width: "40%",
+    marginRight: 10,
   },
   saveandbackbtn: {
     flexDirection: "row",
@@ -214,5 +186,28 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: "white",
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: "purple", // Android border color set to purple
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30, // Ensure the icon is not overlapping
   },
 });
