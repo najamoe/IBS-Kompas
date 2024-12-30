@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://world.openfoodfacts.org";
+const BASE_URL = "https://world.openfoodfacts.net";
 
 /**
  * Search for food products by name.
