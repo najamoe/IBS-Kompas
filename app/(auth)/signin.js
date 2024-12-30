@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Image, Modal } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform  } from "react-native";
 import React from "react";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -46,7 +46,10 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior based on platform
+    >
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View>
           <Image source={logo} style={styles.logo} resizeMode="cover" />
@@ -104,7 +107,7 @@ const SignIn = () => {
         resetEmail={resetEmail}
         setResetEmail={setResetEmail}
       />
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
