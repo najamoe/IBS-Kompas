@@ -6,7 +6,7 @@ import CustomButton from "../CustomButton";
 import FormField from "../FormField";
 import { Toast } from "react-native-toast-message"; // Assuming you're using this for notifications
 
-const UpdatePasswordModal = ({ isVisible, closeModal, user }) => {
+const UpdatePasswordModal = ({ user, visible }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,11 +50,16 @@ const UpdatePasswordModal = ({ isVisible, closeModal, user }) => {
     }
   };
 
+  const closeModal = () => {
+    setIsUpdateModalVisible(false);
+  }
+
   return (
     <Modal
-      visible={isVisible}
-      animationType="fade"
-      transparent={false}
+      visible={visible}
+      animationIn="fadeIn"
+      animationOut="fadeOut"
+      backdropColor="rgba(0, 0, 0, 0.6)"
       onRequestClose={closeModal}
     >
       <View style={styles.container}>
@@ -141,6 +146,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     width: "90%",
     gap: 10,
+ 
   },
   cancelButton: {
     backgroundColor: "red",
