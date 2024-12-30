@@ -168,47 +168,47 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
             <View style={styles.modalContent}>
               <Text style={styles.addItemTitle}>Indtast mængde</Text>
               <View style={{ flexDirection: "row" }}>
-              <TextInput
-                placeholder="Mængde"
-                keyboardType="numeric"
-                value={quantity}
-                onChangeText={setQuantity}
-                style={styles.input}
-              />
-              <RNPickerSelect
-                value={unit}
-                useNativeAndroidPickerStyle={false}
-                onValueChange={(value) => {
-                  setUnit(value);
-                }}
-                items={[
-                  { label: "gram", value: "gram" },
-                  { label: "kg", value: "kg" },
-                  { label: "mL", value: "ml" },
-                  { label: "dL", value: "dl" },
-                  { label: "L", value: "l" },
-                ]}
-                style={pickerSelectStyles}
-                placeholder={{
-                  label: "enhed",
-                  value: null,
-                }}
-              />
+                <TextInput
+                  placeholder="Mængde"
+                  keyboardType="numeric"
+                  value={quantity}
+                  onChangeText={setQuantity}
+                  style={styles.input}
+                />
+                <RNPickerSelect
+                  value={unit}
+                  useNativeAndroidPickerStyle={false}
+                  onValueChange={(value) => {
+                    setUnit(value);
+                  }}
+                  items={[
+                    { label: "stk", value: "stk" },
+                    { label: "gram", value: "gram" },
+                    { label: "kg", value: "kg" },
+                    { label: "mL", value: "ml" },
+                    { label: "dL", value: "dl" },
+                    { label: "L", value: "l" },
+                  ]}
+                  style={pickerSelectStyles}
+                  placeholder={{
+                    label: "enhed",
+                    value: null,
+                  }}
+                />
               </View>
 
               <View style={{ flexDirection: "row" }}>
-                 <CustomButton
+                <CustomButton
                   customStyles={[styles.cancelButton]}
                   title="Afbryd"
                   handlePress={() => setShowModal(false)}
                 />
-                
+
                 <CustomButton
                   customStyles={[styles.addButton]}
                   title="Tilføj til liste"
                   handlePress={handleAddItem}
                 />
-               
               </View>
             </View>
           </View>
