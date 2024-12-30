@@ -50,59 +50,62 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
     }
   };
 
-
   return (
     <Modal
       visible={visible}
-      animationIn="fadeIn"
-      animationOut="fadeOut"
-      backdropColor="rgba(0, 0, 0, 0.6)"
+      animationType="fade"
+      transparent={true} // Make the modal transparent
       onRequestClose={closeModal}
     >
-      <View style={styles.container}>
-        {/* Modal Title */}
-        <Text style={styles.modalTitle}>Skift password</Text>
+      <View style={styles.modalBackdrop}>
+        <View style={styles.container}>
+          {/* Modal Title */}
+          <Text style={styles.modalTitle}>Skift password</Text>
 
-        {/* Form Fields */}
-        <FormField
-          label="Nuværende password"
-          placeholder="Indtast nuværende password"
-          secureTextEntry={true}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-        <FormField
-          label="Nyt password"
-          placeholder="Indtast nyt password"
-          secureTextEntry={true}
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-        <FormField
-          label="Bekræft nyt password"
-          placeholder="Bekræft nyt password"
-          secureTextEntry={true}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
+          {/* Form Fields */}
+          <FormField
+            label="Nuværende password"
+            placeholder="Indtast nuværende password"
+            secureTextEntry={true}
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            otherStyles={styles.customField}
+          />
+          <FormField
+            label="Nyt password"
+            placeholder="Indtast nyt password"
+            secureTextEntry={true}
+            value={newPassword}
+            onChangeText={setNewPassword}
+            otherStyles={styles.customField}
+          />
+          <FormField
+            label="Bekræft nyt password"
+            placeholder="Bekræft nyt password"
+            secureTextEntry={true}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            otherStyles={styles.customField}
+          />
 
-        <View style={styles.buttonContainer}>
-          {/* Cancel Button */}
-          <CustomButton
-            title="Annuller"
-            handlePress={() => {
-             closeModal();
-            }}
-            customStyles={styles.cancelButton}
-            textStyles={styles.buttonText}
-          />
-          {/* Change Password Button */}
-          <CustomButton
-            title="Skift password"
-            customStyles={styles.addButton}
-            textStyles={styles.buttonText}
-            handlePress={handleChangePassword}
-          />
+          <View style={styles.buttonContainer}>
+            {/* Cancel Button */}
+            <CustomButton
+              title="Annuller"
+              handlePress={() => {
+                closeModal();
+              }}
+              customStyles={styles.cancelButton}
+              textStyles={styles.buttonText}
+            />
+            {/* Change Password Button */}
+            <CustomButton
+              title="Skift password"
+              customStyles={styles.addButton}
+              textStyles={styles.buttonText}
+              handlePress={handleChangePassword}
+            />
+          </View>
         </View>
       </View>
     </Modal>
@@ -112,35 +115,30 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
 export default UpdatePasswordModal;
 
 const styles = StyleSheet.create({
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly darker background to dim the rest of the screen
+  },
   container: {
     backgroundColor: "white",
-    borderRadius: 20,
-    alignItems: "center",
-    width: "95%",
-    flex: 1,
-    marginTop: "20%",
-    alignSelf: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 10,
+    borderRadius: 10,
+    padding: 20,
+    width: "80%", // Control the width of the modal
+    maxWidth: 400, // Prevent it from being too wide on larger screens
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
     marginTop: 20,
+    textAlign: "center", // Ensure title is centered
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between", // Distribute buttons evenly
     alignItems: "center",
-    position: "absolute",
-    bottom: 20,
-    width: "90%",
-    gap: 10,
- 
+    marginTop: 20,
   },
   cancelButton: {
     backgroundColor: "red",
@@ -153,7 +151,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
     justifyContent: "center",
-    width: "40%",
+    width: "50%",
   },
   buttonText: {
     fontSize: 14,
