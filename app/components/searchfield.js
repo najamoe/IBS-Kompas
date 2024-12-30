@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     paddingLeft: 10,
-    borderRadius: 20,
+    borderRadius: 8,
   },
   resultText: {
     marginLeft: 10,
