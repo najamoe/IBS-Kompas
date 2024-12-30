@@ -121,9 +121,7 @@ const Home = () => {
   };
 
   const handleFoodModal = () => {
-    console.log("Opening modal");
     setIsFoodModalVisible(true); // Open the FoodModal
-    console.log("Modal state after open:", isFoodModalVisible);
   };
 
   const handleAddWater = async (amount) => {
