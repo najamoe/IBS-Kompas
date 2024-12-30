@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   View,
@@ -9,15 +9,22 @@ import {
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import SearchField from "../searchfield";
-import { AntDesign } from "@expo/vector-icons";
-
-
 
 const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
-  const [selectedType, setSelectedType] = useState(null);
+  const [selectedType, setSelectedType] = useState(null); // Picker state
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
   const [foodName, setFoodName] = useState("");
+
+  // Reset the state when modalVisibility changes
+  useEffect(() => {
+    if (!modalVisible) {
+      setSelectedType(null);
+      setQuantity("");
+      setUnit(null);
+      setFoodName("");
+    }
+  }, [modalVisible]);
 
   const handleSaveFood = async () => {
     if (!selectedType || !foodName || !quantity || !unit) {
@@ -31,7 +38,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
     };
 
     try {
-      await addFoodIntake(userId, foodData, selectedType);
+      await addFoodIntake(userId, foodData, selectedType); // Save food intake
       console.log("Food item saved successfully!");
       setModalVisible(false); // Close the modal after saving
     } catch (error) {
@@ -44,7 +51,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   };
 
   const handleBackdropPress = (e) => {
-    // Only close the modal if the backdrop (outside the modal content) is clicked
     if (e.target === e.currentTarget) {
       setModalVisible(false);
     }
@@ -56,15 +62,13 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       animationType="fade"
       transparent={true}
       onRequestClose={handleClose}
+      pointerEvents="box-none"
     >
       <View style={styles.modalOverlay} onTouchStart={handleBackdropPress}>
-        <View
-          style={styles.container}
-          onTouchStart={(e) => e.stopPropagation()}
-        >
-          {/* Modal Title */}
+        <View style={styles.container}>
           <Text style={styles.modalTitle}>Tilføj mad</Text>
 
+          {/* Picker for selecting meal type */}
           <RNPickerSelect
             useNativeAndroidPickerStyle={false}
             value={selectedType}
@@ -77,21 +81,9 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
             ]}
             placeholder={{ label: "Vælg måltidstype", value: null }}
             style={pickerSelectStyles.selectedType}
-            Icon={() => (
-              <AntDesign
-                name="caretdown"
-                size={14}
-                color="grey"
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: "50%",
-                  transform: [{ translateY: +70 }],
-                }}
-              />
-            )}
           />
 
+          {/* Search field for food name */}
           <View style={styles.searchContainer}>
             <SearchField
               placeholder="Søg mad"
@@ -100,6 +92,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
             />
           </View>
 
+          {/* Input fields for quantity and unit */}
           <View style={styles.quantityContainer}>
             <TextInput
               style={styles.quantityInput}
@@ -120,22 +113,10 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               ]}
               placeholder={{ label: "Enhed", value: null }}
               style={pickerSelectStyles.unit}
-              Icon={() => (
-                <AntDesign
-                  name="caretdown"
-                  size={14}
-                  color="grey"
-                  style={{
-                    position: "absolute",
-                    right: -12,
-                    top: "50%",
-                    transform: [{ translateY: +10 }],
-                  }}
-                />
-              )}
             />
           </View>
 
+          {/* Save and back buttons */}
           <View style={styles.saveandbackbtn}>
             <TouchableOpacity onPress={handleClose} style={styles.backButton}>
               <Text style={styles.backButtonText}>Tilbage</Text>
@@ -186,7 +167,7 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20, 
+    marginBottom: 20,
     backgroundColor: "#ffffff",
     width: "50%",
   },
@@ -236,7 +217,7 @@ const pickerSelectStyles = StyleSheet.create({
       borderColor: "#cfc9c8",
       borderRadius: 4,
       color: "black",
-      paddingRight: 40, // Increase padding to fit the icon
+      paddingRight: 40,
       backgroundColor: "#ffffff",
       width: "100%",
       marginTop: 20,
@@ -249,10 +230,8 @@ const pickerSelectStyles = StyleSheet.create({
       borderColor: "#cfc9c8",
       borderRadius: 8,
       color: "black",
-      paddingRight: 40, // Increase padding to fit the icon
       backgroundColor: "#ffffff",
       width: "100%",
-      marginTop: 60,
     },
   },
   unit: {
@@ -267,7 +246,6 @@ const pickerSelectStyles = StyleSheet.create({
       width: "35%",
     },
     inputAndroid: {
-      width: "130%",
       fontSize: 16,
       paddingHorizontal: 8,
       paddingVertical: 8,
@@ -278,4 +256,3 @@ const pickerSelectStyles = StyleSheet.create({
     },
   },
 });
-
