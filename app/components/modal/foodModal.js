@@ -8,27 +8,27 @@ import {
   StyleSheet,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import SearchField from "../searchfield"; 
-import { addFoodIntake } from "../../services/firebase/foodService"; 
+import SearchField from "../searchfield";
+import { addFoodIntake } from "../../services/firebase/foodService";
 
 const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
-  const [selectedType, setSelectedType] = useState(null); // Picker state
+  const [selectedType, setSelectedType] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
-  const [foodName, setFoodName] = useState(""); // State for the food name
+  const [foodName, setFoodName] = useState("");
 
   useEffect(() => {
     console.log("Selected items in FoodModal:", selectedItems);
   }, [selectedItems]);
 
-  // Reset the state when modalVisibility changes
+  // Reset when modalVisibility changes
   useEffect(() => {
     if (!modalVisible) {
       setSelectedType(null);
       setQuantity("");
       setUnit(null);
-      setFoodName(""); // Reset food name when modal closes
+      setFoodName("");
     }
   }, [modalVisible]);
 
@@ -44,9 +44,12 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   };
 
   const handleSaveFood = async () => {
-   
     if (!selectedItems || selectedItems.length === 0) {
-      console.error("No items selected! message from foodModal.js");
+      alert("Ingen mad valgt."); // Shows an alert if no food is selected
+      return;
+    }
+    if (!selectedType) {
+      alert("Vælg venligst en måltidstype."); // Shows an alert if no meal type is selected
       return;
     }
 
@@ -58,20 +61,14 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           quantity: `${item.quantity} ${item.unit}`,
         };
 
-        // Log arguments to check if any is missing
-        console.log("userId:", userId);
-        console.log("foodData:", foodData);
-        console.log("selectedtype:", selectedType);
-
         await addFoodIntake(userId, foodData, selectedType);
-        console.log(`${item.name} saved successfully!`);
+
       }
       setModalVisible(false); // Close the modal after saving
     } catch (error) {
       console.error("Error saving food items:", error);
     }
   };
-
 
   const handleClose = () => {
     setModalVisible(false);
@@ -176,9 +173,9 @@ const styles = StyleSheet.create({
   },
   saveandbackbtn: {
     flexDirection: "row",
-    justifyContent: "center", 
+    justifyContent: "center",
     width: "100%", // Ensure the buttons take full width
-    marginTop: "auto", 
+    marginTop: "auto",
   },
   saveButton: {
     backgroundColor: "#86C5D8",
@@ -204,7 +201,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
 
 const pickerSelectStyles = StyleSheet.create({
   selectedType: {

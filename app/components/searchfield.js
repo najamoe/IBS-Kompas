@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Button,
+  Alert,
 } from "react-native";
 import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
@@ -54,6 +55,7 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   // Function to handle adding the item with quantity and unit to selectedItems
   const handleAddItem = () => {
     console.log("item from searchfield:", quantity, unit, itemName);
+
 
     if (itemName && quantity && unit) {
       const newItem = { ...selectedItem, quantity, unit };
