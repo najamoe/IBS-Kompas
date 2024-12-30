@@ -41,6 +41,8 @@ const WaterModal = ({ isVisible, onClose, onAddWater }) => {
   );
 };
 
+export default WaterModal;
+
 const styles = StyleSheet.create({
   modal: {
     justifyContent: "center", 
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 180, 
     alignItems: "center",
+    elevation: 20,
   },
   buttonsContainer: {
     marginTop: 8,
@@ -91,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WaterModal;
+
