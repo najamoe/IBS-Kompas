@@ -26,10 +26,11 @@ const TabsLayout = () => {
             height: 60,
             borderRadius: 30,
             marginHorizontal: 10,
-            width: "95%",
+            width: "90%", 
             alignSelf: "center", 
-            position: "absolute", 
-            bottom: 4, 
+            position: "absolute",
+            bottom: 4, // Adjust for bottom spacing
+           marginLeft: 20,
             elevation: 5, // Shadow for Android
             shadowColor: "#000", // Shadow for iOS
             shadowOffset: { width: 0, height: 2 },
