@@ -94,7 +94,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
             useNativeAndroidPickerStyle={false}
             value={selectedType}
             onValueChange={(value) => {
-              console.log("Selected Type:", value); // Log the selected value
               setSelectedType(value);
             }}
             items={[
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between", // Add this to distribute space
     width: "90%",
-    height: "90%",
+    height: 650,
   },
   modalTitle: {
     fontSize: 24,
