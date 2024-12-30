@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     width: "100%",
     marginBottom: 15,
-    marginTop: 10,
+    marginTop: 20,
   },
   quantityContainer: {
     flexDirection: "row",
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   quantityInput: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#cfc9c8",
     padding: 10,
     borderRadius: 5,
     width: "40%",
@@ -200,7 +200,8 @@ const pickerSelectStyles = StyleSheet.create({
       borderRadius: 4,
       color: "black",
       paddingRight: 30,
-      backgroundColor: "#f0f0f0", // Background color for selectedType picker
+      backgroundColor: "#ffffff", 
+      width: "100%",
     },
     inputAndroid: {
       fontSize: 16,
@@ -211,7 +212,8 @@ const pickerSelectStyles = StyleSheet.create({
       borderRadius: 8,
       color: "black",
       paddingRight: 30,
-      backgroundColor: "#e0e0e0", // Android background color for selectedType picker
+      backgroundColor: "#ffffff", 
+      width: "100%",
     },
   },
   unit: {
@@ -224,18 +226,19 @@ const pickerSelectStyles = StyleSheet.create({
       borderRadius: 4,
       color: "black",
       paddingRight: 30,
-      backgroundColor: "#fff3e0", // Background color for unit picker
+      backgroundColor: "#fff3e0", 
     },
     inputAndroid: {
       fontSize: 16,
-      paddingHorizontal: 10,
+      paddingHorizontal: 8,
       paddingVertical: 8,
       borderWidth: 0.5,
       borderColor: "#cfc9c8",
       borderRadius: 8,
       color: "black",
       paddingRight: 30,
-      backgroundColor: "#fff0f0", // Android background color for unit picker
+      backgroundColor: "#ffffff", 
+      width: "100%",
     },
   },
 });
