@@ -49,11 +49,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.container}>
-          {/* Close Button (X) */}
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>X</Text>
-          </TouchableOpacity>
-
           {/* Modal Title */}
           <Text style={styles.modalTitle}>Tilføj mad</Text>
 
@@ -67,33 +62,38 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               { label: "Snack", value: "snack" },
             ]}
             placeholder={{ label: "Vælg måltidstype", value: null }}
+            style={styles.mealType}
           />
 
-          <SearchField
-            placeholder="Søg mad"
-            value={foodName}
-            onChangeText={(text) => setFoodName(text)}
-          />
+          <View style={styles.searchContainer}>
+            <SearchField
+              placeholder="Søg mad"
+              value={foodName}
+              onChangeText={(text) => setFoodName(text)}
+            />
+          </View>
 
-          <Text style={styles.quantityText}>Mængde</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Mængde"
-            keyboardType="numeric"
-            value={quantity}
-            onChangeText={(text) => setQuantity(text)}
-          />
-          <RNPickerSelect
-            value={unit}
-            onValueChange={(value) => setUnit(value)}
-            items={[
-              { label: "ml", value: "ml" },
-              { label: "L", value: "L" },
-              { label: "gram", value: "gram" },
-              { label: "kg", value: "kg" },
-            ]}
-            placeholder={{ label: "Enhed", value: null }}
-          />
+          <View style={styles.quantityContainer}>
+            <TextInput
+              style={styles.quantityInput}
+              placeholder="Mængde"
+              keyboardType="numeric"
+              value={quantity}
+              onChangeText={(text) => setQuantity(text)}
+            />
+            <RNPickerSelect
+              value={unit}
+              onValueChange={(value) => setUnit(value)}
+              items={[
+                { label: "ml", value: "ml" },
+                { label: "L", value: "L" },
+                { label: "gram", value: "gram" },
+                { label: "kg", value: "kg" },
+              ]}
+              placeholder={{ label: "Enhed", value: null }}
+              style={styles.unitPicker}
+            />
+          </View>
 
           <View style={styles.saveandbackbtn}>
             <TouchableOpacity onPress={handleClose} style={styles.backButton}>
@@ -127,22 +127,75 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
+    justifyContent: "flex-start",
     width: "90%",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 10,
+    height: "70%",
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
-    marginBottom: 20,
+    marginTop: 10,
+  },
+  mealType: {
+    inputIOS: {
+      color: "black",
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 5,
+      backgroundColor: "#f0f0f0",
+      width: "80%",
+    },
+    inputAndroid: {
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 5,
+      width: "65%",
+    },
+  },
+  searchContainer: {
+    width: "100%",
+    marginBottom: 15,
+    marginTop: 10,
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center", 
+    justifyContent: "space-between", 
+    width: "60%",
+
+  },
+  quantityInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    width: "40%", 
+    marginRight: 10, 
+  },
+  unitPicker: {
+    inputIOS: {
+      color: "black",
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 5,
+      backgroundColor: "#f0f0f0",
+    },
+    inputAndroid: {
+      width: "140%",
+      height: 40,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: "#ccc",
+      borderRadius: 5,
+      backgroundColor: "pink",
+    },
   },
   saveandbackbtn: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 30,
   },
   saveButton: {
     backgroundColor: "#86C5D8",
@@ -161,26 +214,5 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: "white",
-  },
-  quantityText: {
-    fontSize: 18,
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    width: "100%",
-    marginBottom: 10,
-  },
-});
-
-const pickerSelectStyles = StyleSheet.create({
-  inputAndroid: {
-    fontSize: 16,
-    marginVertical: 10,
-    color: "black",
   },
 });
