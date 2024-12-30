@@ -172,13 +172,11 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    if (isUpdateModalVisible) {
-      console.log("Update password modal is visible", isUpdateModalVisible);
-    } else {
-      console.log("Update password modal is hidden", isUpdateModalVisible);
-    }
-  }, [isUpdateModalVisible]);
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -425,7 +423,6 @@ const Profile = () => {
               ]}
               textStyles={styles.buttonTextStyle}
               handlePress={() => {
-                console.log("Update password button pressed");
                 setIsUpdateModalVisible(true);
               }}
             />
@@ -447,7 +444,6 @@ const Profile = () => {
 
       {isUpdateModalVisible && (
         <UpdatePasswordModal
-          transparent={false}
           visible={isUpdateModalVisible}
           closeModal={() => setIsUpdateModalVisible(false)}
           user={auth.currentUser}

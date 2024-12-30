@@ -6,7 +6,7 @@ import CustomButton from "../CustomButton";
 import FormField from "../FormField";
 import { Toast } from "react-native-toast-message"; // Assuming you're using this for notifications
 
-const UpdatePasswordModal = ({ user, visible }) => {
+const UpdatePasswordModal = ({ user, visible, closeModal }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,9 +50,6 @@ const UpdatePasswordModal = ({ user, visible }) => {
     }
   };
 
-  const closeModal = () => {
-    setIsUpdateModalVisible(false);
-  }
 
   return (
     <Modal
@@ -63,11 +60,6 @@ const UpdatePasswordModal = ({ user, visible }) => {
       onRequestClose={closeModal}
     >
       <View style={styles.container}>
-        {/* Close Button (X) */}
-        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-          <Entypo name="cross" size={30} color="black" />
-        </TouchableOpacity>
-
         {/* Modal Title */}
         <Text style={styles.modalTitle}>Skift password</Text>
 
@@ -98,7 +90,9 @@ const UpdatePasswordModal = ({ user, visible }) => {
           {/* Cancel Button */}
           <CustomButton
             title="Annuller"
-            handlePress={closeModal}
+            handlePress={() => {
+             closeModal();
+            }}
             customStyles={styles.cancelButton}
             textStyles={styles.buttonText}
           />
