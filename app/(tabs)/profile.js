@@ -419,7 +419,6 @@ const Profile = () => {
               ]}
               textStyles={styles.buttonTextStyle}
               handlePress={() => {
-                console.log("Button pressed");
                 setIsUpdateModalVisible(true);
               }}
             />
