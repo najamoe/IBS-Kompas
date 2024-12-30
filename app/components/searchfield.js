@@ -72,21 +72,65 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   };
 
   // Function to handle adding the item with quantity and unit to selectedItems
-  const handleAddItem = () => {
-    console.log("item from searchfield:", quantity, unit, itemName);
+const handleAddItem = () => {
+  console.log("item from searchfield:", quantity, unit, itemName);
 
+  if (itemName && quantity && unit) {
+    const newItem = { ...selectedItem, name: itemName, quantity, unit };
+
+    setSelectedItems((prevItems) => {
+      // Check if an item with the same name already exists
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.name === newItem.name
+      );
+
+      if (existingItemIndex !== -1) {
+        // Replace the existing item with the new one
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = newItem;
+        return updatedItems;
+      } else {
+        // Append the new item to the list
+        return [...prevItems, newItem];
+      }
+    });
+
+    // Reset fields and close modal
+    setItemName("");
+    setQuantity("");
+    setUnit("");
+    setShowModal(false);
+  } else {
+    alert("Please enter both quantity and unit.");
+  }
+};
+
+
+  // Function to handle editing an existing item in the selectedItems list
+  const handleEditItem = (item) => {
+    setSelectedItem(item); // Store the selected item to edit
+    setItemName(item.name); // Pre-fill the item name
+    setQuantity(item.quantity); // Pre-fill the quantity
+    setUnit(item.unit); // Pre-fill the unit
+    setShowModal(true); // Open the modal
+  };
+
+  // Function to save changes to the selected item
+  const handleSaveChanges = () => {
     if (itemName && quantity && unit) {
-      const newItem = { ...selectedItem, quantity, unit };
-      setSelectedItems((prevItems) => {
-        // Directly append new item to the previous items
-        return [...prevItems, newItem]; // Directly return the updated array
-      });
-      setItemName("");
+      setSelectedItems((prevItems) =>
+        prevItems.map((item) =>
+          item === selectedItem
+            ? { ...item, name: itemName, quantity, unit } // Update the selected item
+            : item
+        )
+      );
+      setItemName(""); // Reset fields
       setQuantity("");
       setUnit("");
-      setShowModal(false);
+      setShowModal(false); // Close the modal
     } else {
-      alert("Please enter both quantity and unit.");
+      Alert.alert("Validation Error", "Please fill in all fields.");
     }
   };
 
@@ -140,12 +184,14 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
             data={selectedItems}
             renderItem={({ item }) => (
               <View style={styles.selectedItem}>
-                {/* Left part: Item name, quantity, and unit */}
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={{ marginRight: 10 }}>{item.name}</Text>
-                  <Text style={{ marginRight: 10 }}>{item.quantity}</Text>
-                  <Text>{item.unit}</Text>
-                </View>
+                <TouchableOpacity onPress={() => handleEditItem(item)}>
+                  {/* Left part: Item name, quantity, and unit */}
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={{ marginRight: 10 }}>{item.name}</Text>
+                    <Text style={{ marginRight: 10 }}>{item.quantity}</Text>
+                    <Text>{item.unit}</Text>
+                  </View>
+                </TouchableOpacity>
 
                 {/* Right part: Delete icon */}
                 <TouchableOpacity
