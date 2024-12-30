@@ -63,6 +63,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           <Text style={styles.modalTitle}>Tilføj mad</Text>
 
           <RNPickerSelect
+            useNativeAndroidPickerStyle={false}
             value={selectedType}
             onValueChange={(value) => setSelectedType(value)}
             items={[
@@ -72,7 +73,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               { label: "Snack", value: "snack" },
             ]}
             placeholder={{ label: "Vælg måltidstype", value: null }}
-            style={pickerSelectStyles}
+            style={pickerSelectStyles.selectedType}
           />
 
           <View style={styles.searchContainer}>
@@ -83,27 +84,26 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
             />
           </View>
 
-          <View style={styles.quantityContainer}>
-            <TextInput
-              style={styles.quantityInput}
-              placeholder="Mængde"
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={(text) => setQuantity(text)}
-            />
-            <RNPickerSelect
-              value={unit}
-              onValueChange={(value) => setUnit(value)}
-              items={[
-                { label: "ml", value: "ml" },
-                { label: "L", value: "L" },
-                { label: "gram", value: "gram" },
-                { label: "kg", value: "kg" },
-              ]}
-              placeholder={{ label: "Enhed", value: null }}
-              style={pickerSelectStyles}
-            />
-          </View>
+          <TextInput
+            style={styles.quantityInput}
+            placeholder="Mængde"
+            keyboardType="numeric"
+            value={quantity}
+            onChangeText={(text) => setQuantity(text)}
+          />
+          <RNPickerSelect
+            useNativeAndroidPickerStyle={false}
+            value={unit}
+            onValueChange={(value) => setUnit(value)}
+            items={[
+              { label: "ml", value: "ml" },
+              { label: "L", value: "L" },
+              { label: "gram", value: "gram" },
+              { label: "kg", value: "kg" },
+            ]}
+            placeholder={{ label: "Enhed", value: null }}
+            style={pickerSelectStyles.unit}
+          />
 
           <View style={styles.saveandbackbtn}>
             <TouchableOpacity onPress={handleClose} style={styles.backButton}>
@@ -190,24 +190,52 @@ const styles = StyleSheet.create({
 });
 
 const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 4,
-    color: "black",
-    paddingRight: 30,
+  selectedType: {
+    inputIOS: {
+      fontSize: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: "#cfc9c8",
+      borderRadius: 4,
+      color: "black",
+      paddingRight: 30,
+      backgroundColor: "#f0f0f0", // Background color for selectedType picker
+    },
+    inputAndroid: {
+      fontSize: 16,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      borderWidth: 0.5,
+      borderColor: "#cfc9c8",
+      borderRadius: 8,
+      color: "black",
+      paddingRight: 30,
+      backgroundColor: "#e0e0e0", // Android background color for selectedType picker
+    },
   },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: "purple", // Android border color set to purple
-    borderRadius: 8,
-    color: "black",
-    paddingRight: 30, // Ensure the icon is not overlapping
+  unit: {
+    inputIOS: {
+      fontSize: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderColor: "#cfc9c8",
+      borderRadius: 4,
+      color: "black",
+      paddingRight: 30,
+      backgroundColor: "#fff3e0", // Background color for unit picker
+    },
+    inputAndroid: {
+      fontSize: 16,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      borderWidth: 0.5,
+      borderColor: "#cfc9c8",
+      borderRadius: 8,
+      color: "black",
+      paddingRight: 30,
+      backgroundColor: "#fff0f0", // Android background color for unit picker
+    },
   },
 });
