@@ -44,10 +44,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   };
 
   const handleSaveFood = async () => {
-    console.log(
-      "Selected items before saving - message from foodModal.js : ",
-      selectedItems
-    ); // Log before processing
+   
     if (!selectedItems || selectedItems.length === 0) {
       console.error("No items selected! message from foodModal.js");
       return;
@@ -61,7 +58,12 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           quantity: `${item.quantity} ${item.unit}`,
         };
 
-        await addFoodIntake(userId, foodData, item.type);
+        // Log arguments to check if any is missing
+        console.log("userId:", userId);
+        console.log("foodData:", foodData);
+        console.log("selectedtype:", selectedType);
+
+        await addFoodIntake(userId, foodData, selectedType);
         console.log(`${item.name} saved successfully!`);
       }
       setModalVisible(false); // Close the modal after saving
@@ -69,6 +71,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       console.error("Error saving food items:", error);
     }
   };
+
 
   const handleClose = () => {
     setModalVisible(false);
@@ -96,7 +99,10 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           <RNPickerSelect
             useNativeAndroidPickerStyle={false}
             value={selectedType}
-            onValueChange={(value) => setSelectedType(value)}
+            onValueChange={(value) => {
+              console.log("Selected Type:", value); // Log the selected value
+              setSelectedType(value);
+            }}
             items={[
               { label: "Morgenmad", value: "breakfast" },
               { label: "Frokost", value: "lunch" },

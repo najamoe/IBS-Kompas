@@ -133,7 +133,7 @@ const Home = () => {
         await addWaterIntake(user.uid, newWaterIntake); // Add the new water intake
         setWaterIntake(newWaterIntake); // Update the local state
       } catch (error) {
-        console.error("Error adding water to daily log:", error.message);
+        //Insert error handling
       }
     } else {
       alert("Please sign in to log your water intake.");
@@ -150,7 +150,7 @@ const Home = () => {
         ); // Pass the amount to remove
         setWaterIntake(newWaterIntake); // Update the local state with the new value
       } catch (error) {
-        console.error("Error removing water from daily log:", error.message);
+        //Insert error handling
       }
     } else {
       alert("Please sign in to remove water intake.");
