@@ -1,11 +1,40 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import { Entypo } from "@expo/vector-icons"; // Ensure you import the necessary icon library
+import SearchField from "../searchfield";
 
-const FoodModal = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   const [selectedType, setSelectedType] = useState(null);
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState(null);
+  const [foodName, setFoodName] = useState("");
+
+  const handleSaveFood = async () => {
+    if (!selectedType || !foodName || !quantity || !unit) {
+      console.error("All fields are required!");
+      return;
+    }
+
+    const foodData = {
+      name: foodName,
+      quantity: `${quantity} ${unit}`,
+    };
+
+    try {
+      await addFoodIntake(userId, foodData, selectedType);
+      console.log("Food item saved successfully!");
+      setModalVisible(false); // Close the modal after saving
+    } catch (error) {
+      console.error("Error saving food item:", error);
+    }
+  };
 
   const handleClose = () => {
     setModalVisible(false); // Close the modal
@@ -13,36 +42,72 @@ const FoodModal = () => {
 
   return (
     <Modal
-      isVisible={modalVisible}
-      animationIn="fadeIn"
-      animationOut="fadeOut"
-      backdropColor="rgba(0, 0, 0, 0.6)"
-      onBackdropPress={handleClose}
+      visible={modalVisible}
+      animationType="fade"
+      transparent={true}
       onRequestClose={handleClose}
-      style={styles.modal}
     >
-      <View style={styles.container}>
-        {/* Close Button (X) */}
-        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-          <Entypo name="cross" size={30} color="black" />
-        </TouchableOpacity>
+      <View style={styles.modalOverlay}>
+        <View style={styles.container}>
+          {/* Close Button (X) */}
+          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+            <Text style={{ fontSize: 18, fontWeight: "bold" }}>X</Text>
+          </TouchableOpacity>
 
-        {/* Modal Title */}
-        <Text style={styles.modalTitle}>Tilføj mad</Text>
+          {/* Modal Title */}
+          <Text style={styles.modalTitle}>Tilføj mad</Text>
 
-        <RNPickerSelect
-          value={selectedType}
-          useNativeAndroidPickerStyle={false}
-          onValueChange={(value) => setSelectedType(value)}
-          items={[
-            { label: "Morgenmad", value: "breakfast" },
-            { label: "Frokost", value: "lunch" },
-            { label: "Aftensmad", value: "dinner" },
-            { label: "Snack", value: "snack" },
-          ]}
-          placeholder={{ label: "Vælg måltidstype", value: null }}
-          style={pickerSelectStyles}
-        />
+          <RNPickerSelect
+            value={selectedType}
+            onValueChange={(value) => setSelectedType(value)}
+            items={[
+              { label: "Morgenmad", value: "breakfast" },
+              { label: "Frokost", value: "lunch" },
+              { label: "Aftensmad", value: "dinner" },
+              { label: "Snack", value: "snack" },
+            ]}
+            placeholder={{ label: "Vælg måltidstype", value: null }}
+          />
+
+          <SearchField
+            placeholder="Søg mad"
+            value={foodName}
+            onChangeText={(text) => setFoodName(text)}
+          />
+
+          <Text style={styles.quantityText}>Mængde</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Mængde"
+            keyboardType="numeric"
+            value={quantity}
+            onChangeText={(text) => setQuantity(text)}
+          />
+          <RNPickerSelect
+            value={unit}
+            onValueChange={(value) => setUnit(value)}
+            items={[
+              { label: "ml", value: "ml" },
+              { label: "L", value: "L" },
+              { label: "gram", value: "gram" },
+              { label: "kg", value: "kg" },
+            ]}
+            placeholder={{ label: "Enhed", value: null }}
+          />
+
+          <View style={styles.saveandbackbtn}>
+            <TouchableOpacity onPress={handleClose} style={styles.backButton}>
+              <Text style={styles.backButtonText}>Tilbage</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleSaveFood}
+              style={styles.saveButton}
+            >
+              <Text style={styles.saveButtonText}>Gem Log</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </Modal>
   );
@@ -51,15 +116,18 @@ const FoodModal = () => {
 export default FoodModal;
 
 const styles = StyleSheet.create({
-  modal: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    justifyContent: "center",
     alignItems: "center",
   },
   container: {
     backgroundColor: "white",
     borderRadius: 20,
+    padding: 20,
     alignItems: "center",
-    width: "95%",
-    flex: 1,
+    width: "90%",
   },
   closeButton: {
     position: "absolute",
@@ -70,15 +138,49 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
+    marginBottom: 20,
+  },
+  saveandbackbtn: {
+    flexDirection: "row",
     marginTop: 20,
+  },
+  saveButton: {
+    backgroundColor: "#86C5D8",
+    padding: 15,
+    borderRadius: 25,
+    marginLeft: 10,
+  },
+  saveButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  backButton: {
+    backgroundColor: "gray",
+    padding: 15,
+    borderRadius: 25,
+  },
+  backButtonText: {
+    color: "white",
+  },
+  quantityText: {
+    fontSize: 18,
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    width: "100%",
+    marginBottom: 10,
   },
 });
 
 const pickerSelectStyles = StyleSheet.create({
   inputAndroid: {
     fontSize: 16,
-    marginLeft: 10,
+    marginVertical: 10,
     color: "black",
-    height: 35,
   },
 });

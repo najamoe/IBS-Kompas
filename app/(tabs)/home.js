@@ -6,7 +6,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -16,11 +15,8 @@ import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import foodModal from "../components/modal/foodModal";
-import {
-  addFoodIntake,
-  fetchFoodIntake,
-} from "../services/firebase/foodService";
+import FoodModal from "../components/modal/foodModal";
+import { fetchFoodIntake } from "../services/firebase/foodService";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -39,7 +35,6 @@ import {
   deleteSymptom,
 } from "../services/firebase/symptomService";
 import Checkbox from "../components/Checkbox";
-import SearchField from "../components/searchfield";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -65,7 +60,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
-  const [foodIntake, setFoodIntake] = useState([]);
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -125,16 +120,10 @@ const Home = () => {
     setSelectedDate(formatDateStorage(newDate));
   };
 
-  const handleSearch = async (query) => {
-    console.log(`Searching for: ${query}`); // Debug search trigger
-    if (query.length >= 3) {
-      try {
-        const results = await api.search(query); // Replace with actual API call
-        console.log("API Results:", results); // Debug API response
-      } catch (error) {
-        console.error("Error during search:", error);
-      }
-    }
+  const handleFoodModal = () => {
+    console.log("Opening modal");
+    setIsFoodModalVisible(true); // Open the FoodModal
+    console.log("Modal state after open:", isFoodModalVisible);
   };
 
   const handleAddWater = async (amount) => {
@@ -261,21 +250,21 @@ const Home = () => {
 
         <View style={styles.foodContainer}>
           <Text style={styles.logTitle}> Madlog </Text>
+          <TouchableOpacity onPress={handleFoodModal}>
+            <AntDesign name="pluscircleo" size={30} color="black" />
+          </TouchableOpacity>
 
           <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Morgenmad</Text>
-            <SearchField
-              onSearch={(query) => {
-                console.log("Search query in Home:", query); // Debugging in Home
-                handleSearch(query); // Your API search logic
-              }}
-            />
-          </View>
-
-          <View style={styles.foodContent}>
-           <foodModal />
+            {/* Map over foodIntake and render each item */}
           </View>
         </View>
+
+        {/* Render FoodModal */}
+        <FoodModal
+          modalVisible={isFoodModalVisible}
+          setModalVisible={setIsFoodModalVisible}
+          userId={user?.uid}
+        />
 
         <View style={styles.waterContainer}>
           <View style={styles.logTitleContainer}>
