@@ -37,7 +37,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
 
   // Update the food name when a food item is selected
   const handleFoodSelect = (item) => {
-    console.log("Selected food item in foodModal:", item);
     setFoodName(item.name); // Update foodName with the selected item's name
   };
 
