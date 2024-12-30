@@ -1,5 +1,5 @@
 // SearchField.js (Child)
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
@@ -44,6 +44,14 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
       setSearchResults([]); // Clear results if query is too short
     }
   };
+
+  //Debounce the search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearch(query);
+    }, 500);
+    return () => clearTimeout(timer); //Cleanup on unmount
+  }, [query]);
 
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
@@ -204,20 +212,25 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   searchbar: {
-    backgroundColor: "black",
-    flexDirection: "row",
+    width: "90%",
+    backgroundColor: "#333", // Background color of the Searchbar
+    borderRadius: 10, // Rounded corners
+    elevation: 3, // Shadow for Android
+    shadowColor: "#000", // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   dropdownContainer: {
-    marginTop: 10,
     maxHeight: 200,
     width: "90%",
     backgroundColor: "white",
-    borderRadius: 10,
     borderColor: "grey",
     borderWidth: 0.5,
+    elevation: 5,
     position: "absolute",
-    top: 2,
-    left: 0,
+    top: 26,
+    left: 30,
     right: 0,
     zIndex: 1,
   },
