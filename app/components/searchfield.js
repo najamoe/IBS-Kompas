@@ -100,6 +100,8 @@ const handleAddItem = () => {
     setQuantity("");
     setUnit("");
     setShowModal(false);
+
+    setSearchResults([]); // Clear search results
   } else {
     alert("Please enter both quantity and unit.");
   }
@@ -113,25 +115,6 @@ const handleAddItem = () => {
     setQuantity(item.quantity); // Pre-fill the quantity
     setUnit(item.unit); // Pre-fill the unit
     setShowModal(true); // Open the modal
-  };
-
-  // Function to save changes to the selected item
-  const handleSaveChanges = () => {
-    if (itemName && quantity && unit) {
-      setSelectedItems((prevItems) =>
-        prevItems.map((item) =>
-          item === selectedItem
-            ? { ...item, name: itemName, quantity, unit } // Update the selected item
-            : item
-        )
-      );
-      setItemName(""); // Reset fields
-      setQuantity("");
-      setUnit("");
-      setShowModal(false); // Close the modal
-    } else {
-      Alert.alert("Validation Error", "Please fill in all fields.");
-    }
   };
 
   // Function to handle deleting an item from the selected items list
@@ -290,7 +273,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Rounded corners
     borderColor: "grey",
     borderWidth: 0.5,
-    elevation: 3, // Shadow for Android
+    elevation: 5, // Shadow for Android
     shadowColor: "#000", // Shadow color for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
