@@ -61,6 +61,8 @@ const Home = () => {
   );
   const [user, setUser] = useState(null);
   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [updatedItems, setUpdatedItems] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -262,6 +264,8 @@ const Home = () => {
           modalVisible={isFoodModalVisible}
           setModalVisible={setIsFoodModalVisible}
           userId={user?.uid}
+          selectedItems={selectedItems}
+          updatedItem={updatedItems}
         />
 
         <View style={styles.waterContainer}>

@@ -1,3 +1,4 @@
+// SearchField.js (Child)
 import React, { useState } from "react";
 import {
   View,
@@ -13,14 +14,13 @@ import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
 import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
 
-const SearchField = () => {
+const SearchField = ({ selectedItems, setSelectedItems }) => {
   const [query, setQuery] = useState(""); // Search query
   const [searchResults, setSearchResults] = useState([]); // Search results
   const [loading, setLoading] = useState(false); // Loading state
-  const [selectedItems, setSelectedItems] = useState([]); // Selected items
-  const [page, setPage] = useState(1); // Current page for pagination
   const [showModal, setShowModal] = useState(false); // Control modal visibility
   const [selectedItem, setSelectedItem] = useState(null); // Store selected item
+  const [itemName, setItemName] = useState(""); // Item name input
   const [quantity, setQuantity] = useState(""); // Quantity input
   const [unit, setUnit] = useState(""); // Unit input
 
@@ -31,8 +31,8 @@ const SearchField = () => {
       // Trigger search when the query is at least 3 characters
       setLoading(true);
       try {
-        // Fetch products based on the search query and current page
-        const results = await searchProducts(query, page);
+        // Fetch products based on the search query
+        const results = await searchProducts(query);
         setSearchResults(results); // Update state with new search results
       } catch (error) {
         setSearchResults([]); // Reset results if there is an error
@@ -45,20 +45,23 @@ const SearchField = () => {
 
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
-    console.log("Selected item:", item);
+    console.log("Selected item in searchfield:", item);
     setSelectedItem(item); // Store the selected item
+    setItemName(item.name); // Store the selected item name
     setShowModal(true); // Show the modal to input quantity and unit
   };
 
-  // Function to handle adding the item with quantity and unit
+  // Function to handle adding the item with quantity and unit to selectedItems
   const handleAddItem = () => {
-    if (quantity && unit) {
-      // Add the selected item with the quantity and unit to the selectedItems list
-      setSelectedItems((prevItems) => [
-        ...prevItems,
-        { ...selectedItem, quantity, unit },
-      ]);
-      // Clear the modal and inputs
+    console.log("item from searchfield:", quantity, unit, itemName);
+
+    if (itemName && quantity && unit) {
+      const newItem = { ...selectedItem, quantity, unit };
+      setSelectedItems((prevItems) => {
+        // Directly append new item to the previous items
+        return [...prevItems, newItem]; // Directly return the updated array
+      });
+      setItemName("");
       setQuantity("");
       setUnit("");
       setShowModal(false);
@@ -253,5 +256,3 @@ const pickerSelectStyles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-
-

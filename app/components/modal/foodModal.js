@@ -13,9 +13,14 @@ import { addFoodIntake } from "../../services/firebase/foodService";
 
 const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   const [selectedType, setSelectedType] = useState(null); // Picker state
+  const [selectedItems, setSelectedItems] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
   const [foodName, setFoodName] = useState(""); // State for the food name
+
+  useEffect(() => {
+    console.log("Selected items in FoodModal:", selectedItems);
+  }, [selectedItems]);
 
   // Reset the state when modalVisibility changes
   useEffect(() => {
@@ -27,29 +32,41 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
     }
   }, [modalVisible]);
 
+  // Function to handle updating selected items from SearchField
+  const updateSelectedItems = (items) => {
+    setSelectedItems(items); // Update the state with selected items
+  };
+
   // Update the food name when a food item is selected
   const handleFoodSelect = (item) => {
+    console.log("Selected food item in foodModal:", item);
     setFoodName(item.name); // Update foodName with the selected item's name
   };
 
   const handleSaveFood = async () => {
-    if (!selectedType || !foodName || !quantity || !unit) {
-      console.error("All fields are required!");
+    console.log(
+      "Selected items before saving - message from foodModal.js : ",
+      selectedItems
+    ); // Log before processing
+    if (!selectedItems || selectedItems.length === 0) {
+      console.error("No items selected! message from foodModal.js");
       return;
     }
 
-    const foodData = {
-      name: foodName,
-      quantity: `${quantity} ${unit}`,
-    };
-
     try {
-      // Save the food intake to Firestore
-      await addFoodIntake(userId, foodData, selectedType);
-      console.log("Food item saved successfully!");
+      for (const item of selectedItems) {
+        const foodData = {
+          name: item.name,
+          brand: item.brand,
+          quantity: `${item.quantity} ${item.unit}`,
+        };
+
+        await addFoodIntake(userId, foodData, item.type);
+        console.log(`${item.name} saved successfully!`);
+      }
       setModalVisible(false); // Close the modal after saving
     } catch (error) {
-      console.error("Error saving food item:", error);
+      console.error("Error saving food items:", error);
     }
   };
 
@@ -96,11 +113,11 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               userId={userId} // Pass userId to SearchField
               foodName={foodName} // Bind the state for food name
               setFoodName={setFoodName} // Pass the setter for food name
-              onFoodSelect={handleFoodSelect} // Handle selected food
+              onFoodSelect={handleFoodSelect}
+              selectedItems={selectedItems}
+              setSelectedItems={updateSelectedItems} // Handle selected food
             />
           </View>
-
-  
 
           {/* Save and back buttons */}
           <View style={styles.saveandbackbtn}>
@@ -154,7 +171,7 @@ const styles = StyleSheet.create({
   saveandbackbtn: {
     flexDirection: "row",
     justifyContent: "center", 
-    width: "100%",
+    width: "100%", // Ensure the buttons take full width
     marginTop: "auto", 
   },
   saveButton: {
