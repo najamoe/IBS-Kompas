@@ -169,7 +169,7 @@ const Home = () => {
 
   const handleEmoticonPress = async (emoticon) => {
     if (!user) {
-      console.error("User not logged in");
+   //Insert error handling
       return;
     }
 
@@ -211,7 +211,7 @@ const Home = () => {
           await deleteSymptom(user.uid, symptom, selectedDate); // Remove the symptom from Firestore
         }
       } catch (error) {
-        console.error("Error handling checkbox change:", error);
+        //Insert error handling
       }
     }
   };
