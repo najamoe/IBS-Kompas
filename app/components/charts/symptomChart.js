@@ -4,7 +4,7 @@ import React from 'react'
 const SymptomChart = () => {
   return (
     <View>
-      <Text>S</Text>
+      <Text>SymptomChart</Text>
     </View>
   )
 }
