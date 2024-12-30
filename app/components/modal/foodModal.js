@@ -18,9 +18,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   const [unit, setUnit] = useState(null);
   const [foodName, setFoodName] = useState("");
 
-  useEffect(() => {
-    console.log("Selected items in FoodModal:", selectedItems);
-  }, [selectedItems]);
+
 
   // Reset when modalVisibility changes
   useEffect(() => {
