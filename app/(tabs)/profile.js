@@ -18,18 +18,14 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { MultiSelect } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/FontAwesome";
-import {
-  signOutUser,
-  deleteUserAccount,
-  resetPassword,
-} from "../firebase/auth";
+import { signOutUser, deleteUserAccount } from "../firebase/auth";
 import CustomButton from "../components/CustomButton";
 import firebaseConfig from "../firebase/FirebaseConfig";
 import {
   fetchUserDetails,
   updateUserDetails,
 } from "../firebase/firestoreService";
-import ResetPasswordModal from "../components/modal/passwordReset";
+import UpdatePasswordModal from "../components/modal/updatePasswordModal";
 import icon from "../../assets/icon.png";
 import { Poppins_600SemiBold_Italic } from "@expo-google-fonts/poppins";
 
@@ -51,6 +47,7 @@ const allergyOptions = [
 const Profile = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date());
@@ -59,7 +56,7 @@ const Profile = () => {
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
-  const [resetEmail, setResetEmail] = useState("");
+
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
@@ -69,14 +66,6 @@ const Profile = () => {
       setRefreshing(false);
     }, 200);
   }, []);
-  const handlePasswordReset = async () => {
-    try {
-      await resetPassword(resetEmail);
-      setModalVisible(false);
-    } catch (error) {
-      console.error("Password reset error:", error);
-    }
-  };
 
   useEffect(() => {
     const getUserData = async () => {
@@ -173,6 +162,7 @@ const Profile = () => {
     }
   };
 
+
   const handleDeleteUser = async () => {
     try {
       console.log("Delete account function triggered");
@@ -182,6 +172,7 @@ const Profile = () => {
       console.error("Something went wrong with account deletion", error);
     }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -421,13 +412,16 @@ const Profile = () => {
             />
 
             <CustomButton
-              title="Nulstil password"
+              title="Skift password"
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#AFDCEB" },
               ]}
               textStyles={styles.buttonTextStyle}
-              handlePress={handlePasswordReset}
+              handlePress={() => {
+                console.log("Button pressed");
+                setIsUpdateModalVisible(true);
+              }}
             />
 
             <CustomButton
@@ -444,14 +438,14 @@ const Profile = () => {
           </View>
         </View>
       </ScrollView>
-      <ResetPasswordModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        handlePasswordReset={handlePasswordReset}
-        resetEmail={resetEmail}
-        setResetEmail={setResetEmail}
-      />
-      <StatusBar backgroundColor="#161622" style="light" />
+
+      {isUpdateModalVisible && (
+        <UpdatePasswordModal
+          isVisible={isUpdateModalVisible}
+          closeModal={() => setModalVisible(false)}
+          user={auth.currentUser}
+        />
+      )}
 
       <Modal
         visible={modalVisible}
@@ -479,6 +473,8 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
+
+      <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
 };
