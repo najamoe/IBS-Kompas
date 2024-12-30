@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import { Tabs, Redirect } from 'expo-router';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Entypo } from '@expo/vector-icons';
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Tabs, Redirect } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Entypo } from "@expo/vector-icons";
 
 const TabIcon = ({ name, color, size, iconType }) => {
-     if (iconType === "font-awesome") {
-       return <FontAwesome name={name} color={color} size={size} />;
-     }
-     return <Entypo name={name} color={color} size={size} />;
-  };
+  if (iconType === "font-awesome") {
+    return <FontAwesome name={name} color={color} size={size} />;
+  }
+  return <Entypo name={name} color={color} size={size} />;
+};
 
 const TabsLayout = () => {
   return (
@@ -24,12 +24,13 @@ const TabsLayout = () => {
             borderTopWidth: 1,
             borderTopColor: "#C3C8CC",
             height: 60,
-            borderRadius: 30, 
-            marginHorizontal: 10, 
-            width: "95%", 
-            alignSelf: "center", // Center the tab bar
-            position: "absolute", // Float the tab bar
-            bottom: 10, // Distance from the bottom
+            borderRadius: 30,
+            marginHorizontal: 10,
+            width: "90%", 
+            alignSelf: "center", 
+            position: "absolute",
+            bottom: 4, // Adjust for bottom spacing
+           marginLeft: 20,
             elevation: 5, // Shadow for Android
             shadowColor: "#000", // Shadow for iOS
             shadowOffset: { width: 0, height: 2 },
@@ -57,22 +58,6 @@ const TabsLayout = () => {
             ),
           }}
         />
-        <Tabs.Screen
-          name="insert"
-          options={{
-            title: "tilføj",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                name={focused ? "plus" : "plus"}
-                color={color}
-                size={22}
-                iconType="font-awesome"
-              />
-            ),
-          }}
-        />
-
         <Tabs.Screen
           name="stats"
           options={{
@@ -106,6 +91,6 @@ const TabsLayout = () => {
       </Tabs>
     </>
   );
-}
+};
 
-export default TabsLayout
+export default TabsLayout;

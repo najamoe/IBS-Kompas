@@ -1,135 +1,184 @@
-import React, { useState, useEffect } from "react";
-import { searchProducts } from "../services/api/openFoodFactsApi";
+// SearchField.js (Child)
+import React, { useState } from "react";
 import {
   View,
-  TextInput,
-  StyleSheet,
   FlatList,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  TextInput,
+  Button,
+  Alert,
 } from "react-native";
-import { debounce } from "lodash"; // Import debounce from lodash
-import { addFoodIntake, deleteFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Searchbar } from "react-native-paper";
+import RNPickerSelect from "react-native-picker-select";
+import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
 
-const SearchField = ({ userId }) => {
-  // Pass userId as a prop
-  const [food, setFood] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [addedItems, setAddedItems] = useState([]);
+const SearchField = ({ selectedItems, setSelectedItems }) => {
+  const [query, setQuery] = useState(""); // Search query
+  const [searchResults, setSearchResults] = useState([]); // Search results
+  const [loading, setLoading] = useState(false); // Loading state
+  const [showModal, setShowModal] = useState(false); // Control modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // Store selected item
+  const [itemName, setItemName] = useState(""); // Item name input
+  const [quantity, setQuantity] = useState(""); // Quantity input
+  const [unit, setUnit] = useState(""); // Unit input
 
-  // Handle food search input and call the API if the input is longer than 2 characters
-  const handleSearch = debounce(async (query) => {
-    setFood(query);
+  // Function to handle search input
+  const handleSearch = async (query) => {
+    setQuery(query);
     if (query.length >= 3) {
+      // Trigger search when the query is at least 3 characters
+      setLoading(true);
       try {
-        const products = await searchProducts(query);
-        setSearchResults(products);
+        // Fetch products based on the search query
+        const results = await searchProducts(query);
+        setSearchResults(results); // Update state with new search results
       } catch (error) {
-        setSearchResults([]);
+        setSearchResults([]); // Reset results if there is an error
       }
+      setLoading(false);
     } else {
-      setSearchResults([]);
-    }
-  }, 500);
-
-  // Handle item selection and add to Firestore
-  const handleSelectItem = async (item, type) => {
-    try {
-      // Add selected food item to Firestore with the specified type
-      await addFoodIntake(userId, item, type);
-
-      // Update the local state with the added item
-      setAddedItems((prevItems) => [...prevItems, item]);
-    } catch (error) {
-      console.error("Error adding food item:", error);
+      setSearchResults([]); // Clear results if query is too short
     }
   };
 
-  const handleBreakfastSelect = (item) => {
-    handleSelectItem(item, "breakfast");
+  // Function to handle selecting an item from the dropdown
+  const handleSelectItem = (item) => {
+    console.log("Selected item in searchfield:", item);
+    setSelectedItem(item); // Store the selected item
+    setItemName(item.name); // Store the selected item name
+    setShowModal(true); // Show the modal to input quantity and unit
   };
 
-  const handleLunchSelect = (item) => {
-    handleSelectItem(item, "lunch");
-  };
+  // Function to handle adding the item with quantity and unit to selectedItems
+  const handleAddItem = () => {
+    console.log("item from searchfield:", quantity, unit, itemName);
 
-    const handleDinnerSelect = (item) => {
-      handleSelectItem(item, "dinner");
-    };
-
-  const handleSnackSelect = (item) => {
-    handleSelectItem(item, "snack");
-  };
-
-  const handleRemoveItem = async (item) => {
-    try {
-      // Remove selected food item from Firestore
-      await deleteFoodIntake(userId, item);
-      setAddedItems((prevItems) =>
-        prevItems.filter((addedItem) => addedItem.id !== item.id)
-      );
-    } catch (error) {
-      console.error("Error removing food item:", error);
+    if (itemName && quantity && unit) {
+      const newItem = { ...selectedItem, quantity, unit };
+      setSelectedItems((prevItems) => {
+        // Directly append new item to the previous items
+        return [...prevItems, newItem]; // Directly return the updated array
+      });
+      setItemName("");
+      setQuantity("");
+      setUnit("");
+      setShowModal(false);
+    } else {
+      alert("Please enter both quantity and unit.");
     }
+  };
+
+  // Function to handle deleting an item from the selected items list
+  const handleDeleteItem = (itemToDelete) => {
+    setSelectedItems((prevItems) => {
+      return prevItems.filter((item) => item !== itemToDelete);
+    });
   };
 
   return (
     <View style={styles.container}>
-      {/* Food search input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          value={food}
-          onChangeText={handleSearch}
-          placeholder="Søg efter madvare"
-        />
-      </View>
+      {/* Search bar */}
+      <Searchbar
+        placeholder="Søg efter madvare"
+        onChangeText={handleSearch}
+        value={query}
+        loading={loading}
+        style={styles.searchbar}
+      />
 
-      {/* Dropdown with search results */}
+      {/* Dropdown for search results */}
       {searchResults.length > 0 && (
-        <View style={styles.pickerWrapper}>
-          <Text style={styles.resultText}>Søge resultater:</Text>
+        <View style={styles.dropdownContainer}>
           <FlatList
             data={searchResults}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.item}
-                onPress={() => handleSelectItem(item)} // Add to Firestore and update UI
+                onPress={() => handleSelectItem(item)} // Handle item selection
               >
-                <Text>{`${item.name} - ${item.brand}`}</Text>
+                <Text>{item.name}</Text>
+                <Text>{item.brand}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => index.toString()}
-            style={styles.pickerList}
-            contentContainerStyle={{ maxHeight: 200 }}
+            keyExtractor={(item, index) => index.toString()} // Use index as key since product might not have unique ids
           />
         </View>
       )}
 
-      {/* Display added items */}
-      <View style={styles.addedItemsContainer}>
-        <Text>Tilføjede madvarer:</Text>
-        {addedItems.length > 0 ? (
+      {/* List of selected items */}
+      {selectedItems.length > 0 && (
+        <View style={styles.selectedItemsContainer}>
+          <Text>Tilføjede varer</Text>
           <FlatList
-            data={addedItems}
-            style={styles.addedItemsList}
+            data={selectedItems}
             renderItem={({ item }) => (
-              <View style={styles.addedItem}>
-                <Text>{`${item.name} - ${item.brand}`}</Text>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleRemoveItem(item)} // Remove from Firestore and update UI
+              <View style={styles.selectedItem}>
+                <Text>{item.name}</Text>
+                <Text>{item.brand}</Text>
+                <Text>
+                  {item.quantity} {item.unit}
+                </Text>
+                <MaterialCommunityIcons
+                  name="delete-outline"
+                  onPress={() => handleDeleteItem(item)} // Handle delete
+                  size={24}
                 >
-                  <Text style={styles.deleteText}>X</Text>
-                </TouchableOpacity>
+        
+                </MaterialCommunityIcons>
               </View>
             )}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => index.toString()} // Use index as key
           />
-        ) : (
-          <Text style={styles.addedItemText}>Ingen varer tilføjet.</Text>
-        )}
-      </View>
+        </View>
+      )}
+
+      {/* Modal for quantity and unit input */}
+      {showModal && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text>Indtast mængde</Text>
+              <TextInput
+                placeholder="Mængde"
+                keyboardType="numeric"
+                value={quantity}
+                onChangeText={setQuantity}
+                style={styles.input}
+              />
+              <RNPickerSelect
+                value={unit}
+                useNativeAndroidPickerStyle={false}
+                onValueChange={(value) => {
+                  setUnit(value);
+                }}
+                items={[
+                  { label: "gram", value: "gram" },
+                  { label: "kg", value: "kg" },
+                  { label: "mL", value: "ml" },
+                  { label: "dL", value: "dl" },
+                  { label: "L", value: "l" },
+                ]}
+                style={pickerSelectStyles}
+                placeholder={{
+                  label: "enhed",
+                  value: null,
+                }}
+              />
+              <Button title="Tilføj til liste" onPress={handleAddItem} />
+              <Button title="Afbryd" onPress={() => setShowModal(false)} />
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -140,71 +189,91 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-  },
-  searchContainer: {
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    borderColor: "grey",
+    width: "100%",
+  },
+  searchbar: {
+    width: "100%",
     flexDirection: "row",
   },
-  searchInput: {
-    height: 40,
-    borderColor: "grey",
-    borderWidth: 1,
-    flex: 1,
-    paddingLeft: 10,
-    borderRadius: 20,
-  },
-  resultText: {
-    marginLeft: 10,
-  },
-  pickerWrapper: {
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  pickerList: {
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
+  dropdownContainer: {
+    marginTop: 10,
     maxHeight: 200,
+    width: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderColor: "grey",
+    borderWidth: 0.5,
+    position: "absolute",
+    top: 26, // Adjust based on search bar position
+    left: 30,
+    right: 0,
+    zIndex: 1,
   },
   item: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: "#ccc",
   },
-  addedItemsContainer: {
-    marginTop: 20,
+  selectedItemsContainer: {
+    marginTop: 30,
+    marginBottom: 20,
+    width: "100%",
+    height: 100,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    borderWidth: 0.5,
+    borderColor: "grey",
+    padding: 10,
   },
-  addedItemText: {
-    fontStyle: "italic",
-    fontWeight: "bold",
-  },
-  addedItemsList: {
-    marginTop: 10,
-    flexDirection: "row",
-  },
-  addedItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#F0F8FF",
+  selectedItem: {
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    padding: 5,
+    borderBottomColor: "#ccc",
   },
   deleteButton: {
-    backgroundColor: "#d5d7db",
-    borderRadius: 100,
-    width: 20,
-    height: 20,
+    backgroundColor: "red",
+    padding: 5,
+    borderRadius: 5,
+  },
+  modalContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 50, 
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  deleteText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 10,
+  modalContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  input: {
+    width: "100%",
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    width: "100%",
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+  inputAndroid: {
+    width: "100%",
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
   },
 });

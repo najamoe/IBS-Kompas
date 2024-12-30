@@ -6,7 +6,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -36,7 +35,6 @@ import {
   deleteSymptom,
 } from "../services/firebase/symptomService";
 import Checkbox from "../components/Checkbox";
-import SearchField from "../components/searchfield";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -62,7 +60,9 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
-  const [isFoodModalVisible, setIsFoodModalVisible] = useState(false);
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [updatedItems, setUpdatedItems] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -122,6 +122,10 @@ const Home = () => {
     setSelectedDate(formatDateStorage(newDate));
   };
 
+  const handleFoodModal = () => {
+    setIsFoodModalVisible(true); // Open the FoodModal
+  };
+
   const handleAddWater = async (amount) => {
     if (user) {
       const newWaterIntake = waterIntake + amount;
@@ -129,7 +133,7 @@ const Home = () => {
         await addWaterIntake(user.uid, newWaterIntake); // Add the new water intake
         setWaterIntake(newWaterIntake); // Update the local state
       } catch (error) {
-        console.error("Error adding water to daily log:", error.message);
+        //Insert error handling
       }
     } else {
       alert("Please sign in to log your water intake.");
@@ -146,7 +150,7 @@ const Home = () => {
         ); // Pass the amount to remove
         setWaterIntake(newWaterIntake); // Update the local state with the new value
       } catch (error) {
-        console.error("Error removing water from daily log:", error.message);
+        //Insert error handling
       }
     } else {
       alert("Please sign in to remove water intake.");
@@ -182,7 +186,6 @@ const Home = () => {
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
     { label: "Oppustethed", value: "oppustethed" },
-    { label: "Halsbrand", value: "halsbrand" },
   ];
 
   // useEffect to mark symptoms that are already in the array in firestore
@@ -247,20 +250,23 @@ const Home = () => {
 
         <View style={styles.foodContainer}>
           <Text style={styles.logTitle}> Madlog </Text>
-
-          <TouchableOpacity
-            onPress={() => setIsFoodModalVisible(true)} // Opens FoodModal
-            style={styles.addFoodButton}
-          >
-            <AntDesign name="pluscircle" size={30} color="#4CAF50" />
+          <TouchableOpacity onPress={handleFoodModal}>
+            <AntDesign name="pluscircleo" size={30} color="black" />
           </TouchableOpacity>
 
-          {/* Only render the FoodModal when isFoodModalVisible is true */}
-          <FoodModal
-            isVisible={isFoodModalVisible}
-            closeModal={() => setIsFoodModalVisible(false)} // Close the modal when X is pressed
-          />
+          <View style={styles.foodContent}>
+            {/* Map over foodIntake and render each item */}
+          </View>
         </View>
+
+        {/* Render FoodModal */}
+        <FoodModal
+          modalVisible={isFoodModalVisible}
+          setModalVisible={setIsFoodModalVisible}
+          userId={user?.uid}
+          selectedItems={selectedItems}
+          updatedItem={updatedItems}
+        />
 
         <View style={styles.waterContainer}>
           <View style={styles.logTitleContainer}>
