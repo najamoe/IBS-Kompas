@@ -8,13 +8,14 @@ import {
   StyleSheet,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-import SearchField from "../searchfield";
+import SearchField from "../searchfield"; 
+import { addFoodIntake } from "../../services/firebase/foodService"; 
 
 const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   const [selectedType, setSelectedType] = useState(null); // Picker state
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
-  const [foodName, setFoodName] = useState("");
+  const [foodName, setFoodName] = useState(""); // State for the food name
 
   // Reset the state when modalVisibility changes
   useEffect(() => {
@@ -22,9 +23,14 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       setSelectedType(null);
       setQuantity("");
       setUnit(null);
-      setFoodName("");
+      setFoodName(""); // Reset food name when modal closes
     }
   }, [modalVisible]);
+
+  // Update the food name when a food item is selected
+  const handleFoodSelect = (item) => {
+    setFoodName(item.name); // Update foodName with the selected item's name
+  };
 
   const handleSaveFood = async () => {
     if (!selectedType || !foodName || !quantity || !unit) {
@@ -38,7 +44,8 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
     };
 
     try {
-      await addFoodIntake(userId, foodData, selectedType); // Save food intake
+      // Save the food intake to Firestore
+      await addFoodIntake(userId, foodData, selectedType);
       console.log("Food item saved successfully!");
       setModalVisible(false); // Close the modal after saving
     } catch (error) {
@@ -86,9 +93,10 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           {/* Search field for food name */}
           <View style={styles.searchContainer}>
             <SearchField
-              placeholder="Søg mad"
-              value={foodName}
-              onChangeText={(text) => setFoodName(text)}
+              userId={userId} // Pass userId to SearchField
+              foodName={foodName} // Bind the state for food name
+              setFoodName={setFoodName} // Pass the setter for food name
+              onFoodSelect={handleFoodSelect} // Handle selected food
             />
           </View>
 
@@ -107,6 +115,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
               onValueChange={(value) => setUnit(value)}
               items={[
                 { label: "ml", value: "ml" },
+                { label: "dl", value: "dl" },
                 { label: "L", value: "L" },
                 { label: "gram", value: "gram" },
                 { label: "kg", value: "kg" },
@@ -151,17 +160,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: "90%",
-    height: "70%",
+    height: "60%",
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
     marginTop: 10,
+    marginBottom: 20,
   },
   searchContainer: {
     width: "100%",
     marginBottom: 15,
-    marginTop: 50,
+    marginTop: 40,
     marginBottom: 50,
   },
   quantityContainer: {
@@ -169,7 +179,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
     backgroundColor: "#ffffff",
-    width: "50%",
+    width: "100%",
+    alignContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
   },
   quantityInput: {
     marginRight: 10,
@@ -177,6 +190,10 @@ const styles = StyleSheet.create({
     borderColor: "#cfc9c8",
     borderRadius: 8,
     height: 35,
+    width: 60,
+    alignContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
   },
   saveandbackbtn: {
     flexDirection: "row",
@@ -219,7 +236,7 @@ const pickerSelectStyles = StyleSheet.create({
       color: "black",
       paddingRight: 40,
       backgroundColor: "#ffffff",
-      width: "100%",
+      width: 140,
       marginTop: 20,
     },
     inputAndroid: {
@@ -231,7 +248,7 @@ const pickerSelectStyles = StyleSheet.create({
       borderRadius: 8,
       color: "black",
       backgroundColor: "#ffffff",
-      width: "100%",
+      width: 140,
     },
   },
   unit: {
@@ -243,16 +260,17 @@ const pickerSelectStyles = StyleSheet.create({
       borderColor: "#cfc9c8",
       borderRadius: 4,
       backgroundColor: "#fff3e0",
-      width: "35%",
+      width: 80,
     },
     inputAndroid: {
-      fontSize: 16,
+      fontSize: 14,
       paddingHorizontal: 8,
       paddingVertical: 8,
       borderWidth: 0.5,
       borderColor: "#cfc9c8",
       borderRadius: 8,
       backgroundColor: "#ffffff",
+      width: 80,
     },
   },
 });

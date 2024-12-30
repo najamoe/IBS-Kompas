@@ -1,210 +1,108 @@
 import React, { useState, useEffect } from "react";
-import { searchProducts } from "../services/api/openFoodFactsApi";
 import {
   View,
-  TextInput,
-  StyleSheet,
   FlatList,
-  TouchableOpacity,
   Text,
+  TouchableOpacity,
+  StyleSheet,
 } from "react-native";
-import { debounce } from "lodash"; // Import debounce from lodash
-import { addFoodIntake, deleteFoodIntake } from "../services/firebase/foodService"; // import the Firestore service
+import { Searchbar } from "react-native-paper";
+import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
 
-const SearchField = ({ userId }) => {
-  // Pass userId as a prop
-  const [food, setFood] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [addedItems, setAddedItems] = useState([]);
+const SearchField = () => {
+  const [query, setQuery] = useState(""); // Search query
+  const [searchResults, setSearchResults] = useState([]); // Search results
+  const [loading, setLoading] = useState(false); // Loading state
+  const [page, setPage] = useState(1); // Current page for pagination
 
-  // Handle food search input and call the API if the input is longer than 2 characters
-  const handleSearch = debounce(async (query) => {
-    setFood(query);
+  // Function to handle search input
+  const handleSearch = async (query) => {
+    setQuery(query);
     if (query.length >= 3) {
+      // Trigger search when the query is at least 3 characters
+      setLoading(true);
       try {
-        const products = await searchProducts(query);
-        setSearchResults(products);
+        // Fetch products based on the search query and current page
+        const results = await searchProducts(query, page);
+        setSearchResults(results); // Update state with new search results
       } catch (error) {
-        setSearchResults([]);
+        setSearchResults([]); // Reset results if there is an error
       }
+      setLoading(false);
     } else {
-      setSearchResults([]);
-    }
-  }, 500);
-
-  // Handle item selection and add to Firestore
-  const handleSelectItem = async (item, type) => {
-    try {
-      // Add selected food item to Firestore with the specified type
-      await addFoodIntake(userId, item, type);
-
-      // Update the local state with the added item
-      setAddedItems((prevItems) => [...prevItems, item]);
-    } catch (error) {
-      console.error("Error adding food item:", error);
+      setSearchResults([]); // Clear results if query is too short
     }
   };
 
-  const handleBreakfastSelect = (item) => {
-    handleSelectItem(item, "breakfast");
-  };
-
-  const handleLunchSelect = (item) => {
-    handleSelectItem(item, "lunch");
-  };
-
-    const handleDinnerSelect = (item) => {
-      handleSelectItem(item, "dinner");
-    };
-
-  const handleSnackSelect = (item) => {
-    handleSelectItem(item, "snack");
-  };
-
-  const handleRemoveItem = async (item) => {
-    try {
-      // Remove selected food item from Firestore
-      await deleteFoodIntake(userId, item);
-      setAddedItems((prevItems) =>
-        prevItems.filter((addedItem) => addedItem.id !== item.id)
-      );
-    } catch (error) {
-      console.error("Error removing food item:", error);
-    }
+  // Function to handle selecting an item from the dropdown
+  const handleSelectItem = (item) => {
+    console.log("Selected item:", item);
+    // Handle item selection, e.g., navigating to a product details page
   };
 
   return (
     <View style={styles.container}>
-      {/* Food search input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          value={food}
-          onChangeText={handleSearch}
-          placeholder="Søg efter madvare"
-        />
-      </View>
+      {/* Search bar */}
+      <Searchbar
+        placeholder="Søg efter madvare"
+        onChangeText={handleSearch}
+        value={query}
+        loading={loading}
+        style={styles.searchbar}
+      />
 
-      {/* Dropdown with search results */}
+      {/* Dropdown for search results */}
       {searchResults.length > 0 && (
-        <View style={styles.pickerWrapper}>
-          <Text style={styles.resultText}>Søge resultater:</Text>
+        <View style={styles.dropdownContainer}>
           <FlatList
             data={searchResults}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.item}
-                onPress={() => handleSelectItem(item)} // Add to Firestore and update UI
+                onPress={() => handleSelectItem(item)} // Handle item selection
               >
-                <Text>{`${item.name} - ${item.brand}`}</Text>
+                <Text>{item.name}</Text>
+                <Text>{item.brand}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => index.toString()}
-            style={styles.pickerList}
-            contentContainerStyle={{ maxHeight: 200 }}
+            keyExtractor={(item, index) => index.toString()} // Use index as key since product might not have unique ids
           />
         </View>
       )}
-
-      {/* Display added items */}
-      <View style={styles.addedItemsContainer}>
-        <Text>Tilføjede madvarer:</Text>
-        {addedItems.length > 0 ? (
-          <FlatList
-            data={addedItems}
-            style={styles.addedItemsList}
-            renderItem={({ item }) => (
-              <View style={styles.addedItem}>
-                <Text>{`${item.name} - ${item.brand}`}</Text>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleRemoveItem(item)} // Remove from Firestore and update UI
-                >
-                  <Text style={styles.deleteText}>X</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        ) : (
-          <Text style={styles.addedItemText}>Ingen varer tilføjet.</Text>
-        )}
-      </View>
     </View>
   );
 };
-
-export default SearchField;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-  },
-  searchContainer: {
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    borderColor: "grey",
     flexDirection: "row",
   },
-  searchInput: {
-    height: 40,
-    borderColor: "#cfc9c8",
-    borderWidth: 0.5,
-    flex: 1,
-    paddingLeft: 10,
-    borderRadius: 8,
-  },
-  resultText: {
-    marginLeft: 10,
-  },
-  pickerWrapper: {
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  pickerList: {
-    borderRadius: 20,
-    backgroundColor: "#f0f0f0",
+  searchbar: {
+    marginBottom: 10,
+    width: "100%",
+  }, 
+  dropdownContainer: {
+    marginTop: 10,
     maxHeight: 200,
+    width: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderColor: "grey",
+    borderWidth:0.5,
+    position: "absolute",
+    top: 26, 
+    left: 30,
+    right: 0,
+    zIndex: 1,
   },
   item: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  addedItemsContainer: {
-    marginTop: 20,
-  },
-  addedItemText: {
-    fontStyle: "italic",
-    fontWeight: "bold",
-  },
-  addedItemsList: {
-    marginTop: 10,
-    flexDirection: "row",
-  },
-  addedItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#F0F8FF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    padding: 5,
-  },
-  deleteButton: {
-    backgroundColor: "#d5d7db",
-    borderRadius: 100,
-    width: 20,
-    height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 50,
-  },
-  deleteText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 10,
+    borderBottomColor: "#ccc",
   },
 });
+
+export default SearchField;
