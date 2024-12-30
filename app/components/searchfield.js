@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
+import CustomButton from "../components/CustomButton";
 import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
 
 const SearchField = ({ selectedItems, setSelectedItems }) => {
@@ -192,8 +193,21 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
                   value: null,
                 }}
               />
-              <Button title="Tilføj til liste" onPress={handleAddItem} />
-              <Button title="Afbryd" onPress={() => setShowModal(false)} />
+
+              <View style={{ flexDirection: "row" }}>
+                 <CustomButton
+                  customStyles={[styles.cancelButton]}
+                  title="Afbryd"
+                  onPress={() => setShowModal(false)}
+                />
+                
+                <CustomButton
+                  customStyles={[styles.addButton]}
+                  title="Tilføj til liste"
+                  onPress={handleAddItem}
+                />
+               
+              </View>
             </View>
           </View>
         </Modal>
@@ -295,6 +309,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+  },
+  cancelButton: {
+    backgroundColor: "grey",
+    width: "40%",
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#86C5D8",
+    width: "45%",
   },
 });
 
