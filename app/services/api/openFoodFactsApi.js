@@ -32,4 +32,4 @@ export const searchProducts = async (query, page = 1) => {
 };
 
 
-export default { searchProducts, getProductByBarcode };
+export default { searchProducts };
