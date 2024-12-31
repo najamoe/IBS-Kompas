@@ -6,12 +6,16 @@ import FormField from "../FormField";
 import  Toast  from "react-native-toast-message"; 
 
 const UpdatePasswordModal = ({ user, visible, closeModal }) => {
-  const [loading, setLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+const [loading, setLoading] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [currentPassword, setCurrentPassword] = useState("");
+const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+
+// Separate visibility states for each password field
+const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+const [showNewPassword, setShowNewPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -83,7 +87,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
     <Modal
       visible={visible}
       animationType="fade"
-      transparent={true} 
+      transparent={true}
       onRequestClose={closeModal}
     >
       <View style={styles.modalBackdrop}>
@@ -93,30 +97,32 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
 
           {/* Form Fields */}
           <FormField
-          title={"Password"}
-            label="Nuværende password"
+            title="Password"
             placeholder="Indtast nuværende password"
-            secureTextEntry={!showPassword}
             value={currentPassword}
-            onChangeText={setCurrentPassword}
+            handleChangeText={setCurrentPassword}
+            showPassword={showCurrentPassword}
+            setShowPassword={setShowCurrentPassword}
             otherStyles={styles.customField}
           />
+
           <FormField
-            title={"Password"}
-            label="Nyt password"
+            title="Password"
             placeholder="Indtast nyt password"
-            secureTextEntry={true}
             value={newPassword}
-            onChangeText={setNewPassword}
+            handleChangeText={setNewPassword}
+            showPassword={showNewPassword}
+            setShowPassword={setShowNewPassword}
             otherStyles={styles.customField}
           />
+
           <FormField
-          title={"Verificér Password"}
-            label="Bekræft nyt password"
+            title="Verificér Password"
             placeholder="Bekræft nyt password"
-            secureTextEntry={true}
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            handleChangeText={setConfirmPassword}
+            showPassword={showConfirmPassword}
+            setShowPassword={setShowConfirmPassword}
             otherStyles={styles.customField}
           />
 
@@ -138,7 +144,6 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
               handlePress={handleChangePassword}
               isLoading={isSubmitting}
             />
-            
           </View>
         </View>
       </View>
