@@ -14,6 +14,7 @@ import {
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
+import Toast from "react-native-toast-message";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MultiSelect } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -440,6 +441,7 @@ const Profile = () => {
             />
           </View>
         </View>
+        <Toast/>
       </ScrollView>
 
       {isUpdateModalVisible && (
@@ -478,6 +480,7 @@ const Profile = () => {
       </Modal>
 
       <StatusBar backgroundColor="#161622" style="light" />
+      
     </SafeAreaView>
   );
 };
