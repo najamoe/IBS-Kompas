@@ -1,7 +1,8 @@
-import {
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  updatePassword,
   deleteUser,
 } from "firebase/auth";
 import FirebaseConfig from "./FirebaseConfig";
@@ -10,6 +11,25 @@ import Toast from "react-native-toast-message";
 
 const { auth } = FirebaseConfig;
 
+
+export const reauthenticateUser = async (user, currentPassword) => {
+  if (!user) {
+    throw new Error("User is not authenticated.");
+  }
+
+  const auth = getAuth();
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+  try {
+    await reauthenticateWithCredential(user, credential);
+    console.log("User reauthenticated successfully.");
+  } catch (error) {
+    console.error("Error reauthenticating:", error.message);
+    throw new Error(
+      "Reauthentication failed. Please check your current password."
+    );
+  }
+};
 export const createUser = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -112,22 +132,29 @@ export const resetPassword = async (email) => {
   }
 };
 
-export const updateUserPassword = (newPassword) => {
-  const user = auth.currentUser; // Get the currently authenticated user
-  if (!user) {
-    return Promise.reject("User is not authenticated");
+export const updateUserPassword = async (user, newPassword) => {
+  if (
+    !newPassword ||
+    typeof newPassword !== "string" ||
+    newPassword.trim().length === 0
+  ) {
+    throw new Error("Password must be a non-empty string.");
   }
 
-  // Update the password for the currently authenticated user
-  return updatePassword(user, newPassword)
-    .then(() => {
-      console.log("Password updated successfully");
-    })
-    .catch((error) => {
-      console.error("Error updating password:", error.message);
-      throw error;
-    });
+  const auth = getAuth();
+  if (!user) {
+    throw new Error("User is not authenticated.");
+  }
+
+  try {
+    const userCredential = await updatePassword(user, newPassword);
+    return userCredential;
+  } catch (error) {
+    console.error("Firebase error:", error.message);
+    throw error;
+  }
 };
+
 
 export const deleteUserAccount = async () => {
   const user = auth.currentUser; // Get the currently authenticated user

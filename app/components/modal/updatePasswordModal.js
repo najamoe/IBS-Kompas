@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
-import { updateUserPassword } from "../../firebase/auth"; // Ensure this is correctly imported
+import { updateUserPassword, reauthenticateUser } from "../../firebase/auth"; // Ensure this is correctly imported
 import { Entypo } from "@expo/vector-icons";
 import CustomButton from "../CustomButton";
 import FormField from "../FormField";
-import { Toast } from "react-native-toast-message"; // Assuming you're using this for notifications
+import  Toast  from "react-native-toast-message"; // Assuming you're using this for notifications
 
 const UpdatePasswordModal = ({ user, visible, closeModal }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -12,6 +12,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = async () => {
+    console.log("Changing password...", newPassword);
     if (newPassword !== confirmPassword) {
       Toast.show({
         type: "error",
@@ -22,9 +23,25 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
       });
       return;
     }
+    if (typeof newPassword !== "string" || newPassword.length < 6) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid Password",
+        text2: "Det nye password skal være mindst 6 tegn langt",
+        visibilityTime: 5000,
+        position: "top",
+      });
+      return;
+    }
+
 
     try {
-      // Call Firebase updatePassword
+      // Step 1: Reauthenticate user
+      console.log("Reauthenticating...");
+      await reauthenticateUser(user, currentPassword);
+
+      // Step 2: Update password
+      console.log("Updating password...");
       await updateUserPassword(user, newPassword);
 
       // Show success message
@@ -108,6 +125,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
               textStyles={styles.buttonText}
               handlePress={handleChangePassword}
             />
+            
           </View>
         </View>
       </View>
