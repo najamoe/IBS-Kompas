@@ -1,25 +1,26 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
-import { updateUserPassword, reauthenticateUser } from "../../firebase/auth"; // Ensure this is correctly imported
-import { Entypo } from "@expo/vector-icons";
+import { StyleSheet, Text, View, Modal } from "react-native";
+import { updateUserPassword, reauthenticateUser } from "../../firebase/auth"; 
 import CustomButton from "../CustomButton";
 import FormField from "../FormField";
-import  Toast  from "react-native-toast-message"; // Assuming you're using this for notifications
+import  Toast  from "react-native-toast-message"; 
 
 const UpdatePasswordModal = ({ user, visible, closeModal }) => {
+  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChangePassword = async () => {
-    console.log("Changing password...", newPassword);
     if (newPassword !== confirmPassword) {
       Toast.show({
         type: "error",
         text1: "Uoverensstemmelse",
         text2: "De nye passwords stemmer ikke overens",
         visibilityTime: 5000,
-        position: "top",
+        position: "bottom",
       });
       return;
     }
@@ -29,7 +30,18 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
         text1: "Invalid Password",
         text2: "Det nye password skal være mindst 6 tegn langt",
         visibilityTime: 5000,
-        position: "top",
+        position: "bottom",
+      });
+      return;
+    }
+
+    if(!currentPassword || !newPassword || !confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Udfyld alle felter",
+        text2: "Udfyld venligst alle felter for at fortsætte",
+        visibilityTime: 5000,
+        position: "bottom",
       });
       return;
     }
@@ -50,7 +62,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
         text1: "Password opdateret",
         text2: "Dit password er opdateret",
         visibilityTime: 5000,
-        position: "top",
+        position: "bottom",
       });
 
       // Close modal on success
@@ -62,7 +74,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
         text1: "Opdatering mislykkedes",
         text2: error.message,
         visibilityTime: 5000,
-        position: "top",
+        position: "bottom",
       });
     }
   };
@@ -84,7 +96,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
           title={"Password"}
             label="Nuværende password"
             placeholder="Indtast nuværende password"
-            secureTextEntry={true}
+            secureTextEntry={!showPassword}
             value={currentPassword}
             onChangeText={setCurrentPassword}
             otherStyles={styles.customField}
@@ -120,10 +132,11 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
             />
             {/* Change Password Button */}
             <CustomButton
-              title="Skift password"
+              title={loading ? "Opdaterer..." : "Opdater password"}
               customStyles={styles.addButton}
               textStyles={styles.buttonText}
               handlePress={handleChangePassword}
+              isLoading={isSubmitting}
             />
             
           </View>
@@ -175,7 +188,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
     justifyContent: "center",
-    width: "50%",
+    width: "60%",
     marginLeft: 10,
   },
   buttonText: {
