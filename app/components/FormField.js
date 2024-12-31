@@ -38,7 +38,7 @@ const FormField = ({
         {isPasswordField && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <FontAwesome
-              name={!showPassword ? "eye-slash" : "eye"}
+              name={!showPassword ? "eye" : "eye-slash"}
               size={16}
               color="black"
               style={styles.eyeIcon}
@@ -51,7 +51,7 @@ const FormField = ({
             onPress={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             <FontAwesome
-              name={!showConfirmPassword ? "eye-slash" : "eye"}
+              name={!showConfirmPassword ? "eye" : "eye-slash"}
               size={16}
               color="black"
               style={styles.eyeIcon}
