@@ -37,7 +37,7 @@ export const addWellnessLog = async (userId, emoticonType) => {
     throw error;
   }
 };
-
+//Used in home.js 
 export const fetchWellnessLog = async (userId, date) => {
   try {
       if (!firestore || !userId) {
@@ -66,29 +66,87 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate).startOf("isoWeek").format("YYYY-MM-DD"); // Start of the week (Monday)
-    const endOfWeek = moment(weekStartDate).endOf("isoWeek").format("YYYY-MM-DD");   // End of the week (Sunday)
+    const startOfWeek = moment(weekStartDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
 
     const dailyMood = []; // Initialize an array to hold daily moods
-    const wellnessLogsRef = collection(firestore, `users/${userId}/wellnessLogs`);
+    const wellnessLogsRef = collection(
+      firestore,
+      `users/${userId}/wellnessLogs`
+    );
 
     // Loop over all days of the week to fetch wellness log for each day
-    for (let currentDate = moment(startOfWeek); currentDate.isBefore(moment(endOfWeek).add(1, 'days')); currentDate.add(1, 'days')) {
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
       const date = currentDate.format("YYYY-MM-DD");
       const wellnessLog = doc(wellnessLogsRef, date);
       const snapshot = await getDoc(wellnessLog);
 
-      dailyMood.push({
-        date, // Include the date
-        emoticonType: snapshot.exists() ? snapshot.data().emoticonType || 0 : 0, // Get the emoticon type for the day
-      });
+      const emoticonType = snapshot.exists()
+        ? snapshot.data().emoticonType || null
+        : null;
+
+      // Only push valid emoticon types (exclude '0' or any empty value)
+      if (emoticonType && emoticonType !== "0") {
+        dailyMood.push({
+          date, // Include the date
+          emoticonType, // Get the emoticon type for the day
+        });
+        console.log("Fetched emoticonType for", date, ":", emoticonType);
+      } else {
+        console.log("No valid emoticonType for", date);
+      }
     }
 
-    return dailyMood; // Return the array of daily wellness logs with dates and emoticon types
+    // If no valid emoticon types were found, return a default value or handle appropriately
+    if (dailyMood.length === 0) {
+      console.log("No valid wellness log entries for the week.");
+      return null; // or you could return a default value or handle it differently
+    }
+
+    // Count occurrences of each emoticon type
+    const emoticonCounts = dailyMood.reduce((acc, { emoticonType }) => {
+      acc[emoticonType] = (acc[emoticonType] || 0) + 1;
+      return acc;
+    }, {});
+
+    console.log("Emoticon counts for the week:", emoticonCounts);
+
+    // Find the maximum count value
+    const maxCount = Math.max(...Object.values(emoticonCounts));
+
+    // Find all emoticons with the maximum count
+    const mostFrequentEmoticons = Object.keys(emoticonCounts).filter(
+      (key) => emoticonCounts[key] === maxCount
+    );
+
+    // Handle the case where there is a tie with exactly two emoticons
+    if (mostFrequentEmoticons.length === 2) {
+      console.log("There is a tie between emoticons:", mostFrequentEmoticons);
+      return {
+        message: "Der står lige imellem",
+        emoticons: mostFrequentEmoticons,
+      };
+    }
+
+    // If no tie, return the most frequent emoticon
+    const mostFrequentEmoticon = mostFrequentEmoticons[0];
+    console.log("Most frequent emoticonType:", mostFrequentEmoticon);
+    return mostFrequentEmoticon; // Return the most frequent emoticon type
   } catch (error) {
     console.error("Error fetching weekly wellness logs:", error);
     throw error;
   }
 };
+
+
+
 
 

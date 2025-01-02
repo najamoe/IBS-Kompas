@@ -1,8 +1,14 @@
-import { StyleSheet, Text, View, Dimensions, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { LineChart } from 'react-native-chart-kit'; // Import LineChart
-import { fetchWeeklyWellnessLog } from '../../services/firebase/wellnessService'; // Your data-fetching function
-import moment from 'moment'; // To format the dates
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import { fetchWeeklyWellnessLog } from "../../services/firebase/wellnessService"; // Your data-fetching function
+import moment from "moment"; // To format the dates
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
 
 const emoticons = [
   { name: "emoticon-excited-outline", color: "#006147" },
@@ -17,20 +23,30 @@ const emoticons = [
 const WellnessChart = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
   const [loading, setLoading] = useState(true);
+  const [mostFrequentEmoticon, setMostFrequentEmoticon] = useState(null);
 
   const fetchWellnessData = async () => {
     try {
       setLoading(true);
-      // Fetch the weekly wellness log data
-      const totalWellnessLog = await fetchWeeklyWellnessLog(userId, selectedDate);
+      // Fetch the weekly wellness log data and get the most frequent emoticon type
+      const result = await fetchWeeklyWellnessLog(userId, selectedDate);
 
-      // Prepare the data for the chart
-      const formattedData = totalWellnessLog.map((day) => ({
-        date: day.date,
-        total: isNaN(day.total) ? 0 : day.total, // Ensure total is a number
-      }));
-
-      setWeeklyData(formattedData);
+      // Check if it's a tie
+      if (result && result.message === "Der står lige imellem") {
+        // If it's a tie, display both emoticons
+        setMostFrequentEmoticon({
+          message: result.message,
+          emoticons: result.emoticons.map((type) =>
+            emoticons.find((emoticon) => emoticon.name === type)
+          ),
+        });
+      } else {
+        // If no tie, map to single emoticon details
+        const emoticonDetails = emoticons.find(
+          (emoticon) => emoticon.name === result
+        );
+        setMostFrequentEmoticon(emoticonDetails);
+      }
     } catch (error) {
       console.error("Error fetching wellness log:", error);
     } finally {
@@ -42,56 +58,44 @@ const WellnessChart = ({ userId, selectedDate }) => {
     fetchWellnessData();
   }, [userId, selectedDate]);
 
-
-// Prepare chart data
-const chartData = {
-  labels: weeklyData.map((day) => moment(day.date).format("ddd")),
-  datasets: [
-    {
-      data: weeklyData.map((day) => {
-        // Find the index of the emoticon in the emoticons array
-        const emoticonIndex = emoticons.findIndex((e) => e.name === day.emoticonType);
-        return emoticonIndex >= 0 ? emoticonIndex : 0; // Default to 0 (excited) if not found
-      }),
-    },
-  ],
-};
-// Format the Y-axis label to show the emoticon name
-const formatYLabel = (yValue) => {
-  const emoticon = emoticons[yValue];
-  return emoticon ? emoticon.name : 'Unknown';
-};
-
-  const screenWidth = Dimensions.get("window").width; 
-
   return (
     <View style={styles.chartContainer}>
-      <Text style={styles.title}>Humør</Text>
+      <Text style={styles.title}>Dit gennemsnitlige humør denne uge</Text>
 
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
           <Text>Loading...</Text>
         </View>
-      ) : (
+      ) : mostFrequentEmoticon ? (
         <View style={styles.chartWrapper}>
-          <LineChart
-            data={chartData}
-            width={screenWidth - 40} 
-            height={240}
-            chartConfig={{
-              backgroundGradientFrom: "#f7f7f7",
-              backgroundGradientTo: "#ffffff",
-              color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-            bezier
-            fromZero={true}
-            verticalLabelRotation={0}
-            yAxisLabel="Emotion"
-            formatYLabel={formatYLabel} 
-          />
+          {/* If it's a tie, display both emoticons */}
+          {mostFrequentEmoticon.message === "Der står lige imellem" ? (
+            <>
+              <Text>{mostFrequentEmoticon.message}</Text>
+              <View style={styles.emoticonContainer}>
+                {mostFrequentEmoticon.emoticons.map((emoticon, index) => (
+                  <Icon
+                    key={index}
+                    name={emoticon.name} // Pass the emoticon name to the Icon component
+                    size={40} // Adjust the size as needed
+                    color={emoticon.color} // Set the icon color
+                    style={styles.iconSpacing}
+                  />
+                ))}
+              </View>
+            </>
+          ) : (
+            // Otherwise, display just the most frequent emoticon
+            <Icon
+              name={mostFrequentEmoticon.name} // Pass the emoticon name to the Icon component
+              size={40} // Adjust the size as needed
+              color={mostFrequentEmoticon.color} // Set the icon color
+            />
+          )}
         </View>
+      ) : (
+        <Text>Ingen data tilgængelig for denne uge.</Text>
       )}
     </View>
   );
@@ -104,8 +108,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    width: "96%",
-    height: 300,
+    width: "70%",
+    height: 150,
     marginVertical: 10,
     marginLeft: "3%",
     alignItems: "center",
@@ -130,5 +134,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     height: 240,
+  },
+  emoticonContainer: {
+    flexDirection: "row", // Ensure the emoticons are side by side
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  iconSpacing: {
+    marginHorizontal: 5, // Space between emoticons
   },
 });
