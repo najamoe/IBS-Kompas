@@ -66,16 +66,11 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate)
-      .startOf("isoWeek")
-      .format("YYYY-MM-DD");
-    const endOfWeek = moment(weekStartDate)
-      .endOf("isoWeek")
-      .format("YYYY-MM-DD");
+    const startOfWeek = moment(weekStartDate).startOf("isoWeek").format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate).endOf("isoWeek").format("YYYY-MM-DD");
 
     const dailyMood = []; // Initialize an array to hold daily moods
-    const wellnessLogsRef = collection(
-      firestore,
+    const wellnessLogsRef = collection(firestore,
       `users/${userId}/wellnessLogs`
     );
 
@@ -107,7 +102,7 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
 
     // If no valid emoticon types were found, return a default value or handle appropriately
     if (dailyMood.length === 0) {
-      console.log("No valid wellness log entries for the week.");
+   
       return null; // or you could return a default value or handle it differently
     }
 
@@ -116,8 +111,6 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
       acc[emoticonType] = (acc[emoticonType] || 0) + 1;
       return acc;
     }, {});
-
-    console.log("Emoticon counts for the week:", emoticonCounts);
 
     // Find the maximum count value
     const maxCount = Math.max(...Object.values(emoticonCounts));
@@ -129,7 +122,7 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
 
     // Handle the case where there is a tie with exactly two emoticons
     if (mostFrequentEmoticons.length >= 2 ) {
-      console.log("There is a tie between emoticons:", mostFrequentEmoticons);
+     
       return {
         message: "Der står lige imellem",
         emoticons: mostFrequentEmoticons,
@@ -138,7 +131,7 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
 
     // If no tie, return the most frequent emoticon
     const mostFrequentEmoticon = mostFrequentEmoticons[0];
-    console.log("Most frequent emoticonType:", mostFrequentEmoticon);
+  
     return mostFrequentEmoticon; // Return the most frequent emoticon type
   } catch (error) {
     console.error("Error fetching weekly wellness logs:", error);
