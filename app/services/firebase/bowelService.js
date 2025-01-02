@@ -237,10 +237,6 @@ export const averageBowelLogs = async (userId, selectedDate) => {
 
     const formattedAverage = averageLogs.toFixed(2); // Format the average to 2 decimal places
 
-    console.log("Total bowel logs for the week:", totalBowelLogs);
-    console.log("Average bowel logs for the week:", averageLogs);
-    console.log("Formatted average bowel logs:", formattedAverage);
-
     return parseFloat(formattedAverage);;
   } catch (error) {
     console.error("Error fetching average bowel logs:", error);
