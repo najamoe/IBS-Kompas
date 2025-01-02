@@ -15,7 +15,10 @@ import moment from "moment";
 import "moment/locale/da";
 import WaterIntakeChart from "../components/charts/waterChart";
 import WellnessChart from "../components/charts/wellnessChart";
-import BowelChart from "../components/charts/bowelChart";
+import {
+  BowelChartByFrequency,
+  BowelChartByType,
+} from "../components/charts/bowelChart";
 import SymptomChart from "../components/charts/symptomChart";
 import FoodChart from "../components/charts/foodChart";
 
@@ -112,7 +115,7 @@ const Stats = () => {
 
         <View>
           {user ? (
-            <BowelChart
+            <BowelChartByFrequency
               style={styles.graphContainer}
               userId={user.uid}
               selectedDate={selectedDate}
@@ -121,7 +124,19 @@ const Stats = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           )}
         </View>
-        
+
+        <View>
+          {user ? (
+            <BowelChartByType
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
         <View>
           {user ? (
             <WellnessChart
