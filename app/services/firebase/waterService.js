@@ -44,15 +44,19 @@ export const fetchWaterIntake = async (userId, date) => {
 };
 
 //For the chart
-export const fetchWeeklyWaterIntake = async (userId, weekStartDate) => {
+export const fetchWeeklyWaterIntake = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate).startOf("isoWeek").format("YYYY-MM-DD"); // Start of the week (Monday)
-    const endOfWeek = moment(weekStartDate).endOf("isoWeek").format("YYYY-MM-DD");   // End of the week (Sunday)
+    const startOfWeek = moment(selectedDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD"); // Start of the week (Monday)
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");   // End of the week (Sunday)
 
     const dailyWaterIntakes = []; // Initialize an array to hold daily intakes
     const waterLogsRef = collection(firestore, `users/${userId}/waterlogs`);
