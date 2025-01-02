@@ -5,6 +5,7 @@ import { LineChart } from "react-native-chart-kit";
 import {
   fetchWeeklyBowelLogByFrequency,
   fetchWeeklyBowelLogByType,
+  averageBowelLogs,
 } from "../../services/firebase/bowelService";
 
 export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
@@ -111,22 +112,31 @@ import type6 from "../../../assets/images/bowel/type6.png";
 import type7 from "../../../assets/images/bowel/type7.png";
 
 export const BowelChartByType = ({ userId, startDate, endDate }) => {
-  const [mostFrequentType, setMostFrequentType] = useState(null); // Store the most frequent type
   const [loading, setLoading] = useState(true);
+  const [mostFrequentType, setMostFrequentType] = useState(null); // Store the most frequent type
+  const [formattedAverageLogs, setFormattedAverageLogs] = useState(null); // Store the formatted average bowel logs
 
   const fetchBowelTypeData = async () => {
     try {
-
       setLoading(true);
-      const { mostFrequentType, bowelLogs } = await fetchWeeklyBowelLogByType(
+
+      const { mostFrequentType } = await fetchWeeklyBowelLogByType(
         userId,
         startDate,
         endDate
       );
 
       setMostFrequentType(mostFrequentType);
+
+      // Fetch and calculate average bowel logs for the week
+      const average = await averageBowelLogs(userId, startDate);
+      const formattedAverage = average.toFixed(2); // Format to two decimal places
+      setFormattedAverageLogs(formattedAverage);
     } catch (error) {
-      console.error("Error fetching bowel log by type from bowelchart.js:", error);
+      console.error(
+        "Error fetching bowel log by type from bowelchart.js:",
+        error
+      );
     } finally {
       setLoading(false);
     }
@@ -152,15 +162,27 @@ export const BowelChartByType = ({ userId, startDate, endDate }) => {
       <View style={styles.countContainer}>
         <Text style={styles.title}>Antal toiletbesøg</Text>
 
-        </View>
-
+        {/* Loading */}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text>Loading...</Text>
+          </View>
+        ) : formattedAverageLogs ? (
+          <View style={styles.chartWrapper}>
+            <Text>{formattedAverageLogs}</Text>
+          </View>
+        ) : (
+          <Text>Ingen data tilgængelig for denne uge.</Text>
+        )}
+      </View>
 
       {/* Bowel by Type */}
       <View style={styles.frequentTypeContainer}>
         {/* Centered Title */}
         <Text style={styles.title}>Oftest type af afføring</Text>
 
-        {/* Loading Indicator or Image */}
+        {/* Loading */}
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#0000ff" />
@@ -172,7 +194,7 @@ export const BowelChartByType = ({ userId, startDate, endDate }) => {
               source={bowelTypeImages[mostFrequentType]}
               style={styles.bowelImage}
             />
-            <Text> ${mostFrequentType}</Text>
+            <Text> {mostFrequentType}</Text>
           </View>
         ) : (
           <Text>Ingen type tilgængelig for denne uge.</Text>
@@ -222,10 +244,9 @@ const styles = StyleSheet.create({
   countAndTypeContainer: {
     flexDirection: "row",
 
- 
     padding: 20,
 
-  backgroundColor: "pink",
+    backgroundColor: "pink",
   },
   frequentTypeContainer: {
     width: "50%",
@@ -242,7 +263,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  countContainer: { 
+  countContainer: {
     width: "50%",
     marginTop: 20,
     backgroundColor: "white",

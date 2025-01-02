@@ -186,13 +186,64 @@ export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
       bowelTypeCount[a] > bowelTypeCount[b] ? a : b
     );
 
-    console.log("Bowel type count:", bowelTypeCount);
     return { mostFrequentType, bowelTypeCount };
   } catch (error) {
     console.error(
       "Error fetching bowel log by type from bowelService.js:",
       error
     );
+    throw error;
+  }
+};
+
+export const averageBowelLogs = async (userId, selectedDate) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    // Calculate start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(selectedDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
+
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
+    let totalBowelLogs = 0;
+
+    // Loop through each day of the week
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+
+      // Reference to the 'timeLogs' sub-collection for the current date
+      const dateDocRef = doc(bowelLogsRef, date);
+      const timeLogsRef = collection(dateDocRef, "timeLogs");
+
+      // Query the timeLogs sub-collection
+      const querySnapshot = await getDocs(timeLogsRef);
+
+      // Count the bowel logs for the day
+      totalBowelLogs += querySnapshot.docs.length; // Increment the total by the number of logs for the day
+    }
+
+    // Calculate the average bowel logs for the week (divide by 7)
+    const averageLogs = totalBowelLogs / 7;
+
+    const formattedAverage = averageLogs.toFixed(2); // Format the average to 2 decimal places
+
+    console.log("Total bowel logs for the week:", totalBowelLogs);
+    console.log("Average bowel logs for the week:", averageLogs);
+    console.log("Formatted average bowel logs:", formattedAverage);
+
+    return parseFloat(formattedAverage);;
+  } catch (error) {
+    console.error("Error fetching average bowel logs:", error);
     throw error;
   }
 };
