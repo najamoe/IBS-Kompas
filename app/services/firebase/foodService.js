@@ -55,7 +55,7 @@ export const fetchFoodIntake = async (userId, date, type) => {
     // Reference to the user's food log for the specific type
     const foodLogRef = collection(
       firestore,
-      `users/${userId}/foodLog/${date}/${type}`
+      `users/${userId}/foodLogs/${date}/${type}`
     );
 
     // Fetch food data from the collection
@@ -81,7 +81,7 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
     const date = moment().format("YYYY-MM-DD");
     const foodLogRef = collection(
       firestore,
-      `users/${userId}/foodLog/${date}/${type}`
+      `users/${userId}/foodLogs/${date}/${type}`
     );
 
     // Query for the document by its name or other unique identifier
