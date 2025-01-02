@@ -244,6 +244,60 @@ export const averageBowelLogs = async (userId, selectedDate) => {
   }
 };
 
+export const fetchAverageBloodLogs = async (userId, selectedDate) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    // Calculate start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(selectedDate)
+
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
+
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
+    let totalBloodLogs = 0;
+
+    // Loop through each day of the week
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+
+      // Reference to the 'timeLogs' sub-collection for the current date
+      const dateDocRef = doc(bowelLogsRef, date);
+      const timeLogsRef = collection(dateDocRef, "timeLogs");
+
+      // Query the timeLogs sub-collection
+      const querySnapshot = await getDocs(timeLogsRef);
+
+      // Count the blood logs for the day
+      querySnapshot.docs.forEach((doc) => {
+        if (doc.data().blood) {
+          totalBloodLogs += 1; // Increment the total by the number of logs with blood
+        }
+      });
+    }
+
+    // Calculate the average blood logs for the week (divide by 7)
+    const averageLogs = totalBloodLogs / 7;
+
+    const formattedAverage = averageLogs.toFixed(2); // Format the average to 2 decimal places
+
+    return parseFloat(formattedAverage);
+  } catch (error) {
+    console.error("Error fetching average blood logs:", error);
+    throw error;
+  }
+}
+
+
 
 export const editBowelLog = async (
   userId,

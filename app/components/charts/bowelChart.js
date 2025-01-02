@@ -6,6 +6,7 @@ import {
   fetchWeeklyBowelLogByFrequency,
   fetchWeeklyBowelLogByType,
   averageBowelLogs,
+  fetchAverageBloodLogs,
 } from "../../services/firebase/bowelService";
 
 export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
@@ -200,6 +201,51 @@ export const BowelChartByType = ({ userId, startDate, endDate }) => {
     </View>
   );
 };
+
+export const BowelChartBlood = ({ userId, startDate, endDate }) => {
+  const [loading, setLoading] = useState(true);
+  const [bloodLogsData, setBloodLogsData] = useState(null); // Store the average blood logs
+
+  const fetchBloodData = async () => {
+    try {
+      setLoading(true);
+
+      // Use startDate as the selectedDate
+      const bloodLogs = await fetchAverageBloodLogs(userId, startDate);
+      setBloodLogsData(bloodLogs);
+    } catch (error) {
+      console.error("Error fetching blood log from bowelchart.js:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBloodData();
+  }, [userId, startDate, endDate]);
+
+  return (
+    <View style={styles.chartContainer}>
+      <Text style={styles.title}>Blod</Text>
+
+      {/* Loading */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Loading...</Text>
+        </View>
+      ) : bloodLogsData ? (
+        <View style={styles.chartWrapper}>
+          <Text>{bloodLogsData}</Text>
+        </View>
+      ) : (
+        <Text>Ingen data tilgængelig for denne uge.</Text>
+      )}
+    </View>
+  );
+};
+
+
 
 const styles = StyleSheet.create({
   chartContainer: {
