@@ -9,98 +9,7 @@ import {
   fetchAverageBloodLogs,
 } from "../../services/firebase/bowelService";
 
-export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
-  const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
-
-  const [loading, setLoading] = useState(true);
-
-  const fetchBowelData = async () => {
-    try {
-      setLoading(true);
-      // Fetch the weekly bowel log data (daily values)
-      const bowelLogs = await fetchWeeklyBowelLogByFrequency(
-        userId,
-        startDate,
-        endDate
-      );
-
-      // Prepare the data for the chart
-      const formattedData = bowelLogs.map((day) => ({
-        date: day.date,
-        total: isNaN(day.total) ? 0 : day.total, // Ensure total is a number
-      }));
-
-      console.log("Chart Data", chartData.datasets[0].data); // Log chart data
-
-      setWeeklyData(formattedData);
-    } catch (error) {
-      console.error(
-        "Error fetching weekly bowel log from bowelChart.js:",
-        error
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBowelData();
-  }, [userId, startDate, endDate]);
-
-  // Chart configuration
-  const chartConfig = {
-    backgroundGradientFrom: "#fff",
-    backgroundGradientTo: "#fff",
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: "2",
-      strokeWidth: "2",
-      stroke: "red",
-    },
-  };
-
-  // Prepare data for the chart
-  const chartData = {
-    labels: weeklyData.map((day) => moment(day.date).format("ddd")), //Data on x-axis
-    datasets: [
-      {
-        data: weeklyData.map((day) => day.total), // Bowel intake amounts for each day
-      },
-    ],
-  };
-
-  return (
-    <View style={styles.chartContainer}>
-      {/* Centered Title */}
-      <Text style={styles.title}>Gennemsnitligt toiletbesøg</Text>
-
-      {/* Loading Indicator or LineChart */}
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>Loading...</Text>
-        </View>
-      ) : (
-        <View style={styles.chartWrapper}>
-          <LineChart
-            data={chartData}
-            width={310}
-            height={240}
-            verticalLabelRotation={0}
-            chartConfig={chartConfig}
-          />
-        </View>
-      )}
-    </View>
-  );
-};
-
-// Import all the images
+// Import bowel type images
 import type1 from "../../../assets/images/bowel/type1.png";
 import type2 from "../../../assets/images/bowel/type2.png";
 import type3 from "../../../assets/images/bowel/type3.png";
@@ -109,42 +18,125 @@ import type5 from "../../../assets/images/bowel/type5.png";
 import type6 from "../../../assets/images/bowel/type6.png";
 import type7 from "../../../assets/images/bowel/type7.png";
 
-export const BowelChartByType = ({ userId, startDate, endDate }) => {
+// Helper function to render loading or data state
+const LoadingOrData = ({
+  loading,
+  data,
+  noDataMessage = "Ingen data tilgængelig for denne uge.",
+}) => {
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+  return data ? <Text>{data}</Text> : <Text>{noDataMessage}</Text>;
+};
+
+// Chart configuration for bowel frequency
+const chartConfig = {
+  backgroundGradientFrom: "#fff",
+  backgroundGradientTo: "#fff",
+  decimalPlaces: 0,
+  color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+  style: {
+    borderRadius: 16,
+  },
+  propsForDots: {
+    r: "2",
+    strokeWidth: "2",
+    stroke: "red",
+  },
+};
+
+export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
+  const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mostFrequentType, setMostFrequentType] = useState(null); // Store the most frequent type
-  const [formattedAverageLogs, setFormattedAverageLogs] = useState(null); // Store the formatted average bowel logs
-
-  const fetchBowelTypeData = async () => {
-    try {
-      setLoading(true);
-
-      const { mostFrequentType } = await fetchWeeklyBowelLogByType(
-        userId,
-        startDate,
-        endDate
-      );
-
-      setMostFrequentType(mostFrequentType);
-
-      // Fetch and calculate average bowel logs for the week
-      const average = await averageBowelLogs(userId, startDate);
-      const formattedAverage = average.toFixed(2); // Format to two decimal places
-      setFormattedAverageLogs(formattedAverage);
-    } catch (error) {
-      console.error(
-        "Error fetching bowel log by type from bowelchart.js:",
-        error
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchBowelData = async () => {
+      try {
+        setLoading(true);
+        const bowelLogs = await fetchWeeklyBowelLogByFrequency(
+          userId,
+          startDate,
+          endDate
+        );
+        const formattedData = bowelLogs.map((day) => ({
+          date: day.date,
+          total: isNaN(day.total) ? 0 : day.total,
+        }));
+        setWeeklyData(formattedData);
+      } catch (error) {
+        console.error("Error fetching weekly bowel log by frequency:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBowelData();
+  }, [userId, startDate, endDate]);
+
+  const chartData = {
+    labels: weeklyData.map((day) => moment(day.date).format("ddd")),
+    datasets: [
+      {
+        data: weeklyData.map((day) => day.total),
+      },
+    ],
+  };
+
+  return (
+    <View style={styles.chartContainer}>
+      <Text style={styles.title}>Toiletbesøg</Text>
+      {loading || !weeklyData.length ? (
+        <LoadingOrData loading={loading} data={null} />
+      ) : (
+        <LineChart
+          data={chartData}
+          width={310}
+          height={240}
+          verticalLabelRotation={0}
+          chartConfig={chartConfig}
+        />
+      )}
+    </View>
+  );
+};
+
+export const BowelDetails = ({ userId, startDate, endDate }) => {
+  const [loading, setLoading] = useState(true);
+  const [mostFrequentType, setMostFrequentType] = useState(null);
+  const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
+  const [bloodLogsData, setBloodLogsData] = useState(null);
+
+  useEffect(() => {
+    const fetchBowelTypeData = async () => {
+      try {
+        setLoading(true);
+        const { mostFrequentType } = await fetchWeeklyBowelLogByType(
+          userId,
+          startDate,
+          endDate
+        );
+        setMostFrequentType(mostFrequentType);
+
+        const average = await averageBowelLogs(userId, startDate);
+        setFormattedAverageLogs(average.toFixed(2));
+
+        const bloodLogs = await fetchAverageBloodLogs(userId, startDate);
+        setBloodLogsData(bloodLogs);
+      } catch (error) {
+        console.error("Error fetching bowel log by type:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchBowelTypeData();
   }, [userId, startDate, endDate]);
 
-  // Map bowel types to their corresponding images
   const bowelTypeImages = {
     type1: type1,
     type2: type2,
@@ -158,94 +150,34 @@ export const BowelChartByType = ({ userId, startDate, endDate }) => {
   return (
     <View style={styles.countAndTypeContainer}>
       <View style={styles.countContainer}>
-        <Text style={styles.title}>Antal toiletbesøg</Text>
-
-        {/* Loading */}
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text>Loading...</Text>
-          </View>
-        ) : formattedAverageLogs ? (
-          <View style={styles.chartWrapper}>
-            <Text>{formattedAverageLogs}</Text>
-          </View>
-        ) : (
-          <Text>Ingen data tilgængelig for denne uge.</Text>
-        )}
+        <Text style={styles.title}>Gennemsnitligt antal toiletbesøg</Text>
+        <LoadingOrData loading={loading} data={formattedAverageLogs} />
       </View>
 
-      {/* Bowel by Type */}
       <View style={styles.frequentTypeContainer}>
-        {/* Centered Title */}
         <Text style={styles.title}>Oftest type af afføring</Text>
-
-        {/* Loading */}
         {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text>Loading...</Text>
-          </View>
+          <LoadingOrData loading={loading} data={null} />
         ) : mostFrequentType ? (
           <View style={styles.chartWrapper}>
             <Image
               source={bowelTypeImages[mostFrequentType]}
               style={styles.bowelImage}
             />
-            <Text> {mostFrequentType}</Text>
+            <Text>{mostFrequentType}</Text>
           </View>
         ) : (
           <Text>Ingen type tilgængelig for denne uge.</Text>
         )}
       </View>
+
+      <View style={styles.frequentTypeContainer}>
+        <Text style={styles.title}>Blod Logs</Text>
+        <LoadingOrData loading={loading} data={bloodLogsData} />
+      </View>
     </View>
   );
 };
-
-export const BowelChartBlood = ({ userId, startDate, endDate }) => {
-  const [loading, setLoading] = useState(true);
-  const [bloodLogsData, setBloodLogsData] = useState(null); // Store the average blood logs
-
-  const fetchBloodData = async () => {
-    try {
-      setLoading(true);
-
-      // Use startDate as the selectedDate
-      const bloodLogs = await fetchAverageBloodLogs(userId, startDate);
-      setBloodLogsData(bloodLogs);
-    } catch (error) {
-      console.error("Error fetching blood log from bowelchart.js:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBloodData();
-  }, [userId, startDate, endDate]);
-
-  return (
-    <View style={styles.chartContainer}>
-      <Text style={styles.title}>Blod</Text>
-
-      {/* Loading */}
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text>Loading...</Text>
-        </View>
-      ) : bloodLogsData ? (
-        <View style={styles.chartWrapper}>
-          <Text>{bloodLogsData}</Text>
-        </View>
-      ) : (
-        <Text>Ingen data tilgængelig for denne uge.</Text>
-      )}
-    </View>
-  );
-};
-
-
 
 const styles = StyleSheet.create({
   chartContainer: {
@@ -269,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     marginBottom: 10,
   },
@@ -286,9 +218,7 @@ const styles = StyleSheet.create({
   },
   countAndTypeContainer: {
     flexDirection: "row",
-
     padding: 20,
-
     backgroundColor: "pink",
   },
   frequentTypeContainer: {

@@ -18,7 +18,7 @@ import WellnessChart from "../components/charts/wellnessChart";
 import {
   BowelChartByFrequency,
   BowelChartByType,
-  BowelChartBlood,
+  BowelDetails,
 } from "../components/charts/bowelChart";
 import SymptomChart from "../components/charts/symptomChart";
 import FoodChart from "../components/charts/foodChart";
@@ -128,7 +128,7 @@ const Stats = () => {
 
         <View>
           {user ? (
-            <BowelChartByType
+            <BowelDetails
               style={styles.graphContainer}
               userId={user.uid}
               selectedDate={selectedDate}
@@ -137,17 +137,7 @@ const Stats = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           )}
         </View>
-        <View>
-          {user ? (
-            <BowelChartBlood
-              style={styles.graphContainer}
-              userId={user.uid}
-              selectedDate={selectedDate}
-            />
-          ) : (
-            <ActivityIndicator size="large" color="#0000ff" />
-          )}
-        </View>
+     
 
         <View>
           {user ? (
