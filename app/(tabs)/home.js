@@ -17,6 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodModal from "../components/modal/foodModal";
 import { fetchFoodIntake } from "../services/firebase/foodService";
+import FoodDisplay from "../components/displays/foodDisplay";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -63,6 +64,7 @@ const Home = () => {
   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [updatedItems, setUpdatedItems] = useState([]);
+  const [fetchedFood, setFetchedFood] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -88,8 +90,8 @@ const Home = () => {
       const fetchWaterData = async () => {
         try {
           //Fetch food intake
-          //const foodData = await fetchFoodIntake(user.uid, selectedDate);
-          //setFoodIntake(foodData);
+          const foodData = await fetchFoodIntake(user.uid, selectedDate);
+          setFetchedFood(foodData || []);
 
           // Fetch water intake
           const intake = await fetchWaterIntake(user.uid, selectedDate);
@@ -255,9 +257,30 @@ const Home = () => {
             <AntDesign name="pluscircleo" size={30} color="black" />
           </TouchableOpacity>
 
-          <View style={styles.foodContent}>
-            {/* Map over foodIntake and render each item */}
-          </View>
+          <FoodDisplay
+            mealType={"breakfast"}
+            fetchedFood={fetchedFood.filter(
+              (food) => food.mealType === "breakfast"
+            )}
+          />
+          <FoodDisplay
+            mealType={"lunch"}
+            fetchedFood={fetchedFood.filter(
+              (food) => food.mealType === "lunch"
+            )}
+          />
+          <FoodDisplay
+            mealType={"dinner"}
+            fetchedFood={fetchedFood.filter(
+              (food) => food.mealType === "dinner"
+            )}
+          />
+          <FoodDisplay
+            mealType={"snack"}
+            fetchedFood={fetchedFood.filter(
+              (food) => food.mealType === "snack"
+            )}
+          />
         </View>
 
         {/* Render FoodModal */}
