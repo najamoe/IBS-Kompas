@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const FoodDisplay = ({ fetchedFood, mealType }) => {
-  // Define a mapping for mealType to Danish labels
+const FoodDisplay = ({ fetchedFood, type }) => {
   const mealTypeLabels = {
     breakfast: "Morgenmad",
     lunch: "Frokost",
@@ -12,9 +11,8 @@ const FoodDisplay = ({ fetchedFood, mealType }) => {
 
   return (
     <View style={styles.foodContainer}>
-      {/* Display the meal type dynamically */}
       <Text style={styles.mealTypeTitle}>
-        {mealTypeLabels[mealType] || "Ukendt måltid"}
+        {mealTypeLabels[type] || "Ukendt måltid"}
       </Text>
 
       <View style={styles.foodContent}>
@@ -32,6 +30,7 @@ const FoodDisplay = ({ fetchedFood, mealType }) => {
     </View>
   );
 };
+
 
 export default FoodDisplay;
 
