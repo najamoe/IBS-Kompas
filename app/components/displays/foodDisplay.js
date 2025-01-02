@@ -38,8 +38,11 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
         {foodData.length === 0 ? (
           <Text>Ingen madindtag fundet for denne dag.</Text>
         ) : (
-          foodData.map((item) => (
-            <View key={item.id} style={styles.foodItem}>
+          foodData.map((item, index) => (
+            <View
+              key={`${item.name}-${item.quantity}-${index}`}
+              style={styles.foodItem}
+            >
               <Text>{item.name}</Text>
               <Text>{item.quantity}</Text>
             </View>
