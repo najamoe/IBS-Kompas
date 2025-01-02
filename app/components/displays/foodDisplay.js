@@ -1,7 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { fetchFoodIntake } from "../../services/firebase/foodService";
 
-const FoodDisplay = ({ fetchedFood, type }) => {
+const FoodDisplay = ({ type, user, selectedDate }) => {
+  const [foodData, setFoodData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (user) {
+          const fetchedFood = await fetchFoodIntake(user.uid, selectedDate, type);
+          console.log(
+            "Fetched food:- fetched from foodDisplay.js",
+            fetchedFood
+          ); // Add logging here
+          setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
+        }
+      } catch (error) {
+        console.error("Error fetching food data:", error);
+      }
+    };
+    fetchData();
+  }, [user, selectedDate]);
+
   const mealTypeLabels = {
     breakfast: "Morgenmad",
     lunch: "Frokost",
@@ -11,15 +32,13 @@ const FoodDisplay = ({ fetchedFood, type }) => {
 
   return (
     <View style={styles.foodContainer}>
-      <Text style={styles.mealTypeTitle}>
-        {mealTypeLabels[type]}
-      </Text>
+      <Text style={styles.mealTypeTitle}>{mealTypeLabels[type]}</Text>
 
       <View style={styles.foodContent}>
-        {fetchedFood.length === 0 ? (
+        {foodData.length === 0 ? (
           <Text>Ingen madindtag fundet for denne dag.</Text>
         ) : (
-          fetchedFood.map((item) => (
+          foodData.map((item) => (
             <View key={item.id} style={styles.foodItem}>
               <Text>{item.name}</Text>
               <Text>{item.quantity}</Text>
@@ -31,12 +50,12 @@ const FoodDisplay = ({ fetchedFood, type }) => {
   );
 };
 
-
 export default FoodDisplay;
 
 // Example styles
 const styles = StyleSheet.create({
   foodContainer: {
+    width: "90%",
     padding: 20,
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
@@ -57,5 +76,3 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-
-
