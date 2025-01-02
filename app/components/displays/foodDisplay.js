@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { fetchFoodIntake } from "../../services/firebase/foodService";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { fetchFoodIntake, deleteFoodIntake } from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
   const [foodData, setFoodData] = useState([]);
@@ -19,6 +20,18 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     };
     fetchData();
   }, [user, selectedDate]);
+
+  const handleDeleteItem = async (item) => {
+    try {
+      await deleteFoodIntake(user.uid, item, type);
+      const updatedFoodData = foodData.filter(
+        (foodItem) => foodItem.name !== item.name
+      );
+      setFoodData(updatedFoodData);
+    } catch (error) {
+      console.error("Error deleting food item:", error);
+    }
+  }
 
   const mealTypeLabels = {
     breakfast: "Morgenmad",
@@ -42,6 +55,17 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             >
               <Text>{item.name}</Text>
               <Text>{item.quantity}</Text>
+
+              <TouchableOpacity
+                  onPress={() => handleDeleteItem(item)}
+                  style={styles.deleteIcon}
+                >
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
             </View>
           ))
         )}
