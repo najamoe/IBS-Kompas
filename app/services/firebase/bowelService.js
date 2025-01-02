@@ -122,12 +122,8 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
         querySnapshot.docs.map((doc) => doc.data())
       );
 
-
-      // Calculate the total for the day (sum of all logs for the day)
-      const total = querySnapshot.docs.reduce(
-        (acc, doc) => acc + (doc.data().total || 0),
-        0
-      );
+      // Calculate the total for the day (e.g., count the number of logs for the day)
+      const total = querySnapshot.docs.length; // Count the number of logs for the day
 
       // Push the daily log with the total
       dailyBowelLog.push({
@@ -142,6 +138,7 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
     throw error;
   }
 };
+
 
 
 
