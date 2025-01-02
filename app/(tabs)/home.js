@@ -87,32 +87,38 @@ const Home = () => {
   // Fetch daily when the selected date changes
   useEffect(() => {
     if (user) {
-      const fetchWaterData = async () => {
+      console.log("Fetching data for:", selectedDate);
+      const fetchData = async () => {
         try {
           //Fetch food intake
+          console.log("fetching foood intake for:", selectedDate);
           const foodData = await fetchFoodIntake(user.uid, selectedDate);
           setFetchedFood(foodData || []);
 
           // Fetch water intake
+          console.log("Fetching water intake for:", selectedDate);
           const intake = await fetchWaterIntake(user.uid, selectedDate);
           setWaterIntake(intake);
 
           // Fetch wellness log
+          console.log("Fetching wellness log for:", selectedDate);
           const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
           setSelectedMood(wellnesslog || null);
 
           // Fetch logged symptoms for the selected date
+          console.log("Fetching symptoms for:", selectedDate);
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
 
           // Fetch bowel logs for the selected date
+          console.log("Fetching bowel logs for:", selectedDate);
           const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
           setBowelLogs(bowelLogData || []);
         } catch (error) {
-          console.error("Error fetching data:", error); //LOGS
+          console.error("Error fetching data from home.js:", error); //LOGS
         }
       };
-      fetchWaterData();
+      fetchData();
     }
   }, [user, selectedDate]);
 
@@ -218,13 +224,24 @@ const Home = () => {
       }
     }
   };
+const onRefresh = useCallback(async () => {
+  setRefreshing(true);
+  // Fetch data again when pulling to refresh
+  const fetchData = async () => {
+    if (user) {
+      try {
+        // Fetch the same data you load in useEffect
+        await fetchWaterData(); // You already have this function that handles fetching all the data
+      } catch (error) {
+        console.error("Error refreshing data:", error);
+      }
+    }
+  };
+  
+  await fetchData();
+  setRefreshing(false);
+}, [user, selectedDate]);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
