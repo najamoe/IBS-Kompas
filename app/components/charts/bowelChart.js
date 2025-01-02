@@ -21,7 +21,6 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
         endDate
       );
 
-      console.log("BowelLogs from bowelChart", bowelLogs);
 
       // Prepare the data for the chart
       const formattedData = bowelLogs.map((day) => ({
