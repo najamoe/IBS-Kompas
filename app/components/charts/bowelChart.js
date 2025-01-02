@@ -92,9 +92,6 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
             height={240}
             verticalLabelRotation={0}
             chartConfig={chartConfig}
-            bezier
-            fromZero={true}
-            yLabelsOffset={0}
           />
         </View>
       )}
