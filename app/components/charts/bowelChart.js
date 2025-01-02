@@ -149,32 +149,20 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
 
   return (
     <View style={styles.countAndTypeContainer}>
-      <View style={styles.countContainer}>
-        <Text style={styles.title}>Gennemsnitligt antal toiletbesøg</Text>
-        <LoadingOrData loading={loading} data={formattedAverageLogs} />
-      </View>
-
-      <View style={styles.frequentTypeContainer}>
-        <Text style={styles.title}>Oftest type af afføring</Text>
-        {loading ? (
-          <LoadingOrData loading={loading} data={null} />
-        ) : mostFrequentType ? (
-          <View style={styles.chartWrapper}>
-            <Image
-              source={bowelTypeImages[mostFrequentType]}
-              style={styles.bowelImage}
-            />
-            <Text>{mostFrequentType}</Text>
-          </View>
-        ) : (
-          <Text>Ingen type tilgængelig for denne uge.</Text>
-        )}
-      </View>
-
-      <View style={styles.frequentTypeContainer}>
-        <Text style={styles.title}>Blod Logs</Text>
-        <LoadingOrData loading={loading} data={bloodLogsData} />
-      </View>
+     <View style={styles.container}>
+      {loading ? (
+        <LoadingOrData loading={loading} data={null} />
+      ) : (
+        <Text style={styles.message}>
+          I denne uge har du gennemsnitligt haft {formattedAverageLogs} toiletbesøg per dag.
+          {"\n"}
+          Din mest almindelige afføringstype denne uge er{" "}
+          {mostFrequentType ? mostFrequentType : "Ingen type tilgængelig for denne uge."}.
+          {"\n"}
+          Du har observeret blod {bloodLogsData} antal gange.
+        </Text>
+      )}
+    </View>
     </View>
   );
 };
