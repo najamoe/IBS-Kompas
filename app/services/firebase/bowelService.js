@@ -89,31 +89,50 @@ export const fetchBowelLog = async (userId, date) => {
 
 export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
   try {
-    // Ensure Firestore instance and userId are available
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate).startOf("isoWeek").format("YYYY-MM-DD");
-    const endOfWeek = moment(weekStartDate).endOf("isoWeek").format("YYYY-MM-DD");
+    const startOfWeek = moment(weekStartDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
 
     const dailyBowelLog = [];
     const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
 
-    // Loop over all days of the week to fetch bowel logs for each day
+    // Loop through each day of the week
     for (
       let currentDate = moment(startOfWeek);
       currentDate.isBefore(moment(endOfWeek).add(1, "days"));
       currentDate.add(1, "days")
     ) {
       const date = currentDate.format("YYYY-MM-DD");
-      const bowelRef = doc(bowelLogsRef, date);
-      const snapshot = await getDoc(bowelRef);
 
+      // Query the timestamp subcollection for the current date
+      const dateDocRef = doc(bowelLogsRef, date); // Create document reference for each date
+      const timestampRef = collection(dateDocRef, "timeLogs"); // Query the 'timeLogs' subcollection
+      const querySnapshot = await getDocs(timestampRef);
+
+      console.log(
+        `Logs for date: ${date}`,
+        querySnapshot.docs.map((doc) => doc.data())
+      );
+
+
+      // Calculate the total for the day (sum of all logs for the day)
+      const total = querySnapshot.docs.reduce(
+        (acc, doc) => acc + (doc.data().total || 0),
+        0
+      );
+
+      // Push the daily log with the total
       dailyBowelLog.push({
-        date, // Include the date
-        total: snapshot.exists() ? snapshot.data().total || 0 : 0, // Include the total, default to 0 if not found
+        date,
+        total: total || 0, // Default to 0 if no logs for the day
       });
     }
 
@@ -123,6 +142,8 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
     throw error;
   }
 };
+
+
 
 
 
