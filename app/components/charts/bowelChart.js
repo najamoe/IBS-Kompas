@@ -7,6 +7,7 @@ import {
   fetchWeeklyBowelLogByType,
   averageBowelLogs,
   fetchAverageBloodLogs,
+  fetchAveragePainLogs
 } from "../../services/firebase/bowelService";
 
 // Import bowel type images
@@ -111,6 +112,7 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
   const [mostFrequentType, setMostFrequentType] = useState(null);
   const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
   const [bloodLogsData, setBloodLogsData] = useState(null);
+  const [painLogsData, setPainLogsData] = useState(null);
 
   useEffect(() => {
     const fetchBowelTypeData = async () => {
@@ -128,6 +130,9 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
 
         const bloodLogs = await fetchAverageBloodLogs(userId, startDate);
         setBloodLogsData(bloodLogs);
+
+        const painLogs = await fetchAveragePainLogs(userId, startDate);
+        setPainLogsData(painLogs);
       } catch (error) {
         console.error("Error fetching bowel log by type:", error);
       } finally {
@@ -168,6 +173,9 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
             .{"\n"}
             Du har observeret blod{" "}
             <Text style={styles.boldText}>{bloodLogsData}</Text> antal gange.
+            {"\n"}
+            Din gennemsnitlige smerte var{" "}
+            <Text style={styles.boldText}>{painLogsData}</Text> .
           </Text>
         </View>
       )}
@@ -216,7 +224,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 150,
+    height: 250,
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",

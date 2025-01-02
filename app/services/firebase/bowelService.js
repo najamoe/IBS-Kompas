@@ -12,7 +12,14 @@ import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the defaul
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-export const addBowelLog = async (  userId,  bowelType,  pain,  blood,  urgent,  notes) => {
+export const addBowelLog = async (
+  userId,
+  bowelType,
+  pain,
+  blood,
+  urgent,
+  notes
+) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
@@ -134,7 +141,6 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, selectedDate) => {
   }
 };
 
-
 export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
@@ -237,7 +243,7 @@ export const averageBowelLogs = async (userId, selectedDate) => {
 
     const formattedAverage = averageLogs.toFixed(2); // Format the average to 2 decimal places
 
-    return parseFloat(formattedAverage);;
+    return parseFloat(formattedAverage);
   } catch (error) {
     console.error("Error fetching average bowel logs:", error);
     throw error;
@@ -252,7 +258,6 @@ export const fetchAverageBloodLogs = async (userId, selectedDate) => {
 
     // Calculate start and end date for the week (Monday-Sunday)
     const startOfWeek = moment(selectedDate)
-
       .startOf("isoWeek")
       .format("YYYY-MM-DD");
     const endOfWeek = moment(selectedDate)
@@ -295,9 +300,74 @@ export const fetchAverageBloodLogs = async (userId, selectedDate) => {
     console.error("Error fetching average blood logs:", error);
     throw error;
   }
-}
+};
 
+export const fetchAveragePainLogs = async (userId, selectedDate) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
 
+    // Calculate start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(selectedDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
+
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
+    let totalPainLogs = 0;
+    let totalEntries = 0;
+
+    // Loop through each day of the week
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+
+      // Reference to the 'timeLogs' sub-collection for the current date
+      const dateDocRef = doc(bowelLogsRef, date);
+      const timeLogsRef = collection(dateDocRef, "timeLogs");
+
+      // Query the timeLogs sub-collection
+      const querySnapshot = await getDocs(timeLogsRef);
+
+      // Calculate the total pain logs for the day and count entries
+      let dailyPainTotal = 0;
+      querySnapshot.docs.forEach((doc) => {
+        let painValue = doc.data().pain;
+        console.log(
+          "Pain value for entry:",
+          painValue,
+          "Type:",
+          typeof painValue
+        ); // Log type and value
+        painValue = Number(painValue); // Ensure it's treated as a number
+        dailyPainTotal += painValue;
+      });
+
+      console.log("Daily pain total for", date, ":", dailyPainTotal); // This will show the correct daily total
+
+      if (querySnapshot.docs.length > 0) {
+        totalEntries += querySnapshot.docs.length; // Count the entries for averaging
+      }
+
+      totalPainLogs += dailyPainTotal; // Accumulate the daily total
+    }
+
+    // Calculate the average pain value per log entry (divide total pain by total entries)
+    const averagePain = totalPainLogs / totalEntries;
+    const formattedAveragePain = averagePain.toFixed(2); // Format the average to 2 decimal places
+    console.log("Average pain logs for the week:", formattedAveragePain);
+    return parseFloat(formattedAveragePain); // Return the formatted average
+  } catch (error) {
+    console.error("Error fetching average pain logs:", error);
+    throw error;
+  }
+};
 
 export const editBowelLog = async (
   userId,
