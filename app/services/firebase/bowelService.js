@@ -1,16 +1,18 @@
-import { doc, collection, setDoc, getDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  doc,
+  collection,
+  setDoc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import moment from "moment";
 import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
-export const addBowelLog = async (
-  userId,
-  bowelType,
-  pain,
-  blood,
-  urgent,
-  notes
-) => {
+export const addBowelLog = async (  userId,  bowelType,  pain,  blood,  urgent,  notes) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
@@ -48,13 +50,13 @@ export const addBowelLog = async (
 
     // Save the bowel log in Firestore
     await setDoc(bowelRef, bowelLog);
-
   } catch (error) {
     console.error("Error saving bowel log from addBowelLog:", error);
     throw error;
   }
 };
 
+//Used in home.js for displaying the bowel logs
 export const fetchBowelLog = async (userId, date) => {
   try {
     if (!firestore || !userId) {
@@ -62,12 +64,15 @@ export const fetchBowelLog = async (userId, date) => {
     }
 
     // Correctly reference the subcollection
-    const bowelRef = collection(firestore, `users/${userId}/bowelLogs/${date}/timeLogs`);
+    const bowelRef = collection(
+      firestore,
+      `users/${userId}/bowelLogs/${date}/timeLogs`
+    );
     const q = query(bowelRef); // Optionally add query filters here, e.g., where clauses
     const snapshot = await getDocs(q);
 
     if (!snapshot.empty) {
-      const bowelLogs = snapshot.docs.map(doc => ({
+      const bowelLogs = snapshot.docs.map((doc) => ({
         id: doc.id, // Add the document ID to each bowel log entry
         ...doc.data(), // Spread the rest of the document data
       }));
@@ -82,6 +87,82 @@ export const fetchBowelLog = async (userId, date) => {
   }
 };
 
+export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
+  try {
+    // Ensure Firestore instance and userId are available
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    // Get the start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(weekStartDate).startOf("isoWeek").format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate).endOf("isoWeek").format("YYYY-MM-DD");
+
+    const dailyBowelLog = [];
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
+
+    // Loop over all days of the week to fetch bowel logs for each day
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+      const bowelRef = doc(bowelLogsRef, date);
+      const snapshot = await getDoc(bowelRef);
+
+      dailyBowelLog.push({
+        date, // Include the date
+        total: snapshot.exists() ? snapshot.data().total || 0 : 0, // Include the total, default to 0 if not found
+      });
+    }
+
+    return dailyBowelLog; // Return an array of bowel logs for the week
+  } catch (error) {
+    console.error("Error fetching weekly bowel log:", error);
+    throw error;
+  }
+};
+
+
+
+
+
+export const fetchWeeklyBowelLogByType = async (userId, date, type) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    // Get the start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(weekStartDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD"); // Start of the week (Monday)
+    const endOfWeek = moment(weekStartDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD"); // End of the week (Sunday)
+    const bowelRef = collection(
+      firestore,
+      `users/${userId}/bowelLogs/${date}/timeLogs`
+    );
+    const q = query(bowelRef, where("bowelType", "==", type)); // Filter by bowel type
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      const bowelLogs = snapshot.docs.map((doc) => ({
+        id: doc.id, // Add the document ID to each bowel log entry
+        ...doc.data(), // Spread the rest of the document data
+      }));
+      return bowelLogs; // Return an array of bowel log entries with unique IDs
+    } else {
+      console.log("No bowel log found for this date.");
+      return null; // No bowel log found for the given date
+    }
+  } catch (error) {
+    console.error("Error fetching bowel log by type:", error);
+    throw error;
+  }
+};
 
 export const editBowelLog = async (
   userId,
