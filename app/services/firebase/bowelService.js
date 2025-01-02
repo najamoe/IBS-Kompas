@@ -339,17 +339,10 @@ export const fetchAveragePainLogs = async (userId, selectedDate) => {
       let dailyPainTotal = 0;
       querySnapshot.docs.forEach((doc) => {
         let painValue = doc.data().pain;
-        console.log(
-          "Pain value for entry:",
-          painValue,
-          "Type:",
-          typeof painValue
-        ); // Log type and value
+
         painValue = Number(painValue); // Ensure it's treated as a number
         dailyPainTotal += painValue;
       });
-
-      console.log("Daily pain total for", date, ":", dailyPainTotal); // This will show the correct daily total
 
       if (querySnapshot.docs.length > 0) {
         totalEntries += querySnapshot.docs.length; // Count the entries for averaging
@@ -361,7 +354,7 @@ export const fetchAveragePainLogs = async (userId, selectedDate) => {
     // Calculate the average pain value per log entry (divide total pain by total entries)
     const averagePain = totalPainLogs / totalEntries;
     const formattedAveragePain = averagePain.toFixed(2); // Format the average to 2 decimal places
-    console.log("Average pain logs for the week:", formattedAveragePain);
+
     return parseFloat(formattedAveragePain); // Return the formatted average
   } catch (error) {
     console.error("Error fetching average pain logs:", error);
