@@ -2,12 +2,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Dimensions,
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { fetchWeeklyWellnessLog } from "../../services/firebase/wellnessService"; // Your data-fetching function
-import moment from "moment"; // To format the dates
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
 
 const emoticons = [
