@@ -128,7 +128,7 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
     );
 
     // Handle the case where there is a tie with exactly two emoticons
-    if (mostFrequentEmoticons.length === 2) {
+    if (mostFrequentEmoticons.length >= 2 ) {
       console.log("There is a tie between emoticons:", mostFrequentEmoticons);
       return {
         message: "Der står lige imellem",
