@@ -16,7 +16,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodModal from "../components/modal/foodModal";
-import { fetchFoodIntake } from "../services/firebase/foodService";
 import FoodDisplay from "../components/displays/foodDisplay";
 import {
   addWaterIntake,
@@ -87,13 +86,9 @@ const Home = () => {
   // Fetch daily when the selected date changes
   useEffect(() => {
     if (user) {
-      console.log("Fetching data for:", selectedDate);
+     
       const fetchData = async () => {
         try {
-          //Fetch food intake
-          console.log("fetching foood intake for:", selectedDate);
-          const foodData = await fetchFoodIntake(user.uid, selectedDate);
-          setFetchedFood(foodData || []);
 
           // Fetch water intake
           console.log("Fetching water intake for:", selectedDate);
@@ -275,29 +270,13 @@ const onRefresh = useCallback(async () => {
           </TouchableOpacity>
 
           <FoodDisplay
-            mealType={"breakfast"}
-            fetchedFood={fetchedFood.filter(
-              (food) => food.mealType === "breakfast"
-            )}
+            type="breakfast"
+            user={user}
+            selectedDate={selectedDate}
           />
-          <FoodDisplay
-            mealType={"lunch"}
-            fetchedFood={fetchedFood.filter(
-              (food) => food.mealType === "lunch"
-            )}
-          />
-          <FoodDisplay
-            mealType={"dinner"}
-            fetchedFood={fetchedFood.filter(
-              (food) => food.mealType === "dinner"
-            )}
-          />
-          <FoodDisplay
-            mealType={"snack"}
-            fetchedFood={fetchedFood.filter(
-              (food) => food.mealType === "snack"
-            )}
-          />
+          <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
+          <FoodDisplay type="dinner" user={user} selectedDate={selectedDate} />
+          <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
         </View>
 
         {/* Render FoodModal */}
