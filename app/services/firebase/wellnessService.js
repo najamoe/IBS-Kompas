@@ -94,7 +94,7 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
           emoticonType, // Get the emoticon type for the day
         });
       } else {
-        console.log("No valid emoticonType for", date);
+        //console.log("No valid emoticonType for", date);
       }
     }
 
