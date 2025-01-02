@@ -94,7 +94,7 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
       await deleteDoc(doc.ref);
     });
 
-    console.log(`Successfully deleted food item from ${type} log.`);
+   
   } catch (error) {
     console.error("Error deleting food intake:", error);
   }
