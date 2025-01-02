@@ -186,6 +186,7 @@ const Home = () => {
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
     { label: "Oppustethed", value: "oppustethed" },
+    { label: "halsbrand", value: "halsbrand" },
   ];
 
   // useEffect to mark symptoms that are already in the array in firestore
@@ -557,6 +558,7 @@ const styles = StyleSheet.create({
   },
   symptomListContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   logTitleContainer: {
     flexDirection: "row",
