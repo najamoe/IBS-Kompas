@@ -86,27 +86,25 @@ const Home = () => {
   // Fetch daily when the selected date changes
   useEffect(() => {
     if (user) {
-     
       const fetchData = async () => {
         try {
-
           // Fetch water intake
-          console.log("Fetching water intake for:", selectedDate);
+
           const intake = await fetchWaterIntake(user.uid, selectedDate);
           setWaterIntake(intake);
 
           // Fetch wellness log
-          console.log("Fetching wellness log for:", selectedDate);
+
           const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
           setSelectedMood(wellnesslog || null);
 
           // Fetch logged symptoms for the selected date
-          console.log("Fetching symptoms for:", selectedDate);
+
           const symptoms = await fetchSymptoms(user.uid, selectedDate);
           setSymptoms(symptoms);
 
           // Fetch bowel logs for the selected date
-          console.log("Fetching bowel logs for:", selectedDate);
+
           const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
           setBowelLogs(bowelLogData || []);
         } catch (error) {
@@ -172,7 +170,7 @@ const Home = () => {
 
   const handleEmoticonPress = async (emoticon) => {
     if (!user) {
-   //Insert error handling
+      //Insert error handling
       return;
     }
 
@@ -219,24 +217,24 @@ const Home = () => {
       }
     }
   };
-const onRefresh = useCallback(async () => {
-  setRefreshing(true);
-  // Fetch data again when pulling to refresh
-  const fetchData = async () => {
-    if (user) {
-      try {
-        // Fetch the same data you load in useEffect
-        await fetchWaterData(); // You already have this function that handles fetching all the data
-      } catch (error) {
-        console.error("Error refreshing data:", error);
-      }
-    }
-  };
   
-  await fetchData();
-  setRefreshing(false);
-}, [user, selectedDate]);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    // Fetch data again when pulling to refresh
+    const fetchData = async () => {
+      if (user) {
+        try {
+          // Fetch the same data you load in useEffect
+          await fetchWaterData(); // You already have this function that handles fetching all the data
+        } catch (error) {
+          console.error("Error refreshing data:", error);
+        }
+      }
+    };
 
+    await fetchData();
+    setRefreshing(false);
+  }, [user, selectedDate]);
 
   return (
     <SafeAreaView style={styles.container}>
