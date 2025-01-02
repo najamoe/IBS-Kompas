@@ -117,11 +117,6 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
       const timestampRef = collection(dateDocRef, "timeLogs"); // Query the 'timeLogs' subcollection
       const querySnapshot = await getDocs(timestampRef);
 
-      console.log(
-        `Logs for date: ${date}`,
-        querySnapshot.docs.map((doc) => doc.data())
-      );
-
       // Calculate the total for the day (e.g., count the number of logs for the day)
       const total = querySnapshot.docs.length; // Count the number of logs for the day
 
