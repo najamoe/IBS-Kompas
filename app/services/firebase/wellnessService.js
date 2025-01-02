@@ -50,7 +50,6 @@ export const fetchWellnessLog = async (userId, date) => {
       if (snapshot.exists()) {
           return snapshot.data().emoticonType;
       } else {
-          console.log("No wellnesslog found for the given date, returning 0");
           return 0;
       }
   } catch (error) {
@@ -94,7 +93,6 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
           date, // Include the date
           emoticonType, // Get the emoticon type for the day
         });
-        console.log("Fetched emoticonType for", date, ":", emoticonType);
       } else {
         console.log("No valid emoticonType for", date);
       }
