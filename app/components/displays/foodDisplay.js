@@ -12,7 +12,7 @@ const FoodDisplay = ({ fetchedFood, type }) => {
   return (
     <View style={styles.foodContainer}>
       <Text style={styles.mealTypeTitle}>
-        {mealTypeLabels[type] || "Ukendt måltid"}
+        {mealTypeLabels[type]}
       </Text>
 
       <View style={styles.foodContent}>
