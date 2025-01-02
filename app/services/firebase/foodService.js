@@ -46,39 +46,28 @@ export const addFoodIntake = async (userId, foodData, type) => {
   }
 };
 
+//Fecthing food based on type of meal
 export const fetchFoodIntake = async (userId, date, type) => {
   try {
-    // Logging the variables to check their values
-    console.log("Firestore instance:", firestore);
-    console.log("userId:", userId);
-    console.log("date:", date);
-    console.log("type:", type);
-
     if (!firestore || !userId || !date || !type) {
       throw new Error("Firestore instance, userId, date, or type is missing.");
     }
 
-    console.log("Fetching food intake for:");
-    console.log("User ID:", userId, "Date:", date, "Type:", type);
-
-    // Reference to the user's food log for the specific type
     const foodLogRef = collection(
       firestore,
       `users/${userId}/foodLogs/${date}/${type}`
     );
 
-    // Fetch food data from the collection
     const snapshot = await getDocs(foodLogRef);
-    const foodData = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      console.log("Fetched data:", data); // Log the data to verify the structure
-      return data;
+    const foodData = [];
+
+    snapshot.forEach((doc) => {
+      foodData.push(doc.data());
     });
 
-    console.log(`Successfully fetched ${type} log for ${date}.`);
     return foodData;
   } catch (error) {
-    console.error("Error fetching food intake from foodservice.js:", error);
+    console.error("Error fetching food intake:", error);
   }
 };
 
