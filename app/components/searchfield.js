@@ -1,5 +1,5 @@
 // SearchField.js (Child)
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   FlatList,
@@ -14,6 +14,7 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
+import CustomButton from "../components/CustomButton";
 import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
 
 const SearchField = ({ selectedItems, setSelectedItems }) => {
@@ -45,6 +46,23 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
     }
   };
 
+  //Debounce the search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearch(query);
+    }, 500);
+    return () => clearTimeout(timer); //Cleanup on unmount
+  }, [query]);
+
+  // Function to handle modal close for resetting inputs
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedItems([]); // Clear selected items
+    setItemName(""); // Reset item name
+    setQuantity(""); // Reset quantity
+    setUnit(""); // Reset unit
+  };
+
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
     console.log("Selected item in searchfield:", item);
@@ -54,22 +72,49 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   };
 
   // Function to handle adding the item with quantity and unit to selectedItems
-  const handleAddItem = () => {
-    console.log("item from searchfield:", quantity, unit, itemName);
+const handleAddItem = () => {
+  console.log("item from searchfield:", quantity, unit, itemName);
 
-    if (itemName && quantity && unit) {
-      const newItem = { ...selectedItem, quantity, unit };
-      setSelectedItems((prevItems) => {
-        // Directly append new item to the previous items
-        return [...prevItems, newItem]; // Directly return the updated array
-      });
-      setItemName("");
-      setQuantity("");
-      setUnit("");
-      setShowModal(false);
-    } else {
-      alert("Please enter both quantity and unit.");
-    }
+  if (itemName && quantity && unit) {
+    const newItem = { ...selectedItem, name: itemName, quantity, unit };
+
+    setSelectedItems((prevItems) => {
+      // Check if an item with the same name already exists
+      const existingItemIndex = prevItems.findIndex(
+        (item) => item.name === newItem.name
+      );
+
+      if (existingItemIndex !== -1) {
+        // Replace the existing item with the new one
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = newItem;
+        return updatedItems;
+      } else {
+        // Append the new item to the list
+        return [...prevItems, newItem];
+      }
+    });
+
+    // Reset fields and close modal
+    setItemName("");
+    setQuantity("");
+    setUnit("");
+    setShowModal(false);
+
+    setSearchResults([]); // Clear search results
+  } else {
+    alert("Please enter both quantity and unit.");
+  }
+};
+
+
+  // Function to handle editing an existing item in the selectedItems list
+  const handleEditItem = (item) => {
+    setSelectedItem(item); // Store the selected item to edit
+    setItemName(item.name); // Pre-fill the item name
+    setQuantity(item.quantity); // Pre-fill the quantity
+    setUnit(item.unit); // Pre-fill the unit
+    setShowModal(true); // Open the modal
   };
 
   // Function to handle deleting an item from the selected items list
@@ -110,31 +155,44 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
       )}
 
       {/* List of selected items */}
-      {selectedItems.length > 0 && (
-        <View style={styles.selectedItemsContainer}>
-          <Text>Tilføjede varer</Text>
+
+      <View style={styles.selectedItemsContainer}>
+        <Text style={styles.addItemTitle}>Tilføjede varer</Text>
+
+        {/* Conditionally render message if no items are present */}
+        {selectedItems.length === 0 ? (
+          <Text style={styles.noItemsText}>Ingen varer tilføjet</Text>
+        ) : (
           <FlatList
             data={selectedItems}
             renderItem={({ item }) => (
               <View style={styles.selectedItem}>
-                <Text>{item.name}</Text>
-                <Text>{item.brand}</Text>
-                <Text>
-                  {item.quantity} {item.unit}
-                </Text>
-                <MaterialCommunityIcons
-                  name="delete-outline"
-                  onPress={() => handleDeleteItem(item)} // Handle delete
-                  size={24}
+                <TouchableOpacity onPress={() => handleEditItem(item)}>
+                  {/* Left part: Item name, quantity, and unit */}
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text style={{ marginRight: 10 }}>{item.name}</Text>
+                    <Text style={{ marginRight: 10 }}>{item.quantity}</Text>
+                    <Text>{item.unit}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                {/* Right part: Delete icon */}
+                <TouchableOpacity
+                  onPress={() => handleDeleteItem(item)}
+                  style={styles.deleteIcon}
                 >
-        
-                </MaterialCommunityIcons>
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
               </View>
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key
           />
-        </View>
-      )}
+        )}
+      </View>
 
       {/* Modal for quantity and unit input */}
       {showModal && (
@@ -142,39 +200,54 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
           animationType="slide"
           transparent={true}
           visible={showModal}
-          onRequestClose={() => setShowModal(false)}
+          onRequestClose={handleCloseModal}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text>Indtast mængde</Text>
-              <TextInput
-                placeholder="Mængde"
-                keyboardType="numeric"
-                value={quantity}
-                onChangeText={setQuantity}
-                style={styles.input}
-              />
-              <RNPickerSelect
-                value={unit}
-                useNativeAndroidPickerStyle={false}
-                onValueChange={(value) => {
-                  setUnit(value);
-                }}
-                items={[
-                  { label: "gram", value: "gram" },
-                  { label: "kg", value: "kg" },
-                  { label: "mL", value: "ml" },
-                  { label: "dL", value: "dl" },
-                  { label: "L", value: "l" },
-                ]}
-                style={pickerSelectStyles}
-                placeholder={{
-                  label: "enhed",
-                  value: null,
-                }}
-              />
-              <Button title="Tilføj til liste" onPress={handleAddItem} />
-              <Button title="Afbryd" onPress={() => setShowModal(false)} />
+              <Text style={styles.addItemTitle}>Indtast mængde</Text>
+              <View style={{ flexDirection: "row" }}>
+                <TextInput
+                  placeholder="Mængde"
+                  keyboardType="numeric"
+                  value={quantity}
+                  onChangeText={setQuantity}
+                  style={styles.input}
+                />
+                <RNPickerSelect
+                  value={unit}
+                  useNativeAndroidPickerStyle={false}
+                  onValueChange={(value) => {
+                    setUnit(value);
+                  }}
+                  items={[
+                    { label: "stk", value: "stk" },
+                    { label: "gram", value: "gram" },
+                    { label: "kg", value: "kg" },
+                    { label: "mL", value: "ml" },
+                    { label: "dL", value: "dl" },
+                    { label: "L", value: "l" },
+                  ]}
+                  style={pickerSelectStyles}
+                  placeholder={{
+                    label: "enhed",
+                    value: null,
+                  }}
+                />
+              </View>
+
+              <View style={{ flexDirection: "row" }}>
+                <CustomButton
+                  customStyles={[styles.cancelButton]}
+                  title="Afbryd"
+                  handlePress={() => setShowModal(false)}
+                />
+
+                <CustomButton
+                  customStyles={[styles.addButton]}
+                  title="Tilføj til liste"
+                  handlePress={handleAddItem}
+                />
+              </View>
             </View>
           </View>
         </Modal>
@@ -193,48 +266,68 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   searchbar: {
-    width: "100%",
     flexDirection: "row",
-  },
-  dropdownContainer: {
-    marginTop: 10,
-    maxHeight: 200,
-    width: "90%",
-    backgroundColor: "white",
-    borderRadius: 10,
+    alignItems: "center", // Vertically align the icon and input field
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    borderRadius: 10, // Rounded corners
     borderColor: "grey",
     borderWidth: 0.5,
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000", // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    paddingHorizontal: 10, // Add padding for inner elements
+    height: 50,
+  },
+  dropdownContainer: {
+    maxHeight: 200,
+    backgroundColor: "white",
+    borderColor: "grey",
+    borderWidth: 0.5,
+    elevation: 5,
     position: "absolute",
-    top: 26, // Adjust based on search bar position
-    left: 30,
-    right: 0,
+    top: 66,
+    left: 10,
+    right: 10,
     zIndex: 1,
   },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+  addItemTitle: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  noItemsText: {
+    fontSize: 16,
+    color: "gray",
+    textAlign: "center",
+    marginTop: 20,
   },
   selectedItemsContainer: {
-    marginTop: 30,
+    width: "90%",
+    marginTop: 50,
     marginBottom: 20,
-    width: "100%",
-    height: 100,
-    backgroundColor: "#f5f5f5",
+    height: 300,
+    backgroundColor: "#ffffff",
+    elevation: 5,
     borderRadius: 10,
     borderWidth: 0.5,
     borderColor: "grey",
     padding: 10,
   },
   selectedItem: {
+    flexDirection: "row", // Place items in a row
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 8,
+    marginLeft: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
-  deleteButton: {
-    backgroundColor: "red",
+  deleteIcon: {
     padding: 5,
     borderRadius: 5,
+    marginLeft: 10,
   },
   modalContainer: {
     flex: 1,
@@ -250,12 +343,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   input: {
-    width: "100%",
+    width: "40%",
+    marginTop: 20,
+    marginRight: 20,
     padding: 10,
+    textAlign: "center",
+    justifyContent: "center",
     marginVertical: 5,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+  },
+  cancelButton: {
+    backgroundColor: "grey",
+    width: "40%",
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#86C5D8",
+    width: "45%",
   },
 });
 
@@ -275,5 +381,6 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+    marginTop: 20,
   },
 });
