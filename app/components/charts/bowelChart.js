@@ -148,21 +148,29 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
   };
 
   return (
-    <View style={styles.countAndTypeContainer}>
-     <View style={styles.container}>
+    <View style={styles.detailContainer}>
       {loading ? (
         <LoadingOrData loading={loading} data={null} />
       ) : (
-        <Text style={styles.message}>
-          I denne uge har du gennemsnitligt haft {formattedAverageLogs} toiletbesøg per dag.
-          {"\n"}
-          Din mest almindelige afføringstype denne uge er{" "}
-          {mostFrequentType ? mostFrequentType : "Ingen type tilgængelig for denne uge."}.
-          {"\n"}
-          Du har observeret blod {bloodLogsData} antal gange.
-        </Text>
+        <View style={styles.TextContainer}>
+          <Text style={styles.title}>Detaljer</Text>
+          <Text style={styles.message}>
+            I denne uge har du gennemsnitligt haft{" "}
+            <Text style={styles.boldText}>{formattedAverageLogs}</Text>{" "}
+            toiletbesøg per dag.
+            {"\n"}
+            Din mest almindelige afføringstype denne uge er{" "}
+            <Text style={styles.boldText}>
+              {mostFrequentType
+                ? mostFrequentType
+                : "Ingen type tilgængelig for denne uge."}
+            </Text>
+            .{"\n"}
+            Du har observeret blod{" "}
+            <Text style={styles.boldText}>{bloodLogsData}</Text> antal gange.
+          </Text>
+        </View>
       )}
-    </View>
     </View>
   );
 };
@@ -172,7 +180,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    width: "100%",
     height: 300,
     marginVertical: 10,
     alignItems: "center",
@@ -204,17 +211,12 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 10,
   },
-  countAndTypeContainer: {
+  detailContainer: {
     flexDirection: "row",
     padding: 20,
-    backgroundColor: "pink",
-  },
-  frequentTypeContainer: {
-    width: "50%",
-    marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 200,
+    height: 150,
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -224,19 +226,17 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  countContainer: {
-    width: "50%",
-    marginTop: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-    height: 200,
-    marginVertical: 10,
+  TextContainer: {
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    width: "80%",
+  },
+  message: {
+    fontSize: 14,
+    color: "grey",
+    textAlign: "center",
+  },
+  boldText: {
+    fontWeight: "bold",
   },
 });
