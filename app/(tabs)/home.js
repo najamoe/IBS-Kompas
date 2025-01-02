@@ -63,7 +63,6 @@ const Home = () => {
   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [updatedItems, setUpdatedItems] = useState([]);
-  const [fetchedFood, setFetchedFood] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -217,7 +216,7 @@ const Home = () => {
       }
     }
   };
-  
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     // Fetch data again when pulling to refresh

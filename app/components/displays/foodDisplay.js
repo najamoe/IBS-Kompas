@@ -10,10 +10,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       try {
         if (user) {
           const fetchedFood = await fetchFoodIntake(user.uid, selectedDate, type);
-          console.log(
-            "Fetched food:- fetched from foodDisplay.js",
-            fetchedFood
-          ); // Add logging here
+          
           setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
         }
       } catch (error) {
