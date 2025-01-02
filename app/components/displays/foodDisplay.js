@@ -56,16 +56,18 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               <Text>{item.name}</Text>
               <Text>{item.quantity}</Text>
 
+              <View style={styles.deleteIcon}>
               <TouchableOpacity
                   onPress={() => handleDeleteItem(item)}
                   style={styles.deleteIcon}
                 >
                   <MaterialCommunityIcons
                     name="delete-outline"
-                    size={24}
+                    size={18}
                     color="black"
                   />
                 </TouchableOpacity>
+                </View>
             </View>
           ))
         )}
@@ -92,11 +94,17 @@ const styles = StyleSheet.create({
   },
   foodContent: {
     marginTop: 10,
+    flexDirection: "column",
   },
   foodItem: {
     marginBottom: 10,
     backgroundColor: "#e0e0e0",
     padding: 10,
     borderRadius: 5,
+  },
+  deleteIcon: {
+    position: "absolute",
+    right: 4,
+    top: 10,
   },
 });
