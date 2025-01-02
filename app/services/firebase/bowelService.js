@@ -87,17 +87,17 @@ export const fetchBowelLog = async (userId, date) => {
   }
 };
 
-export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
+export const fetchWeeklyBowelLogByFrequency = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate)
+    const startOfWeek = moment(selectedDate)
       .startOf("isoWeek")
       .format("YYYY-MM-DD");
-    const endOfWeek = moment(weekStartDate)
+    const endOfWeek = moment(selectedDate)
       .endOf("isoWeek")
       .format("YYYY-MM-DD");
 
@@ -135,47 +135,68 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, weekStartDate) => {
 };
 
 
-
-
-
-
-
-
-export const fetchWeeklyBowelLogByType = async (userId, date, type) => {
+export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate)
+    // Calculate start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(selectedDate)
       .startOf("isoWeek")
-      .format("YYYY-MM-DD"); // Start of the week (Monday)
-    const endOfWeek = moment(weekStartDate)
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
       .endOf("isoWeek")
-      .format("YYYY-MM-DD"); // End of the week (Sunday)
-    const bowelRef = collection(
-      firestore,
-      `users/${userId}/bowelLogs/${date}/timeLogs`
-    );
-    const q = query(bowelRef, where("bowelType", "==", type)); // Filter by bowel type
-    const snapshot = await getDocs(q);
+      .format("YYYY-MM-DD");
 
-    if (!snapshot.empty) {
-      const bowelLogs = snapshot.docs.map((doc) => ({
-        id: doc.id, // Add the document ID to each bowel log entry
-        ...doc.data(), // Spread the rest of the document data
-      }));
-      return bowelLogs; // Return an array of bowel log entries with unique IDs
-    } else {
-      console.log("No bowel log found for this date.");
-      return null; // No bowel log found for the given date
+    const bowelTypeCount = {};
+
+    // Reference to the `bowelLogs` collection
+    const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
+
+    // Loop through each day of the week
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+
+      // Reference to the 'timeLogs' sub-collection for the current date
+      const dateDocRef = doc(bowelLogsRef, date);
+      const timeLogsRef = collection(dateDocRef, "timeLogs");
+
+      // Query the timeLogs sub-collection
+      const querySnapshot = await getDocs(timeLogsRef);
+
+      // Process the fetched bowel logs
+      querySnapshot.docs.forEach((doc) => {
+        const bowelType = doc.data().bowelType;
+        bowelTypeCount[bowelType] = (bowelTypeCount[bowelType] || 0) + 1;
+      });
     }
+
+    if (Object.keys(bowelTypeCount).length === 0) {
+      console.log("No bowel log found for this week.");
+      return null;
+    }
+
+    // Find the most frequent bowel type
+    const mostFrequentType = Object.keys(bowelTypeCount).reduce((a, b) =>
+      bowelTypeCount[a] > bowelTypeCount[b] ? a : b
+    );
+
+    console.log("Bowel type count:", bowelTypeCount);
+    return { mostFrequentType, bowelTypeCount };
   } catch (error) {
-    console.error("Error fetching bowel log by type:", error);
+    console.error(
+      "Error fetching bowel log by type from bowelService.js:",
+      error
+    );
     throw error;
   }
 };
+
 
 export const editBowelLog = async (
   userId,
