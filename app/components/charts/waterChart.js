@@ -36,15 +36,15 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
   const chartConfig = {
     backgroundGradientFrom: "#fff",
     backgroundGradientTo: "#fff",
-    decimalPlaces: 2,
-
+    decimalPlaces: 1,
+    yAxisSuffix: "L",
     color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     style: {
       borderRadius: 16,
     },
     propsForDots: {
-      r: "4",
+      r: "2",
       strokeWidth: "2",
       stroke: "blue",
     },
