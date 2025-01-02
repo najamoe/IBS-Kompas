@@ -79,7 +79,6 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
             height={240}
             verticalLabelRotation={0}
             chartConfig={chartConfig}
-            yAxisLabel="L " 
             bezier
           />
         </View>
