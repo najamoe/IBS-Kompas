@@ -303,8 +303,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   selectedItemsContainer: {
-    width: "95%",
-    marginTop: 50,
+    width: "100%",
+    marginTop: 30,
     marginBottom: 240,
     height: 280,
     backgroundColor: "#ffffff",
