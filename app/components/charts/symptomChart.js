@@ -65,12 +65,12 @@ const SymptomChart = ({ userId }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Symptom Distribution</Text>
+      <Text style={styles.title}>Symptomer</Text>
 
       <PieChart
         data={chartData}
         width={350}
-        height={220}
+        height={160}
         chartConfig={{
           backgroundColor: "#1e2923",
           backgroundGradientFrom: "#08130D",
@@ -93,13 +93,22 @@ export default SymptomChart;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    marginTop: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    height: 250,
+    marginVertical: 10,
+    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   title: {
     fontSize: 24,
-    textAlign: "center",
+    fontWeight: "bold",
     marginBottom: 10,
   },
   dayContainer: {
