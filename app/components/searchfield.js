@@ -12,10 +12,11 @@ import {
   Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import debounce from "lodash.debounce";
 import { Searchbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
 import CustomButton from "../components/CustomButton";
-import { searchProducts } from "../services/api/openFoodFactsApi"; // Adjust the import path to where your API file is located
+import { searchProducts } from "../services/api/FoodSearchAPI"; // Adjust the import path to where your API file is located
 
 const SearchField = ({ selectedItems, setSelectedItems }) => {
   const [query, setQuery] = useState(""); // Search query
@@ -28,23 +29,20 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   const [unit, setUnit] = useState(""); // Unit input
 
   // Function to handle search input
-  const handleSearch = async (query) => {
-    setQuery(query);
-    if (query.length >= 3) {
-      // Trigger search when the query is at least 3 characters
-      setLoading(true);
-      try {
-        // Fetch products based on the search query
-        const results = await searchProducts(query);
-        setSearchResults(results); // Update state with new search results
-      } catch (error) {
-        setSearchResults([]); // Reset results if there is an error
-      }
-      setLoading(false);
-    } else {
-      setSearchResults([]); // Clear results if query is too short
-    }
-  };
+const handleSearch = debounce(async (query) => {
+  console.log("Searching for:", query);
+  setLoading(true);
+  try {
+    const results = await searchProducts(query);
+    console.log("Search results:", results); 
+    setSearchResults(results || []);
+  } catch (error) {
+    console.error("Error during search:", error.message);
+    setSearchResults([]);
+  } finally {
+    setLoading(false);
+  }
+}, 500);
 
   //Debounce the search input
   useEffect(() => {
@@ -129,14 +127,14 @@ const handleAddItem = () => {
       {/* Search bar */}
       <Searchbar
         placeholder="Søg efter madvare"
-        onChangeText={handleSearch}
-        value={query}
+        onChangeText={(text) => setQuery(text)} // Bind the input to the query state
+        value={query} // Display the current query state in the input
         loading={loading}
         style={styles.searchbar}
       />
 
       {/* Dropdown for search results */}
-      {searchResults.length > 0 && (
+      {searchResults.length > 0 ? (
         <View style={styles.dropdownContainer}>
           <FlatList
             data={searchResults}
@@ -151,6 +149,10 @@ const handleAddItem = () => {
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key since product might not have unique ids
           />
+        </View>
+      ) : (
+        <View style={styles.noResultsContainer}>
+          <Text style={styles.noResultsText}>No results found</Text>
         </View>
       )}
 
@@ -291,7 +293,7 @@ const styles = StyleSheet.create({
     top: 66,
     left: 10,
     right: 10,
-    zIndex: 1,
+    zIndex: 1000,
   },
   addItemTitle: {
     fontSize: 16,
