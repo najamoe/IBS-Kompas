@@ -3,12 +3,10 @@ import {
   Text,
   View,
   ActivityIndicator,
-  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { PieChart } from "react-native-chart-kit";
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
-import moment from "moment";
 
 // Predefined color palette for symptoms
 const symptomColorPalette = {
@@ -19,45 +17,41 @@ const symptomColorPalette = {
   feber: "#FF4500", // OrangeRed for Feber
 };
 
-const SymptomChart = ({ userId }) => {
-  const [symptoms, setSymptoms] = useState([]);
-  const [loading, setLoading] = useState(true);
+const SymptomChart = ({ userId, selectedDate }) => {
+  const [weeklyData, setWeeklyData] = useState([]); 
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchSymptoms = async () => {
       try {
-        const symptomData = await fetchSymptomsForWeek(
-          userId,
-          moment().format("YYYY-MM-DD")
-        );
-        setSymptoms(symptomData);
-        setLoading(false);
+        setLoading(true); // Start loading
+        const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
+        setWeeklyData(symptomData); // Store the fetched data
       } catch (error) {
         console.error("Error fetching symptoms:", error);
-        setLoading(false); // Stop loading if error occurs
+      } finally {
+        setLoading(false); // Stop loading after data is fetched or if error occurs
       }
     };
 
     fetchSymptoms();
-  }, [userId]);
+  }, [userId, selectedDate]);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
+  // Prepare data for the pie chart
   const chartData = [];
-  symptoms.forEach((dayData) => {
+  // Loop through weeklyData to count occurrences of each symptom
+  weeklyData.forEach((dayData) => {
     dayData.symptoms.forEach((entry) => {
       const existingSymptom = chartData.find(
         (item) => item.name === entry.symptom
       );
       if (existingSymptom) {
-        existingSymptom.value += 1;
+        existingSymptom.value += 1; // Increment if symptom already exists
       } else {
         chartData.push({
           name: entry.symptom,
-          value: 1,
-          color: symptomColorPalette[entry.symptom] || "#000000",
+          value: 1, // Initialize value for new symptom
+          color: symptomColorPalette[entry.symptom] || "#000000", // Set color from palette
         });
       }
     });
@@ -67,24 +61,34 @@ const SymptomChart = ({ userId }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Symptomer</Text>
 
-      <PieChart
-        data={chartData}
-        width={350}
-        height={160}
-        chartConfig={{
-          backgroundColor: "#1e2923",
-          backgroundGradientFrom: "#08130D",
-          backgroundGradientTo: "#08130D",
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
-        }}
-        accessor="value"
-        backgroundColor="transparent"
-      />
+      {/* Loading Indicator or chart */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Loading...</Text>
+        </View>
+      ) : (
+        <View style={styles.chartWrapper}>
+          <PieChart
+            data={chartData}
+            width={350}
+            height={160}
+            chartConfig={{
+              backgroundColor: "#1e2923",
+              backgroundGradientFrom: "#08130D",
+              backgroundGradientTo: "#08130D",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            accessor="value"
+            backgroundColor="transparent"
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -111,22 +115,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  dayContainer: {
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    paddingBottom: 10,
+  chartWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 5,
   },
-  dateText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    height: 240,
   },
-  symptomEntry: {
-    marginLeft: 10,
-    marginBottom: 5,
-  },
-  symptomText: {
+  loadingText: {
+    marginTop: 10,
     fontSize: 16,
+    color: "#0000ff",
   },
 });
