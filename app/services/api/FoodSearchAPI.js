@@ -15,7 +15,6 @@ async function searchProducts(query) {
 
     // Check if the response has the expected structure
     if (response && response.data && response.data.products) {
-      console.log("Products retrieved:", response.data.products); // Optional: Log the products
       return response.data.products; // Return the list of products
     } else {
       console.error("No products found in response");
