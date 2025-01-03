@@ -76,17 +76,17 @@ export const fetchSymptoms = async (userId, date) => {
 };
 
 // Fetch symptoms for a week
-export const fetchSymptomsForWeek = async (userId, weekStartDate) => {
+export const fetchSymptomsForWeek = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
     // Get the start and end date for the week (Monday-Sunday)
-    const startOfWeek = moment(weekStartDate)
+    const startOfWeek = moment(selectedDate)
       .startOf("isoWeek")
       .format("YYYY-MM-DD");
-    const endOfWeek = moment(weekStartDate)
+    const endOfWeek = moment(selectedDate)
       .endOf("isoWeek")
       .format("YYYY-MM-DD");
 
