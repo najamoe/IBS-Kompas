@@ -29,7 +29,7 @@ const WellnessChart = ({ userId, selectedDate }) => {
       // Fetch the weekly wellness log data and get the most frequent emoticon type
       const result = await fetchWeeklyWellnessLog(userId, selectedDate);
 
-      // Check if it's a tie
+      // Checking if it's a tie
       if (result && result.message === "Der står lige imellem") {
         // If it's a tie, display both emoticons
         setMostFrequentEmoticon({
