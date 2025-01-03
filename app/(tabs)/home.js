@@ -123,8 +123,6 @@ const Home = () => {
     setSelectedDate(formatDateStorage(newDate));
   };
 
-
-
   const handleFoodModal = () => {
     setIsFoodModalVisible(true); // Open the FoodModal
   };
@@ -190,6 +188,7 @@ const Home = () => {
     { label: "Kvalme", value: "kvalme" },
     { label: "Oppustethed", value: "oppustethed" },
     { label: "halsbrand", value: "halsbrand" },
+    { label: "feber", value: "feber" },
   ];
 
   // useEffect to mark symptoms that are already in the array in firestore
