@@ -7,7 +7,8 @@ import {
   fetchWeeklyBowelLogByType,
   averageBowelLogs,
   fetchAverageBloodLogs,
-  fetchAveragePainLogs
+  fetchAveragePainLogs,
+  fetchAverageUrgentLogs,
 } from "../../services/firebase/bowelService";
 
 // Import bowel type images
@@ -113,6 +114,8 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
   const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
   const [bloodLogsData, setBloodLogsData] = useState(null);
   const [painLogsData, setPainLogsData] = useState(null);
+  const [urgentLogsData, setUrgentLogsData] = useState(null);
+
 
   useEffect(() => {
     const fetchBowelTypeData = async () => {
@@ -133,6 +136,9 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
 
         const painLogs = await fetchAveragePainLogs(userId, startDate);
         setPainLogsData(painLogs);
+
+        const urgentLogs = await fetchAverageUrgentLogs(userId, startDate);
+        setUrgentLogsData(urgentLogs);
       } catch (error) {
         console.error("Error fetching bowel log by type:", error);
       } finally {
@@ -164,19 +170,28 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
             <Text style={styles.boldText}>{formattedAverageLogs}</Text>{" "}
             toiletbesøg per dag.
             {"\n"}
+            Du har observeret blod{" "}
+            <Text style={styles.boldText}>{bloodLogsData}</Text> antal gange.
+            {"\n"}
+            Din gennemsnitlige smerte var{" "}
+            <Text style={styles.boldText}>{painLogsData}</Text>.{"\n"}
+            Du havde <Text style={styles.boldText}>{urgentLogsData}</Text> gange
+            hvor det var hastende
+            {"/n"}
             Din mest almindelige afføringstype denne uge er{" "}
             <Text style={styles.boldText}>
               {mostFrequentType
                 ? mostFrequentType
                 : "Ingen type tilgængelig for denne uge."}
             </Text>
-            .{"\n"}
-            Du har observeret blod{" "}
-            <Text style={styles.boldText}>{bloodLogsData}</Text> antal gange.
-            {"\n"}
-            Din gennemsnitlige smerte var{" "}
-            <Text style={styles.boldText}>{painLogsData}</Text> .
           </Text>
+          {mostFrequentType && bowelTypeImages[mostFrequentType] && (
+            <Image
+              source={bowelTypeImages[mostFrequentType]}
+              style={styles.typeImage}
+              resizeMode="contain"
+            />
+          )}
         </View>
       )}
     </View>
@@ -214,10 +229,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 240,
   },
-  bowelImage: {
-    width: 40,
-    height: 40,
-    marginBottom: 10,
+  typeImage: {
+    width: 60,
+    height: 60,
+    marginBottom: 5,
   },
   detailContainer: {
     flexDirection: "row",
