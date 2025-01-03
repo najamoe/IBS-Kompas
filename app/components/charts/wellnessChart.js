@@ -68,7 +68,7 @@ const WellnessChart = ({ userId, selectedDate }) => {
       ) : mostFrequentEmoticon ? (
         <View style={styles.chartWrapper}>
           {/* If it's a tie, display both emoticons */}
-          {mostFrequentEmoticon.message === "Der står lige imellem" ? (
+          {mostFrequentEmoticon.message === "Det står lige imellem" ? (
             <>
               <Text>{mostFrequentEmoticon.message}</Text>
               <View style={styles.emoticonContainer}>
