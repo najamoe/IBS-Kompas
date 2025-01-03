@@ -17,7 +17,6 @@ import WaterIntakeChart from "../components/charts/waterChart";
 import WellnessChart from "../components/charts/wellnessChart";
 import {
   BowelChartByFrequency,
-  BowelChartByType,
   BowelDetails,
 } from "../components/charts/bowelChart";
 import SymptomChart from "../components/charts/symptomChart";
