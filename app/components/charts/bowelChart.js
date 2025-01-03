@@ -64,8 +64,6 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate
         setLoading(true);
         const bowelLogs = await fetchWeeklyBowelLogByFrequency(
           userId,
-          startDate,
-          endDate,
           selectedDate
         );
         const formattedData = bowelLogs.map((day) => ({
@@ -80,7 +78,7 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate
       }
     };
     fetchBowelData();
-  }, [userId, startDate, endDate, selectedDate]);
+  }, [userId,  selectedDate]);
 
   const chartData = {
     labels: weeklyData.map((day) => moment(day.date).format("ddd")),
@@ -111,7 +109,6 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate
 
 export const BowelDetails = ({ userId,  selectedDate }) => {
   const [loading, setLoading] = useState(true);
-  const [weeklyData, setWeeklyData] = useState([]);
   const [mostFrequentType, setMostFrequentType] = useState(null);
   const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
   const [bloodLogsData, setBloodLogsData] = useState(null);
