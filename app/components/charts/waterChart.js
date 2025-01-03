@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService"; 
 import moment from "moment"; 
@@ -91,7 +91,7 @@ export default WaterIntakeChart;
 
 const styles = StyleSheet.create({
   chartContainer: {  
-    marginTop: 20, //Edit margin when foodGraph is added
+    marginTop: 20, 
     backgroundColor: "white",
     borderRadius: 10,
     width: "100%",
