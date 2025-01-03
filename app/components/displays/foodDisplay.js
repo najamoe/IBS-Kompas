@@ -109,7 +109,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
 
 export default FoodDisplay;
 
-// Example styles
 const styles = StyleSheet.create({
   foodContainer: {
     width: "90%",

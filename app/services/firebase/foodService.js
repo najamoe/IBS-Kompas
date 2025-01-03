@@ -71,6 +71,59 @@ export const fetchFoodIntake = async (userId, date, type) => {
   }
 };
 
+export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance, userId, or date is missing.");
+    }
+
+    const startOfWeek = moment(weekStartDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
+
+    const foodDataByType = {}; // Object to hold food data categorized by type
+
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
+
+      // Loop through the meal types (e.g., breakfast, lunch, dinner)
+      const types = ["breakfast", "lunch", "dinner"];
+      for (const type of types) {
+        const foodLogRef = collection(
+          firestore,
+          `users/${userId}/foodLogs/${date}/${type}`
+        );
+
+        const snapshot = await getDocs(foodLogRef);
+        const foodData = [];
+
+        snapshot.forEach((doc) => {
+          foodData.push(doc.data());
+        });
+
+        // Organize food data by date and type
+        if (!foodDataByType[date]) {
+          foodDataByType[date] = {};
+        }
+        foodDataByType[date][type] = foodData;
+      }
+    }
+
+    return foodDataByType;
+  } catch (error) {
+    console.error("Error fetching food intake for week:", error);
+  }
+};
+
+
+
 
 export const deleteFoodIntake = async (userId, foodData, type) => {
   try {
