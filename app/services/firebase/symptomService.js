@@ -107,7 +107,12 @@ export const fetchSymptomsForWeek = async (userId, weekStartDate) => {
       console.log("Symptom log snapshot:", snapshot && snapshot.data());
 
       if (snapshot.exists()) {
-        symptomsForWeek.push(snapshot.data());
+        const symptomData = snapshot.data();
+        // Add date field explicitly to the returned object
+        symptomsForWeek.push({
+          date: date, // Add the date field to each entry
+          symptoms: symptomData.symptoms || [], // Make sure symptoms are an array, or fallback to an empty array
+        });
       }
     }
 
@@ -118,6 +123,7 @@ export const fetchSymptomsForWeek = async (userId, weekStartDate) => {
     throw error;
   }
 };
+
 
 // used in home.js
 export const deleteSymptom = async (userId, symptomToRemove, date) => {

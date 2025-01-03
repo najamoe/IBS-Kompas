@@ -6,7 +6,6 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { StackedBarChart } from "react-native-chart-kit";
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
 import moment from "moment";
 
@@ -28,8 +27,8 @@ const SymptomChart = ({ userId }) => {
       try {
         const symptomData = await fetchSymptomsForWeek(
           userId,
-          moment().format("YYYY-MM-DD")
-        ); // Pass the current date for week start
+          moment().format("YYYY-MM-DD") // Pass the current date for week start
+        );
         setSymptoms(symptomData);
         setLoading(false);
       } catch (error) {
