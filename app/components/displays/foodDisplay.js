@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import FoodModal from "../modal/foodModal";
 import { fetchFoodIntake, deleteFoodIntake } from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
   const [foodData, setFoodData] = useState([]);
+   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+     const [selectedItems, setSelectedItems] = useState([]);
+     const [updatedItems, setUpdatedItems] = useState([]);
+     const [SelectedType, setSelectedType] = useState(type);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (user) {
-          const fetchedFood = await fetchFoodIntake(user.uid, selectedDate, type);
+          const fetchedFood = await fetchFoodIntake(user.uid, selectedDate, SelectedType);
           
           setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
         }
@@ -19,7 +25,13 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       }
     };
     fetchData();
-  }, [user, selectedDate]);
+  }, [user, selectedDate, SelectedType]);
+
+  const handleFoodModal = () => {
+    setSelectedType(type);
+    setIsFoodModalVisible(true); // Open the FoodModal
+  };
+
 
   const handleDeleteItem = async (item) => {
     try {
@@ -57,7 +69,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               <Text>{item.quantity}</Text>
 
               <View style={styles.deleteIcon}>
-              <TouchableOpacity
+                <TouchableOpacity
                   onPress={() => handleDeleteItem(item)}
                   style={styles.deleteIcon}
                 >
@@ -67,10 +79,22 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                     color="black"
                   />
                 </TouchableOpacity>
-                </View>
+              </View>
             </View>
           ))
         )}
+        <TouchableOpacity onPress={handleFoodModal}>
+          <AntDesign name="pluscircleo" size={30} color="black" />
+        </TouchableOpacity>
+
+        <FoodModal
+          modalVisible={isFoodModalVisible}
+          setModalVisible={setIsFoodModalVisible}
+          userId={user?.uid}
+          selectedItems={selectedItems}
+          updatedItem={updatedItems}
+          SelectedType={SelectedType}
+        />
       </View>
     </View>
   );
