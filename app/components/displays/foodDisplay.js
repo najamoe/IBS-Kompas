@@ -3,21 +3,28 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import FoodModal from "../modal/foodModal";
-import { fetchFoodIntake, deleteFoodIntake } from "../../services/firebase/foodService";
+import {
+  fetchFoodIntake,
+  deleteFoodIntake,
+} from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
   const [foodData, setFoodData] = useState([]);
-   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
-     const [selectedItems, setSelectedItems] = useState([]);
-     const [updatedItems, setUpdatedItems] = useState([]);
-     const [SelectedType, setSelectedType] = useState(type);
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [updatedItems, setUpdatedItems] = useState([]);
+  const [SelectedType, setSelectedType] = useState(type);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (user) {
-          const fetchedFood = await fetchFoodIntake(user.uid, selectedDate, SelectedType);
-          
+          const fetchedFood = await fetchFoodIntake(
+            user.uid,
+            selectedDate,
+            SelectedType
+          );
+
           setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
         }
       } catch (error) {
@@ -32,7 +39,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setIsFoodModalVisible(true); // Open the FoodModal
   };
 
-
   const handleDeleteItem = async (item) => {
     try {
       await deleteFoodIntake(user.uid, item, type);
@@ -43,7 +49,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     } catch (error) {
       console.error("Error deleting food item:", error);
     }
-  }
+  };
 
   const mealTypeLabels = {
     breakfast: "Morgenmad",
@@ -54,8 +60,12 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
 
   return (
     <View style={styles.foodContainer}>
-      <Text style={styles.mealTypeTitle}>{mealTypeLabels[type]}</Text>
-
+      <View style={styles.titleContainer}>
+        <Text style={styles.mealTypeTitle}>{mealTypeLabels[type]}</Text>
+        <TouchableOpacity onPress={handleFoodModal}>
+          <AntDesign name="pluscircleo" size={24} color="black" style={styles.addIcon} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.foodContent}>
         {foodData.length === 0 ? (
           <Text>Ingen madindtag fundet for denne dag.</Text>
@@ -83,9 +93,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             </View>
           ))
         )}
-        <TouchableOpacity onPress={handleFoodModal}>
-          <AntDesign name="pluscircleo" size={30} color="black" />
-        </TouchableOpacity>
 
         <FoodModal
           modalVisible={isFoodModalVisible}
@@ -111,10 +118,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   mealTypeTitle: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  addIcon: {
+    marginLeft: 10,
   },
   foodContent: {
     marginTop: 10,
