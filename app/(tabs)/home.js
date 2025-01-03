@@ -288,7 +288,6 @@ const Home = () => {
             <View style={styles.logTitleContainer}>
               <Text style={styles.logTitle}>
                 Tilføj væskeindtag
-                <Ionicons name="water" size={22} color="#1591ea" />
               </Text>
             </View>
 
@@ -330,12 +329,7 @@ const Home = () => {
             <View style={styles.logTitleContainer}>
               <Text style={styles.logTitle}>
                 Log toiletbesøg
-                <FontAwesomeIcons
-                  name="toilet"
-                  size={20}
-                  color={"black"}
-                  style={styles.logTitleIcon}
-                />
+          
               </Text>
             </View>
 
@@ -386,8 +380,8 @@ const Home = () => {
                 >
                   <MaterialCommunityIcons
                     name={icon.name}
-                    size={selectedMood === icon.name ? 44 : 30} // Increase size if selected
-                    color={selectedMood === icon.name ? "blue" : icon.color}
+                    size={selectedMood === icon.name ? 38 : 30} // Increase size if selected
+                    color={selectedMood === icon.name ? "white" : icon.color}
                   />
                 </TouchableOpacity>
               ))}
@@ -424,7 +418,6 @@ const Home = () => {
 export default Home;
 
 const styles = StyleSheet.create({
- 
   container: {
     backgroundColor: "#cae9f5",
     flex: 1,
@@ -563,8 +556,8 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   selectedEmoticon: {
-    backgroundColor: "#c6cfc8",
-    padding: 5,
+    backgroundColor: "#86C5D8",
+    padding: 2,
   },
   symptomContainer: {
     marginLeft: 20,
