@@ -127,8 +127,6 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
     // Sort the emoticons by their counts in descending order
     emoticonsWithCounts.sort((a, b) => b.count - a.count);
 
-    console.log("Emoticons with their counts:", emoticonsWithCounts);
-
     // Return all emoticons with their counts
     return emoticonsWithCounts;
   } catch (error) {

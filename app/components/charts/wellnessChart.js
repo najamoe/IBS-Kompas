@@ -22,7 +22,6 @@ const WellnessChart = ({ userId, selectedDate }) => {
       setLoading(true);
       // Fetch the weekly wellness log data with emoticon counts
       const result = await fetchWeeklyWellnessLog(userId, selectedDate);
-      console.log("Result from fetchWeeklyWellnessLog:", result);
 
       if (result) {
         // Convert the result array into an object for easier lookup
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
     height: 240,
   },
   emoticonRow: {
-    flexDirection: "column", // Display emoticon and count vertically
+    flexDirection: "column", 
     alignItems: "center",
     marginTop: 10,
   },
