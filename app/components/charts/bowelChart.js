@@ -54,7 +54,7 @@ const chartConfig = {
   },
 };
 
-export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
+export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,7 +65,8 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
         const bowelLogs = await fetchWeeklyBowelLogByFrequency(
           userId,
           startDate,
-          endDate
+          endDate,
+          selectedDate
         );
         const formattedData = bowelLogs.map((day) => ({
           date: day.date,
@@ -79,7 +80,7 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
       }
     };
     fetchBowelData();
-  }, [userId, startDate, endDate]);
+  }, [userId, startDate, endDate, selectedDate]);
 
   const chartData = {
     labels: weeklyData.map((day) => moment(day.date).format("ddd")),
@@ -108,8 +109,9 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate }) => {
   );
 };
 
-export const BowelDetails = ({ userId, startDate, endDate }) => {
+export const BowelDetails = ({ userId, startDate, endDate, selectedDate }) => {
   const [loading, setLoading] = useState(true);
+  const [weeklyData, setWeeklyData] = useState([]);
   const [mostFrequentType, setMostFrequentType] = useState(null);
   const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
   const [bloodLogsData, setBloodLogsData] = useState(null);
@@ -124,7 +126,8 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
         const { mostFrequentType } = await fetchWeeklyBowelLogByType(
           userId,
           startDate,
-          endDate
+          endDate,
+          selectedDate
         );
         setMostFrequentType(mostFrequentType);
 
@@ -139,6 +142,7 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
 
         const urgentLogs = await fetchAverageUrgentLogs(userId, startDate);
         setUrgentLogsData(urgentLogs);
+
       } catch (error) {
         console.error("Error fetching bowel log by type:", error);
       } finally {
@@ -146,7 +150,7 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
       }
     };
     fetchBowelTypeData();
-  }, [userId, startDate, endDate]);
+  }, [userId, startDate, endDate, selectedDate]);
 
   const bowelTypeImages = {
     type1: type1,
@@ -176,8 +180,8 @@ export const BowelDetails = ({ userId, startDate, endDate }) => {
             Din gennemsnitlige smerte var{" "}
             <Text style={styles.boldText}>{painLogsData}</Text>.{"\n"}
             Du havde <Text style={styles.boldText}>{urgentLogsData}</Text> gange
-            hvor det var hastende
-            {"/n"}
+            hvor det var hastende.
+            {"\n"}
             Din mest almindelige afføringstype denne uge er{" "}
             <Text style={styles.boldText}>
               {mostFrequentType
