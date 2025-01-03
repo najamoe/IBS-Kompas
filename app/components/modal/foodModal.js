@@ -6,13 +6,12 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Alert,
 } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
 import SearchField from "../searchfield";
 import { addFoodIntake } from "../../services/firebase/foodService";
 
 const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
-  const [selectedType, setSelectedType] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
@@ -21,7 +20,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
   // Reset when modalVisibility changes
   useEffect(() => {
     if (!modalVisible) {
-      setSelectedType(null);
       setQuantity("");
       setUnit(null);
       setFoodName("");
@@ -41,11 +39,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
 
   const handleSaveFood = async () => {
     if (!selectedItems || selectedItems.length === 0) {
-      alert("Ingen mad valgt."); // Shows an alert if no food is selected
-      return;
-    }
-    if (!selectedType) {
-      alert("Vælg venligst en måltidstype."); // Shows an alert if no meal type is selected
+      Alert.alert("Fejl", "Ingen mad valgt"); // Shows an alert if no food is selected
       return;
     }
 
@@ -55,9 +49,10 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           name: item.name,
           brand: item.brand,
           quantity: `${item.quantity} ${item.unit}`,
+          type: selectedType,
         };
 
-        await addFoodIntake(userId, foodData, selectedType);
+        await addFoodIntake(userId, foodData);
 
       }
       setModalVisible(false); // Close the modal after saving
@@ -87,23 +82,6 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
       <View style={styles.modalOverlay} onTouchStart={handleBackdropPress}>
         <View style={styles.container}>
           <Text style={styles.modalTitle}>Tilføj mad</Text>
-
-          {/* Picker for selecting meal type */}
-          <RNPickerSelect
-            useNativeAndroidPickerStyle={false}
-            value={selectedType}
-            onValueChange={(value) => {
-              setSelectedType(value);
-            }}
-            items={[
-              { label: "Morgenmad", value: "breakfast" },
-              { label: "Frokost", value: "lunch" },
-              { label: "Aftensmad", value: "dinner" },
-              { label: "Snack", value: "snack" },
-            ]}
-            placeholder={{ label: "Vælg måltidstype", value: null }}
-            style={pickerSelectStyles.selectedType}
-          />
 
           {/* Search field for food name */}
           <View style={styles.searchContainer}>
