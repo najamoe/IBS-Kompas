@@ -9,33 +9,37 @@ import React, { useState, useEffect } from "react";
 import { fetchFoodIntakeForWeek } from "../../services/firebase/foodService";
 import moment from "moment";
 
-const FoodChart = ({ userId, weekStartDate }) => {
+const FoodChart = ({ userId, selectedDate }) => {
+  const [foodData, setFoodData] = useState({}); // Store food data categorized by date and meal type
   const [loading, setLoading] = useState(true);
-  const [foodData, setFoodData] = useState({});
 
+  // Fetch data whenever selectedDate or userId changes
   useEffect(() => {
     const fetchFoodData = async () => {
       try {
+        setLoading(true); // Start loading whenever the data is being fetched
         const fetchedFoodData = await fetchFoodIntakeForWeek(
           userId,
-          weekStartDate
+          selectedDate
         );
-        setFoodData(fetchedFoodData);
-        setLoading(false);
+        if (fetchedFoodData) {
+          setFoodData(fetchedFoodData); // Update the state with new data
+        }
       } catch (error) {
         console.error("Error fetching food data:", error);
-        setLoading(false);
+      } finally {
+        setLoading(false); // Stop loading after the fetch is done
       }
     };
 
     fetchFoodData();
-  }, [userId, weekStartDate]);
+  }, [userId, selectedDate]); // Re-run the effect when userId or selectedDate changes
 
   const mealTypeTranslation = {
     breakfast: "Morgenmad",
     lunch: "Frokost",
     dinner: "Aftensmad",
-    Snack: "Snack",
+    snack: "Snack",
   };
 
   return (
@@ -50,7 +54,7 @@ const FoodChart = ({ userId, weekStartDate }) => {
                 {moment(date).format("dddd, MMMM Do YYYY")}
               </Text>
 
-              {["breakfast", "lunch", "dinner", "Snack"].map((mealType) => (
+              {["breakfast", "lunch", "dinner", "snack"].map((mealType) => (
                 <View key={mealType} style={styles.mealTypeContainer}>
                   <Text style={styles.mealTypeTitle}>
                     {mealTypeTranslation[mealType] || mealType}
@@ -82,7 +86,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
