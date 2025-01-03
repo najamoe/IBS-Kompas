@@ -10,6 +10,7 @@ import {
   TextInput,
   Button,
   Alert,
+  Image,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import debounce from "lodash.debounce";
@@ -44,13 +45,6 @@ const handleSearch = debounce(async (query) => {
   }
 }, 500);
 
-  //Debounce the search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleSearch(query);
-    }, 500);
-    return () => clearTimeout(timer); //Cleanup on unmount
-  }, [query]);
 
   // Function to handle modal close for resetting inputs
   const handleCloseModal = () => {
@@ -127,7 +121,10 @@ const handleAddItem = () => {
       {/* Search bar */}
       <Searchbar
         placeholder="Søg efter madvare"
-        onChangeText={(text) => setQuery(text)} // Bind the input to the query state
+        onChangeText={(text) => {
+          setQuery(text);
+          handleSearch(text); // Call the debounced search function
+        }}
         value={query} // Display the current query state in the input
         loading={loading}
         style={styles.searchbar}
@@ -143,8 +140,8 @@ const handleAddItem = () => {
                 style={styles.item}
                 onPress={() => handleSelectItem(item)} // Handle item selection
               >
-                <Text>{item.name}</Text>
-                <Text>{item.brand}</Text>
+                <Text>{item.title}</Text>
+            
               </TouchableOpacity>
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key since product might not have unique ids
@@ -152,7 +149,7 @@ const handleAddItem = () => {
         </View>
       ) : (
         <View style={styles.noResultsContainer}>
-          <Text style={styles.noResultsText}>No results found</Text>
+          <Text style={styles.noResultsText}>Ingen resultater fundet</Text>
         </View>
       )}
 
@@ -285,7 +282,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     maxHeight: 200,
-    backgroundColor: "white",
+    backgroundColor: "pink",
     borderColor: "grey",
     borderWidth: 0.5,
     elevation: 5,
@@ -355,6 +352,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   cancelButton: {
     backgroundColor: "grey",
