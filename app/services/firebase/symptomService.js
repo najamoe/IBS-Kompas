@@ -104,25 +104,25 @@ export const fetchSymptomsForWeek = async (userId, weekStartDate) => {
       const symptomLog = doc(symptomLogsRef, date);
       const snapshot = await getDoc(symptomLog);
 
-      console.log("Symptom log snapshot:", snapshot && snapshot.data());
+      // Initialize with empty symptoms if no data is found
+      const symptomData = snapshot.exists()
+        ? snapshot.data()
+        : { symptoms: [] };
 
-      if (snapshot.exists()) {
-        const symptomData = snapshot.data();
-        // Add date field explicitly to the returned object
-        symptomsForWeek.push({
-          date: date, // Add the date field to each entry
-          symptoms: symptomData.symptoms || [], // Make sure symptoms are an array, or fallback to an empty array
-        });
-      }
+      // Add date field explicitly to the returned object
+      symptomsForWeek.push({
+        date: date, // Add the date field to each entry
+        symptoms: symptomData.symptoms || [], // Make sure symptoms are an array, or fallback to an empty array
+      });
     }
 
-    console.log("Symptoms for the week:", symptomsForWeek);
     return symptomsForWeek;
   } catch (error) {
     console.error("Error fetching symptoms for the week:", error);
     throw error;
   }
 };
+
 
 
 // used in home.js

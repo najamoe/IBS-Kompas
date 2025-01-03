@@ -6,6 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import { PieChart } from "react-native-chart-kit";
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
 import moment from "moment";
 
@@ -20,14 +21,14 @@ const symptomColorPalette = {
 
 const SymptomChart = ({ userId }) => {
   const [symptoms, setSymptoms] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSymptoms = async () => {
       try {
         const symptomData = await fetchSymptomsForWeek(
           userId,
-          moment().format("YYYY-MM-DD") // Pass the current date for week start
+          moment().format("YYYY-MM-DD")
         );
         setSymptoms(symptomData);
         setLoading(false);
@@ -44,42 +45,46 @@ const SymptomChart = ({ userId }) => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  // Function to render symptom for a specific day
-  const renderSymptomsForDay = (daySymptoms) => {
-    if (!daySymptoms || daySymptoms.length === 0) {
-      return <Text>No symptoms recorded.</Text>;
-    }
-
-    return daySymptoms.map((entry, index) => (
-      <View key={index} style={styles.symptomEntry}>
-        <Text
-          style={[
-            styles.symptomText,
-            { color: symptomColorPalette[entry.symptom] || "#000000" },
-          ]}
-        >
-          {entry.symptom}
-        </Text>
-      </View>
-    ));
-  };
+  const chartData = [];
+  symptoms.forEach((dayData) => {
+    dayData.symptoms.forEach((entry) => {
+      const existingSymptom = chartData.find(
+        (item) => item.name === entry.symptom
+      );
+      if (existingSymptom) {
+        existingSymptom.value += 1;
+      } else {
+        chartData.push({
+          name: entry.symptom,
+          value: 1,
+          color: symptomColorPalette[entry.symptom] || "#000000",
+        });
+      }
+    });
+  });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Symptom Chart</Text>
+      <Text style={styles.title}>Symptom Distribution</Text>
 
-      <ScrollView>
-        {symptoms.map((dayData, index) => {
-          const date = moment(dayData.date).format("YYYY-MM-DD");
-          const daySymptoms = dayData.symptoms || [];
-          return (
-            <View key={index} style={styles.dayContainer}>
-              <Text style={styles.dateText}>{date}</Text>
-              {renderSymptomsForDay(daySymptoms)}
-            </View>
-          );
-        })}
-      </ScrollView>
+      <PieChart
+        data={chartData}
+        width={350}
+        height={220}
+        chartConfig={{
+          backgroundColor: "#1e2923",
+          backgroundGradientFrom: "#08130D",
+          backgroundGradientTo: "#08130D",
+          decimalPlaces: 0,
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+        }}
+        accessor="value"
+        backgroundColor="transparent"
+      />
     </View>
   );
 };
