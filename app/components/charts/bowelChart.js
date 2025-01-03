@@ -54,7 +54,7 @@ const chartConfig = {
   },
 };
 
-export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate }) => {
+export const BowelChartByFrequency = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
