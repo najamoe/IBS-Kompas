@@ -87,9 +87,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 150,
     marginVertical: 10,
-    marginLeft: "3%",
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "center", 
+    justifyContent: "center", 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -98,7 +97,9 @@ const styles = StyleSheet.create({
   },
   chartWrapper: {
     flexDirection: "row",
-    alignSelf: "flex-start",
+    flexWrap: "wrap", 
+    justifyContent: "center", 
+    alignItems: "center", 
     paddingHorizontal: 5,
   },
   title: {
@@ -113,15 +114,15 @@ const styles = StyleSheet.create({
     height: 240,
   },
   emoticonRow: {
-    flexDirection: "column", 
-    alignItems: "center",
+    alignItems: "center", 
     marginTop: 10,
+    marginHorizontal: 3, 
   },
   iconSpacing: {
-    marginHorizontal: 5,
+    marginHorizontal: 5, 
   },
   countText: {
-    marginTop: 5, // Add spacing above the count
+    marginTop: 5, 
     fontSize: 16,
     fontWeight: "bold",
   },
