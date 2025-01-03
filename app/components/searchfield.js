@@ -303,10 +303,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   selectedItemsContainer: {
-    width: "90%",
+    width: "95%",
     marginTop: 50,
-    marginBottom: 20,
-    height: 300,
+    marginBottom: 240,
+    height: 280,
     backgroundColor: "#ffffff",
     elevation: 5,
     borderRadius: 10,

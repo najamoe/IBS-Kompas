@@ -130,18 +130,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between", // Add this to distribute space
     width: "90%",
-    height: 650,
+    height: 550,
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "400",
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   searchContainer: {
     width: "100%",
     marginBottom: 15,
-    marginTop: 40,
     marginBottom: 50,
   },
   saveandbackbtn: {
