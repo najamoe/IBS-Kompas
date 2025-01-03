@@ -1,12 +1,7 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
-import { fetchWeeklyWellnessLog } from "../../services/firebase/wellnessService"; // Your data-fetching function
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
+import { fetchWeeklyWellnessLog } from "../../services/firebase/wellnessService";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const emoticons = [
   { name: "emoticon-excited-outline", color: "#006147" },
@@ -19,31 +14,20 @@ const emoticons = [
 ];
 
 const WellnessChart = ({ userId, selectedDate }) => {
-  const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
+  const [weeklyData, setWeeklyData] = useState({}); // Store emoticon counts
   const [loading, setLoading] = useState(true);
-  const [mostFrequentEmoticon, setMostFrequentEmoticon] = useState(null);
 
   const fetchWellnessData = async () => {
     try {
       setLoading(true);
-      // Fetch the weekly wellness log data and get the most frequent emoticon type
+      // Fetch the weekly wellness log data with emoticon counts
       const result = await fetchWeeklyWellnessLog(userId, selectedDate);
+      console.log("Result from fetchWeeklyWellnessLog:", result);
 
-      // Checking if it's a tie
-      if (result && result.message === "Der står lige imellem") {
-        // If it's a tie, display both emoticons
-        setMostFrequentEmoticon({
-          message: result.message,
-          emoticons: result.emoticons.map((type) =>
-            emoticons.find((emoticon) => emoticon.name === type)
-          ),
-        });
+      if (result) {
+        setWeeklyData(result); // Store the emoticon counts for display
       } else {
-        // If no tie, map to single emoticon details
-        const emoticonDetails = emoticons.find(
-          (emoticon) => emoticon.name === result
-        );
-        setMostFrequentEmoticon(emoticonDetails);
+        console.log("No data available for the selected week");
       }
     } catch (error) {
       console.error("Error fetching wellness log:", error);
@@ -65,35 +49,26 @@ const WellnessChart = ({ userId, selectedDate }) => {
           <ActivityIndicator size="large" color="#0000ff" />
           <Text>Loading...</Text>
         </View>
-      ) : mostFrequentEmoticon ? (
-        <View style={styles.chartWrapper}>
-          {/* If it's a tie, display both emoticons */}
-          {mostFrequentEmoticon.message === "Det står lige imellem" ? (
-            <>
-              <Text>{mostFrequentEmoticon.message}</Text>
-              <View style={styles.emoticonContainer}>
-                {mostFrequentEmoticon.emoticons.map((emoticon, index) => (
-                  <Icon
-                    key={index}
-                    name={emoticon.name} // Pass the emoticon name to the Icon component
-                    size={40} // Adjust the size as needed
-                    color={emoticon.color} // Set the icon color
-                    style={styles.iconSpacing}
-                  />
-                ))}
-              </View>
-            </>
-          ) : (
-            // Otherwise, display just the most frequent emoticon
-            <Icon
-              name={mostFrequentEmoticon.name} // Pass the emoticon name to the Icon component
-              size={40} // Adjust the size as needed
-              color={mostFrequentEmoticon.color} // Set the icon color
-            />
-          )}
-        </View>
       ) : (
-        <Text>Ingen data tilgængelig for denne uge.</Text>
+        <View style={styles.chartWrapper}>
+          {emoticons.map((emoticon) => {
+            // Check if the emoticon exists in weeklyData, if not set count to 0
+            const count = weeklyData[emoticon.name] || 0; // Default to 0 if no count found for the emoticon
+
+            return (
+              <View key={emoticon.name} style={styles.emoticonRow}>
+                <Text style={styles.countText}>{count}</Text>
+                <Icon
+                  name={emoticon.name}
+                  size={30}
+                  color={emoticon.color}
+                  style={styles.iconSpacing}
+                />
+                
+              </View>
+            );
+          })}
+        </View>
       )}
     </View>
   );
@@ -106,7 +81,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    width: "70%",
     height: 150,
     marginVertical: 10,
     marginLeft: "3%",
@@ -119,6 +93,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   chartWrapper: {
+    flexDirection: "row",
     alignSelf: "flex-start",
     paddingHorizontal: 5,
   },
@@ -133,13 +108,17 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 240,
   },
-  emoticonContainer: {
-    flexDirection: "row", // Ensure the emoticons are side by side
-    justifyContent: "center",
+  emoticonRow: {
+    flexDirection: "column", // Display emoticon and count vertically
     alignItems: "center",
     marginTop: 10,
   },
   iconSpacing: {
-    marginHorizontal: 5, // Space between emoticons
+    marginHorizontal: 5,
+  },
+  countText: {
+    marginTop: 5, // Add spacing above the count
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
