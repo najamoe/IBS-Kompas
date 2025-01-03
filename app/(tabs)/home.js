@@ -14,7 +14,6 @@ import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import FoodModal from "../components/modal/foodModal";
 import FoodDisplay from "../components/displays/foodDisplay";
 import {
   addWaterIntake,
@@ -60,7 +59,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
-  const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+ const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [updatedItems, setUpdatedItems] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
@@ -123,10 +122,7 @@ const Home = () => {
     setSelectedDate(formatDateStorage(newDate));
   };
 
-  const handleFoodModal = () => {
-    setIsFoodModalVisible(true); // Open the FoodModal
-  };
-
+  
   const handleAddWater = async (amount) => {
     if (user) {
       const newWaterIntake = waterIntake + amount;
@@ -264,32 +260,29 @@ const Home = () => {
 
           <View style={styles.foodContainer}>
             <Text style={styles.logTitle}> Madlog </Text>
-            <TouchableOpacity onPress={handleFoodModal}>
-              <AntDesign name="pluscircleo" size={30} color="black" />
-            </TouchableOpacity>
 
             <FoodDisplay
               type="breakfast"
               user={user}
               selectedDate={selectedDate}
             />
-            <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
+
+            <FoodDisplay 
+            type="lunch" 
+            user={user} 
+            selectedDate={selectedDate} 
+            />
             <FoodDisplay
               type="dinner"
               user={user}
               selectedDate={selectedDate}
             />
-            <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
+            <FoodDisplay 
+            type="snack" 
+            user={user} 
+            selectedDate={selectedDate} 
+            />
           </View>
-
-          {/* Render FoodModal */}
-          <FoodModal
-            modalVisible={isFoodModalVisible}
-            setModalVisible={setIsFoodModalVisible}
-            userId={user?.uid}
-            selectedItems={selectedItems}
-            updatedItem={updatedItems}
-          />
 
           <View style={styles.waterContainer}>
             <View style={styles.logTitleContainer}>
