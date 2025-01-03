@@ -109,7 +109,7 @@ export const BowelChartByFrequency = ({ userId, startDate, endDate, selectedDate
   );
 };
 
-export const BowelDetails = ({ userId, startDate, endDate, selectedDate }) => {
+export const BowelDetails = ({ userId,  selectedDate }) => {
   const [loading, setLoading] = useState(true);
   const [weeklyData, setWeeklyData] = useState([]);
   const [mostFrequentType, setMostFrequentType] = useState(null);
@@ -123,24 +123,19 @@ export const BowelDetails = ({ userId, startDate, endDate, selectedDate }) => {
     const fetchBowelTypeData = async () => {
       try {
         setLoading(true);
-        const { mostFrequentType } = await fetchWeeklyBowelLogByType(
-          userId,
-          startDate,
-          endDate,
-          selectedDate
-        );
+        const { mostFrequentType } = await fetchWeeklyBowelLogByType(userId, selectedDate);
         setMostFrequentType(mostFrequentType);
 
-        const average = await averageBowelLogs(userId, startDate);
+        const average = await averageBowelLogs(userId, selectedDate);
         setFormattedAverageLogs(average.toFixed(2));
 
-        const bloodLogs = await fetchAverageBloodLogs(userId, startDate);
+        const bloodLogs = await fetchAverageBloodLogs(userId, selectedDate);
         setBloodLogsData(bloodLogs);
 
-        const painLogs = await fetchAveragePainLogs(userId, startDate);
+        const painLogs = await fetchAveragePainLogs(userId, selectedDate);
         setPainLogsData(painLogs);
 
-        const urgentLogs = await fetchAverageUrgentLogs(userId, startDate);
+        const urgentLogs = await fetchAverageUrgentLogs(userId, selectedDate);
         setUrgentLogsData(urgentLogs);
 
       } catch (error) {
@@ -150,7 +145,7 @@ export const BowelDetails = ({ userId, startDate, endDate, selectedDate }) => {
       }
     };
     fetchBowelTypeData();
-  }, [userId, startDate, endDate, selectedDate]);
+  }, [userId, selectedDate]);
 
   const bowelTypeImages = {
     type1: type1,
