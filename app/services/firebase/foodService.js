@@ -94,7 +94,7 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
       const date = currentDate.format("YYYY-MM-DD");
 
       // Loop through the meal types (e.g., breakfast, lunch, dinner)
-      const types = ["breakfast", "lunch", "dinner"];
+      const types = ["breakfast", "lunch", "dinner", "snack"];
       for (const type of types) {
         const foodLogRef = collection(
           firestore,

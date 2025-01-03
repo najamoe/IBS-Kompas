@@ -31,6 +31,13 @@ const FoodChart = ({ userId, weekStartDate }) => {
     fetchFoodData();
   }, [userId, weekStartDate]);
 
+  const mealTypeTranslation = {
+    breakfast: "Morgenmad",
+    lunch: "Frokost",
+    dinner: "Aftensmad",
+    Snack: "Snack",
+  };
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -43,10 +50,10 @@ const FoodChart = ({ userId, weekStartDate }) => {
                 {moment(date).format("dddd, MMMM Do YYYY")}
               </Text>
 
-              {["breakfast", "lunch", "dinner"].map((mealType) => (
+              {["breakfast", "lunch", "dinner", "Snack"].map((mealType) => (
                 <View key={mealType} style={styles.mealTypeContainer}>
                   <Text style={styles.mealTypeTitle}>
-                    {mealType.charAt(0).toUpperCase() + mealType.slice(1)}
+                    {mealTypeTranslation[mealType] || mealType}
                   </Text>
                   {foodData[date][mealType]?.length ? (
                     foodData[date][mealType].map((item, index) => (
@@ -56,7 +63,7 @@ const FoodChart = ({ userId, weekStartDate }) => {
                       </View>
                     ))
                   ) : (
-                    <Text>No {mealType} logged</Text>
+                    <Text>Ingen {mealType} logged</Text>
                   )}
                 </View>
               ))}
@@ -72,9 +79,18 @@ export default FoodChart;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#f9f9f9",
+    marginTop: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+
+    marginVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   dayContainer: {
     marginBottom: 20,
