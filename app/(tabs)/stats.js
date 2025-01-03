@@ -17,6 +17,7 @@ import WaterIntakeChart from "../components/charts/waterChart";
 import WellnessChart from "../components/charts/wellnessChart";
 import {
   BowelChartByFrequency,
+
   BowelDetails,
 } from "../components/charts/bowelChart";
 import SymptomChart from "../components/charts/symptomChart";
@@ -41,7 +42,7 @@ const Stats = () => {
   // Handle week navigation (back and forward)
   const handleWeekChange = (weeks) => {
     const newDate = moment(selectedDate).add(weeks, "weeks");
-    setSelectedDate(newDate);
+    setSelectedDate(newDate); // This will trigger re-render for all charts
   };
 
   const onRefresh = useCallback(() => {
@@ -72,15 +73,12 @@ const Stats = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={styles.dateContainer}>
-          {/* Header with week navigation */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => handleWeekChange(-1)}>
               <AntDesign style={styles.arrowIcons} name="left" size={22} />
             </TouchableOpacity>
             <View style={styles.weekInfo}>
-              {/* Week number display */}
               <Text style={styles.weekText}>Uge {weekNumber}</Text>
-              {/* Week range display */}
               <Text style={styles.dateRangeText}>{weekRange}</Text>
             </View>
             <TouchableOpacity onPress={() => handleWeekChange(1)}>
@@ -89,6 +87,7 @@ const Stats = () => {
           </View>
         </View>
 
+        {/* Update FoodChart with the new selectedDate */}
         <View>
           {user ? (
             <FoodChart
@@ -101,6 +100,7 @@ const Stats = () => {
           )}
         </View>
 
+        {/* Repeat for other charts (WaterIntakeChart, WellnessChart, etc.) */}
         <View>
           {user ? (
             <WaterIntakeChart
@@ -113,6 +113,7 @@ const Stats = () => {
           )}
         </View>
 
+        {/* Other charts */}
         <View>
           {user ? (
             <BowelChartByFrequency
@@ -125,6 +126,7 @@ const Stats = () => {
           )}
         </View>
 
+        {/* Other chart components */}
         <View>
           {user ? (
             <BowelDetails
@@ -136,7 +138,6 @@ const Stats = () => {
             <ActivityIndicator size="large" color="#0000ff" />
           )}
         </View>
-     
 
         <View>
           {user ? (
@@ -165,6 +166,7 @@ const Stats = () => {
     </SafeAreaView>
   );
 };
+
 
 export default Stats;
 
