@@ -7,6 +7,8 @@ import {
   addDoc,
   updateDoc,
   arrayUnion,
+  query, 
+  where,
 } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
@@ -21,6 +23,7 @@ export const addSymptoms = async (userId, symptom, date) => {
 
     // Reference to the specific date document in symptomLogs
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
+    
 
     // Prepare the symptom with the current timestamp
     const symptomWithTime = {
@@ -55,7 +58,6 @@ export const fetchSymptoms = async (userId, date) => {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-
     // Reference to the specific symptom log document for the given date
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
     const snapshot = await getDoc(symptomDocRef);
@@ -72,36 +74,64 @@ export const fetchSymptoms = async (userId, date) => {
     throw error;
   }
 };
-// Remove a symptom for a specific user on a given date
-export const deleteSymptom = async (userId, symptomToRemove, date) => {
-    try {
-      if (!firestore || !userId) {
-        throw new Error("Firestore instance or userId is missing.");
-      }
-  
-      const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
-      const snapshot = await getDoc(symptomDocRef);
-  
-      if (snapshot.exists()) {
-        const currentSymptoms = snapshot.data().symptoms || [];
-  
-        // Filter out the symptom to remove
-        const updatedSymptoms = currentSymptoms.filter(
-          (symptom) => symptom.symptom !== symptomToRemove
-        );
-  
-        // Update the symptom log in Firestore with the new symptoms array
-        await updateDoc(symptomDocRef, {
-          symptoms: updatedSymptoms,
-        });
-  
-        console.log("Symptom removed:", symptomToRemove);
-      } else {
-        console.log("No symptoms found for this date.");
-      }
-    } catch (error) {
-      console.error("Error removing symptom:", error);
-      throw error;
+
+// Fetch symptoms for a week
+export const fetchSymptomsForWeek = async (userId, startDate, endDate) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
     }
-  };
-  
+    console.log("userId from fetchsymptomsforweek", userId);
+
+    const symptomLogsRef = collection(firestore, `users/${userId}/symptomLogs`);
+    const querySnapshot = await getDocs(
+      query(symptomLogsRef, where("date", ">=", startDate), where("date", "<=", endDate))
+    );
+
+    const symptomsForWeek = [];
+    console.log(symptomsForWeek);
+
+    querySnapshot.forEach((doc) => {
+      symptomsForWeek.push(doc.data());
+    });
+
+    return symptomsForWeek;
+  } catch (error) {
+    console.error("Error fetching symptoms for the week:", error);
+    throw error;
+  }
+};
+
+
+// used in home.js
+export const deleteSymptom = async (userId, symptomToRemove, date) => {
+  try {
+    if (!firestore || !userId) {
+      throw new Error("Firestore instance or userId is missing.");
+    }
+
+    const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
+    const snapshot = await getDoc(symptomDocRef);
+
+    if (snapshot.exists()) {
+      const currentSymptoms = snapshot.data().symptoms || [];
+
+      // Filter out the symptom to remove
+      const updatedSymptoms = currentSymptoms.filter(
+        (symptom) => symptom.symptom !== symptomToRemove
+      );
+
+      // Update the symptom log in Firestore with the new symptoms array
+      await updateDoc(symptomDocRef, {
+        symptoms: updatedSymptoms,
+      });
+
+      console.log("Symptom removed:", symptomToRemove);
+    } else {
+      console.log("No symptoms found for this date.");
+    }
+  } catch (error) {
+    console.error("Error removing symptom:", error);
+    throw error;
+  }
+};

@@ -13,7 +13,8 @@ const symptomColorPalette = {
   feber: "#FF4500", // OrangeRed for Cough
 };
 
-const SymptomChart = () => {
+const SymptomChart = ({ userId }) => {
+  // Pass userId as prop or get it from context
   const [loading, setLoading] = useState(true);
   const [symptomData, setSymptomData] = useState([]);
   const [dates, setDates] = useState([]);
@@ -21,12 +22,19 @@ const SymptomChart = () => {
 
   useEffect(() => {
     const fetchSymptoms = async () => {
+      // Only fetch if userId is available
+      if (!userId) {
+        console.error("User ID is required for fetching symptoms");
+        setLoading(false);
+        return;
+      }
+
       const startDate = moment().startOf("isoWeek").format("YYYY-MM-DD");
       const endDate = moment().endOf("isoWeek").format("YYYY-MM-DD");
 
       try {
         const symptomsForWeek = await fetchSymptomsForWeek(
-          "userId",
+          userId,
           startDate,
           endDate
         );
@@ -43,7 +51,7 @@ const SymptomChart = () => {
     };
 
     fetchSymptoms();
-  }, []);
+  }, [userId]); // Re-fetch data when userId changes
 
   // Process symptoms data to format it for the chart
   const processSymptomsData = (symptomsForWeek) => {
