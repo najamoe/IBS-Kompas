@@ -25,7 +25,12 @@ const WellnessChart = ({ userId, selectedDate }) => {
       console.log("Result from fetchWeeklyWellnessLog:", result);
 
       if (result) {
-        setWeeklyData(result); // Store the emoticon counts for display
+        // Convert the result array into an object for easier lookup
+        const data = result.reduce((acc, { name, count }) => {
+          acc[name] = count; // Map emoticon name to count
+          return acc;
+        }, {});
+        setWeeklyData(data); // Store the emoticon counts for display
       } else {
         console.log("No data available for the selected week");
       }
@@ -53,7 +58,7 @@ const WellnessChart = ({ userId, selectedDate }) => {
         <View style={styles.chartWrapper}>
           {emoticons.map((emoticon) => {
             // Check if the emoticon exists in weeklyData, if not set count to 0
-            const count = weeklyData[emoticon.name] || 0; // Default to 0 if no count found for the emoticon
+            const count = weeklyData[emoticon.name] || 0; 
 
             return (
               <View key={emoticon.name} style={styles.emoticonRow}>
