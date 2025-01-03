@@ -7,9 +7,10 @@ import {
   addDoc,
   updateDoc,
   arrayUnion,
-  query, 
+  query,
   where,
 } from "firebase/firestore";
+import moment from "moment";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db;
@@ -23,7 +24,6 @@ export const addSymptoms = async (userId, symptom, date) => {
 
     // Reference to the specific date document in symptomLogs
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
-    
 
     // Prepare the symptom with the current timestamp
     const symptomWithTime = {
@@ -76,32 +76,48 @@ export const fetchSymptoms = async (userId, date) => {
 };
 
 // Fetch symptoms for a week
-export const fetchSymptomsForWeek = async (userId, startDate, endDate) => {
+export const fetchSymptomsForWeek = async (userId, weekStartDate) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-    console.log("userId from fetchsymptomsforweek", userId);
 
-    const symptomLogsRef = collection(firestore, `users/${userId}/symptomLogs`);
-    const querySnapshot = await getDocs(
-      query(symptomLogsRef, where("date", ">=", startDate), where("date", "<=", endDate))
-    );
+    // Get the start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(weekStartDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(weekStartDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
 
     const symptomsForWeek = [];
-    console.log(symptomsForWeek);
+    const symptomLogsRef = collection(firestore, `users/${userId}/symptomLogs`);
 
-    querySnapshot.forEach((doc) => {
-      symptomsForWeek.push(doc.data());
-    });
+    // Loop over all days of the week to fetch symptom log for each day
+    for (
+      let currentDate = moment(startOfWeek);
+      currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+      currentDate.add(1, "days")
+    ) {
+      const date = currentDate.format("YYYY-MM-DD");
 
+      const symptomLog = doc(symptomLogsRef, date);
+      const snapshot = await getDoc(symptomLog);
+
+      console.log("Symptom log snapshot:", snapshot && snapshot.data());
+
+      if (snapshot.exists()) {
+        symptomsForWeek.push(snapshot.data());
+      }
+    }
+
+    console.log("Symptoms for the week:", symptomsForWeek);
     return symptomsForWeek;
   } catch (error) {
     console.error("Error fetching symptoms for the week:", error);
     throw error;
   }
 };
-
 
 // used in home.js
 export const deleteSymptom = async (userId, symptomToRemove, date) => {

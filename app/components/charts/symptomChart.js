@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { StackedBarChart } from "react-native-chart-kit";
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
@@ -6,134 +12,75 @@ import moment from "moment";
 
 // Predefined color palette for symptoms
 const symptomColorPalette = {
-  krampe: "#FF6347", // Tomato red for Headache
-  kvalme: "#FFD700", // Gold for Fever
-  oppustethed: "#32CD32", // LimeGreen for Nausea
-  halsbrand: "#1E90FF", // DodgerBlue for Fatigue
-  feber: "#FF4500", // OrangeRed for Cough
+  krampe: "#FF6347", // Tomato red for Krampe
+  kvalme: "#FFD700", // Gold for Kvalme
+  oppustethed: "#32CD32", // LimeGreen for Oppustethed
+  halsbrand: "#1E90FF", // DodgerBlue for Halsbrand
+  feber: "#FF4500", // OrangeRed for Feber
 };
 
 const SymptomChart = ({ userId }) => {
-  // Pass userId as prop or get it from context
-  const [loading, setLoading] = useState(true);
-  const [symptomData, setSymptomData] = useState([]);
-  const [dates, setDates] = useState([]);
-  const [symptomColors, setSymptomColors] = useState({});
+  const [symptoms, setSymptoms] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchSymptoms = async () => {
-      // Only fetch if userId is available
-      if (!userId) {
-        console.error("User ID is required for fetching symptoms");
-        setLoading(false);
-        return;
-      }
-
-      const startDate = moment().startOf("isoWeek").format("YYYY-MM-DD");
-      const endDate = moment().endOf("isoWeek").format("YYYY-MM-DD");
-
       try {
-        const symptomsForWeek = await fetchSymptomsForWeek(
+        const symptomData = await fetchSymptomsForWeek(
           userId,
-          startDate,
-          endDate
-        );
-        const formattedData = processSymptomsData(symptomsForWeek);
-
-        setSymptomData(formattedData.symptomsByDay);
-        setDates(formattedData.dates);
-        setSymptomColors(formattedData.symptomColors);
-        setLoading(false); // Set loading to false after data is fetched
+          moment().format("YYYY-MM-DD")
+        ); // Pass the current date for week start
+        setSymptoms(symptomData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching symptoms:", error);
-        setLoading(false); // Set loading to false in case of an error
+        setLoading(false); // Stop loading if error occurs
       }
     };
 
     fetchSymptoms();
-  }, [userId]); // Re-fetch data when userId changes
+  }, [userId]);
 
-  // Process symptoms data to format it for the chart
-  const processSymptomsData = (symptomsForWeek) => {
-    let dates = [];
-    let symptomsByDay = [];
-    let symptomColors = {};
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
-    symptomsForWeek.forEach((dayData) => {
-      const { date, symptoms } = dayData;
-      dates.push(date);
+  // Function to render symptom for a specific day
+  const renderSymptomsForDay = (daySymptoms) => {
+    if (!daySymptoms || daySymptoms.length === 0) {
+      return <Text>No symptoms recorded.</Text>;
+    }
 
-      // Create an object to count each symptom's occurrences
-      let symptomCounts = {};
-      symptoms.forEach((symptom) => {
-        if (!symptomCounts[symptom.symptom]) {
-          symptomCounts[symptom.symptom] = 0;
-        }
-        symptomCounts[symptom.symptom]++;
-      });
-
-      // Convert the symptom counts to an array of numbers (for stacked bars)
-      let symptomValues = Object.keys(symptomCounts).map((symptom) => {
-        // Use the predefined color for each symptom from the palette
-        symptomColors[symptom] = symptomColorPalette[symptom] || "#808080"; // Default to gray if not defined
-        return symptomCounts[symptom];
-      });
-
-      symptomsByDay.push(symptomValues);
-    });
-
-    return {
-      symptomsByDay,
-      dates,
-      symptomColors,
-    };
-  };
-
-  // Format datasets with color mapping
-  const formatDatasets = () => {
-    const datasets = Object.keys(symptomColors).map((symptom, index) => {
-      const symptomDataForChart = symptomData.map((symptomValues, i) => {
-        const symptomIndex = Object.keys(symptomColors).indexOf(symptom);
-        return symptomValues[symptomIndex] || 0;
-      });
-
-      return {
-        data: symptomDataForChart,
-        color: () => symptomColors[symptom], // Use the assigned color
-      };
-    });
-
-    return datasets;
+    return daySymptoms.map((entry, index) => (
+      <View key={index} style={styles.symptomEntry}>
+        <Text
+          style={[
+            styles.symptomText,
+            { color: symptomColorPalette[entry.symptom] || "#000000" },
+          ]}
+        >
+          {entry.symptom}
+        </Text>
+      </View>
+    ));
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Symptom Chart</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : dates.length > 0 && symptomData.length > 0 ? (
-        <StackedBarChart
-          data={{
-            labels: dates,
-            datasets: formatDatasets(),
-          }}
-          width={300}
-          height={220}
-          chartConfig={{
-            backgroundColor: "#ffffff",
-            backgroundGradientFrom: "#ffffff",
-            backgroundGradientTo: "#ffffff",
-            decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          }}
-          withHorizontalLabels
-          fromZero
-          withStackedBars
-        />
-      ) : (
-        <Text>Ingen symptomer for denne uge.</Text>
-      )}
+
+      <ScrollView>
+        {symptoms.map((dayData, index) => {
+          const date = moment(dayData.date).format("YYYY-MM-DD");
+          const daySymptoms = dayData.symptoms || [];
+          return (
+            <View key={index} style={styles.dayContainer}>
+              <Text style={styles.dateText}>{date}</Text>
+              {renderSymptomsForDay(daySymptoms)}
+            </View>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
@@ -150,5 +97,23 @@ const styles = StyleSheet.create({
     fontSize: 24,
     textAlign: "center",
     marginBottom: 10,
+  },
+  dayContainer: {
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+    paddingBottom: 10,
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  symptomEntry: {
+    marginLeft: 10,
+    marginBottom: 5,
+  },
+  symptomText: {
+    fontSize: 16,
   },
 });
