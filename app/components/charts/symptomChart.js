@@ -1,12 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import { PieChart } from "react-native-chart-kit";
+import { LineChart } from "react-native-chart-kit"; // Import LineChart
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
+import moment from "moment";
 
 // Predefined color palette for symptoms
 const symptomColorPalette = {
@@ -15,47 +11,69 @@ const symptomColorPalette = {
   oppustethed: "#32CD32", // LimeGreen for Oppustethed
   halsbrand: "#1E90FF", // DodgerBlue for Halsbrand
   feber: "#FF4500", // OrangeRed for Feber
+  diarre: "#FF69B4", // HotPink for Diarre
+  forstoppelse: "#8A2BE2", // BlueViolet for Forstoppelse
 };
 
 const SymptomChart = ({ userId, selectedDate }) => {
-  const [weeklyData, setWeeklyData] = useState([]); 
-  const [loading, setLoading] = useState(true); 
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSymptoms = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
         const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
         setWeeklyData(symptomData); // Store the fetched data
       } catch (error) {
         console.error("Error fetching symptoms:", error);
       } finally {
-        setLoading(false); // Stop loading after data is fetched or if error occurs
+        setLoading(false);
       }
     };
 
     fetchSymptoms();
   }, [userId, selectedDate]);
 
-  // Prepare data for the pie chart
-  const chartData = [];
-  // Loop through weeklyData to count occurrences of each symptom
+  // Prepare data for the LineChart
+  const chartData = {
+    labels: [], // Days of the week
+    datasets: [], // Symptom datasets
+  };
+
+  // Track which symptoms are present across days
+  const symptoms = {};
+
+  // Loop through the weeklyData and organize the symptoms
   weeklyData.forEach((dayData) => {
+    chartData.labels.push(dayData.date); // Add date as label
+
     dayData.symptoms.forEach((entry) => {
-      const existingSymptom = chartData.find(
-        (item) => item.name === entry.symptom
-      );
-      if (existingSymptom) {
-        existingSymptom.value += 1; // Increment if symptom already exists
-      } else {
-        chartData.push({
-          name: entry.symptom,
-          value: 1, // Initialize value for new symptom
-          color: symptomColorPalette[entry.symptom] || "#000000", // Set color from palette
-        });
+      // Initialize dataset for this symptom if not already present
+      if (!symptoms[entry.symptom]) {
+        symptoms[entry.symptom] = {
+          data: Array(weeklyData.length).fill(0), // Initialize all days with 0
+          color: symptomColorPalette[entry.symptom] || "#000000",
+          strokeWidth: 2,
+        };
       }
+
+      // Find the index of the current day and update the count
+      const dayIndex = chartData.labels.indexOf(dayData.date);
+      symptoms[entry.symptom].data[dayIndex] =
+        (symptoms[entry.symptom].data[dayIndex] || 0) + 1;
     });
   });
+
+  // Convert symptom data into datasets
+  chartData.datasets = Object.keys(symptoms).map((symptom) => ({
+    data: symptoms[symptom].data,
+    color: () => symptoms[symptom].color,
+    strokeWidth: symptoms[symptom].strokeWidth,
+    withDots: true, // Show points on the line
+    withInnerLines: false,
+    withOuterLines: false,
+  }));
 
   return (
     <View style={styles.container}>
@@ -69,10 +87,10 @@ const SymptomChart = ({ userId, selectedDate }) => {
         </View>
       ) : (
         <View style={styles.chartWrapper}>
-          <PieChart
+          <LineChart
             data={chartData}
-            width={350}
-            height={160}
+            width={350} // Adjust width for your layout
+            height={250} // Adjust height for your layout
             chartConfig={{
               backgroundColor: "#1e2923",
               backgroundGradientFrom: "#08130D",
@@ -83,9 +101,14 @@ const SymptomChart = ({ userId, selectedDate }) => {
               style: {
                 borderRadius: 16,
               },
+              propsForDots: {
+                r: "6", // Size of dots
+                strokeWidth: "2",
+                stroke: "#fff",
+              },
             }}
-            accessor="value"
-            backgroundColor="transparent"
+            bezier // Use Bezier curve for smooth lines
+            fromZero={true} // Start from zero for better visibility
           />
         </View>
       )}
@@ -100,7 +123,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 250,
+    height: 300, // Adjust container height
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
