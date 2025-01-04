@@ -1,35 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { LineChart } from "react-native-chart-kit";
-import { fetchWeeklyWaterIntake } from "../../services/firebase/waterService"; 
-import moment from "moment"; 
+import { subscribeToWeeklyWaterIntake } from "../../services/firebase/waterService";
+import moment from "moment";
 
 const WaterIntakeChart = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]); // Store data for the week
   const [loading, setLoading] = useState(true);
 
-  const fetchWaterData = async () => {
-    try {
-      setLoading(true);
-      // Fetch the weekly water intake data (daily values)
-      const totalWaterIntake = await fetchWeeklyWaterIntake(userId, selectedDate);
-
-      // Prepare the data for the chart
-      const formattedData = totalWaterIntake.map((day) => ({
-        date: day.date,
-        total: isNaN(day.total) ? 0 : day.total, // Ensure total is a number
-      }));
-
-      setWeeklyData(formattedData);
-    } catch (error) {
-      console.error("Error fetching weekly water intake:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchWaterData();
+    let unsubscribe;
+
+    const fetchRealTimeData = async () => {
+      setLoading(true);
+
+      unsubscribe = subscribeToWeeklyWaterIntake(
+        userId,
+        selectedDate,
+        (data) => {
+          setWeeklyData(data);
+          setLoading(false);
+        }
+      );
+    };
+
+    fetchRealTimeData();
+
+    // Cleanup the subscription when the component unmounts or dependencies change
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [userId, selectedDate]);
 
   // Chart configuration
@@ -52,7 +52,7 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
 
   // Prepare data for the chart
   const chartData = {
-    labels: weeklyData.map((day) => moment(day.date).format("ddd")), //Data on x-axis
+    labels: weeklyData.map((day) => moment(day.date).format("ddd")), // Data on x-axis
     datasets: [
       {
         data: weeklyData.map((day) => day.total), // Water intake amounts for each day
@@ -90,8 +90,8 @@ const WaterIntakeChart = ({ userId, selectedDate }) => {
 export default WaterIntakeChart;
 
 const styles = StyleSheet.create({
-  chartContainer: {  
-    marginTop: 20, 
+  chartContainer: {
+    marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
     width: "100%",
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   chartWrapper: {
-    alignSelf: "flex-start", 
+    alignSelf: "flex-start",
   },
   title: {
     fontSize: 18,
@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   loadingContainer: {
-    alignItems: "center",  
+    alignItems: "center",
     justifyContent: "center",
-    flex: 1,  
-    height: 240,  
+    flex: 1,
+    height: 240,
   },
 });

@@ -1,4 +1,4 @@
-import { doc, collection, setDoc, getDoc } from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, onSnapshot } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig"; 
 import moment from "moment";
 
@@ -22,23 +22,64 @@ export const addWaterIntake = async (userId, amount) => {
   }
 };
 
-export const fetchWaterIntake = async (userId, date) => {
+export const subscribeToWeeklyWaterIntake = (
+  userId,
+  selectedDate,
+  callback
+) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const waterRef = doc(firestore, `users/${userId}/waterlogs/${date}`); // Use firestore instance
-    const snapshot = await getDoc(waterRef);
+    // Get the start and end date for the week (Monday-Sunday)
+    const startOfWeek = moment(selectedDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
 
-    if (snapshot.exists()) {
-      return snapshot.data().total || 0;
-    } else {
-      console.log("No water log found for this date.");
-      return 0;
-    }
+    const waterLogsRef = collection(firestore, `users/${userId}/waterlogs`);
+
+    const unsubscribe = onSnapshot(waterLogsRef, (snapshot) => {
+      const dailyWaterIntakes = [];
+
+      // Loop through the documents in the collection
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+        const date = doc.id; // Firestore doc ID is used as the date
+
+        if (date >= startOfWeek && date <= endOfWeek) {
+          dailyWaterIntakes.push({
+            date,
+            total: data.total || 0,
+          });
+        }
+      });
+
+      // Fill missing days of the week with zeros
+      for (
+        let currentDate = moment(startOfWeek);
+        currentDate.isBefore(moment(endOfWeek).add(1, "days"));
+        currentDate.add(1, "days")
+      ) {
+        const date = currentDate.format("YYYY-MM-DD");
+        if (!dailyWaterIntakes.find((day) => day.date === date)) {
+          dailyWaterIntakes.push({ date, total: 0 });
+        }
+      }
+
+      // Sort the array by date
+      dailyWaterIntakes.sort((a, b) => moment(a.date).diff(moment(b.date)));
+
+      // Trigger the callback with the updated data
+      callback(dailyWaterIntakes);
+    });
+
+    return unsubscribe; // Return the unsubscribe function to stop listening
   } catch (error) {
-    console.error("Error fetching water intake:", error);
+    console.error("Error subscribing to weekly water intake:", error);
     throw error;
   }
 };
