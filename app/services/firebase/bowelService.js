@@ -29,13 +29,15 @@ export const addBowelLog = async (
     const localDate = new Date();
 
     // Format the date to 'YYYY-MM-DD' (ISO format)
-    const date = localDate.toISOString().split("T")[0]; // YYYY-MM-DD
+   const date = moment().format("YYYY-MM-DD");  // YYYY-MM-DD
 
     // Format the time to 'HH:MM:SS' (local time format)
     const time = localDate
       .toLocaleTimeString("en-GB", { hour12: false })
       .split(":")
       .join(":");
+
+      console.log("time and date", time, date);
     // Reference to the bowelLogs collection under the user
     const bowelLogsRef = collection(
       firestore,
@@ -63,33 +65,41 @@ export const addBowelLog = async (
   }
 };
 
-//Used in home.js for displaying the bowel logs
-export const fetchBowelLog = async (userId, date) => {
+// Real-time subscription for bowel logs
+export const subscribeBowelLog = (userId, date, callback) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    // Correctly reference the subcollection
+    // Reference to the bowelLogs collection under the user
     const bowelRef = collection(
       firestore,
       `users/${userId}/bowelLogs/${date}/timeLogs`
     );
-    const q = query(bowelRef); // Optionally add query filters here, e.g., where clauses
-    const snapshot = await getDocs(q);
 
-    if (!snapshot.empty) {
-      const bowelLogs = snapshot.docs.map((doc) => ({
-        id: doc.id, // Add the document ID to each bowel log entry
-        ...doc.data(), // Spread the rest of the document data
-      }));
-      return bowelLogs; // Return an array of bowel log entries with unique IDs
-    } else {
-      console.log("No bowel log found for this date.");
-      return null; // No bowel log found for the given date
-    }
+    // Create a query (you can add filters here as needed)
+    const q = query(bowelRef);
+
+    // Use onSnapshot to listen for changes in real time
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const bowelLogs = snapshot.docs.map((doc) => ({
+          id: doc.id, // Add the document ID to each bowel log entry
+          ...doc.data() // Spread the rest of the document data
+        }));
+        callback(bowelLogs); // Pass the updated logs to the callback
+        console.log("Bowel logs updated:", bowelLogs);
+      } else {
+        console.log("Ingen toiletbesøg idag.");
+        callback(null); // No bowel log found for the given date
+      }
+    });
+
+    // Return the unsubscribe function to stop the listener when needed
+    return unsubscribe;
   } catch (error) {
-    console.error("Error fetching bowel log:", error);
+    console.error("Error subscribing to bowel log:", error);
     throw error;
   }
 };
