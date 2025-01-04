@@ -47,12 +47,10 @@ export const addSymptoms = async (userId, date, symptoms) => {
       await updateDoc(symptomDocRef, {
         symptoms: updatedSymptoms, // Replace the entire symptoms array
       });
-      console.log("Symptoms updated successfully", updatedSymptoms);
     } else {
       await setDoc(symptomDocRef, {
         symptoms: updatedSymptoms, // Create the new document with the symptoms
       });
-      console.log("Symptoms added successfully");
     }
   } catch (error) {
     console.error("Error adding or updating symptoms:", error);
@@ -118,7 +116,10 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
     ) {
       const date = currentDate.format("YYYY-MM-DD");
 
-      const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
+      const symptomDocRef = doc(
+        firestore,
+        `users/${userId}/symptomLogs/${date}`
+      );
       const snapshot = await getDoc(symptomDocRef);
 
       if (snapshot.exists()) {
@@ -128,16 +129,17 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
         const symptoms = data.symptoms || [];
 
         // Add symptoms to the array for the week
-        symptomsForWeek.push(...symptoms.map((symptom) => ({
-          name: symptom.symptom,
-          intensity: symptom.intensity,
-        })));
+        symptomsForWeek.push(
+          ...symptoms.map((symptom) => ({
+            name: symptom.symptom,
+            intensity: symptom.intensity,
+          }))
+        );
       } else {
         //console.log("No symptom log found for this date:", date);
       }
     }
     return symptomsForWeek; // Return the collected symptoms for the entire week
-
   } catch (error) {
     console.error("Error fetching symptoms for the week:", error);
     throw error;

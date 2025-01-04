@@ -104,17 +104,14 @@ const SymptomChart = ({ userId, selectedDate }) => {
   // Chart configuration
   const chartConfig = {
     backgroundColor: "#cae9f5",
-    backgroundGradientFrom: "#cae9f5",
+    backgroundGradientFrom: "#ffffff",
     backgroundGradientTo: "#cae9f5",
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
     propsForDots: {
-      r: "4", // Size of dots
-      strokeWidth: "2",
+      r: "3", 
+      strokeWidth: "0.5",
       stroke: "#fff",
     },
   };
@@ -134,7 +131,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
           <LineChart
             data={chartData}
             width={350}
-            height={250}
+            height={380}
             yAxisInterval={1}
             chartConfig={chartConfig}
             bezier
@@ -168,7 +165,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 380, 
+    height: 480, 
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",

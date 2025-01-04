@@ -71,7 +71,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
 
     try {
       await addSymptoms(user.uid, selectedDate, symptomsToSave);
-      console.log("Symptoms saved successfully", user.uid);
+      
     } catch (error) {
       console.error("Error saving symptoms:", error);
     }
