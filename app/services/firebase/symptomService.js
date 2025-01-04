@@ -66,17 +66,13 @@ export const fetchSymptoms = async (userId, date) => {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-    console.log("Received userId:", userId, "Type of userId:", typeof userId);
-    const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
 
-    console.log("Fetching symptoms for date:", date);
+    const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
 
     const snapshot = await getDoc(symptomDocRef);
 
-    console.log("Symptom doc ref path:", symptomDocRef.path);
     if (snapshot.exists()) {
       const data = snapshot.data();
-      console.log("Document data for date:", date, data);
 
       // Ensure data.symptoms is always an array
       const symptoms = data.symptoms || [];
@@ -95,6 +91,7 @@ export const fetchSymptoms = async (userId, date) => {
   }
 };
 
+// Fetch symptoms for a week
 // Fetch symptoms for a week
 export const fetchSymptomsForWeek = async (userId, selectedDate) => {
   try {
@@ -121,22 +118,27 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
     ) {
       const date = currentDate.format("YYYY-MM-DD");
 
-      const symptomLog = doc(symptomLogsRef, date);
-      const snapshot = await getDoc(symptomLog);
+      const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
+      const snapshot = await getDoc(symptomDocRef);
 
-      // Initialize with empty symptoms if no data is found
-      const symptomData = snapshot.exists()
-        ? snapshot.data()
-        : { symptoms: [] };
+      if (snapshot.exists()) {
+        const data = snapshot.data();
 
-      // Add date field explicitly to the returned object
-      symptomsForWeek.push({
-        date: date, // Add the date field to each entry
-        symptoms: symptomData.symptoms || [], // Make sure symptoms are an array, or fallback to an empty array
-      });
+        // Ensure data.symptoms is always an array
+        const symptoms = data.symptoms || [];
+
+        // Add symptoms to the array for the week
+        symptomsForWeek.push(...symptoms.map((symptom) => ({
+          name: symptom.symptom,
+          intensity: symptom.intensity,
+        })));
+      } else {
+        //console.log("No symptom log found for this date:", date);
+      }
     }
+    console.log("Symptoms for the week fetched successfully:", symptomsForWeek);
+    return symptomsForWeek; // Return the collected symptoms for the entire week
 
-    return symptomsForWeek;
   } catch (error) {
     console.error("Error fetching symptoms for the week:", error);
     throw error;

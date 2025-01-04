@@ -9,6 +9,8 @@ import {
 const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptomIntensities, setSymptomIntensities] = useState({});
 
+  
+
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
@@ -22,13 +24,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
   useEffect(() => {
     const initializeSymptoms = async () => {
    try {
-     if (!user) {
-       console.error("No user provided");
-       return;
-     }
-
-     console.log("User ID from symptomDisplay:", user.uid); // Check if user.id is available
-
+ 
      // Fetch symptoms for the selected user and date
      const symptomsFromFirestore = await fetchSymptoms(user.uid, selectedDate);
 
@@ -40,7 +36,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
        acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
        return acc;
      }, {});
-
+     
      setSymptomIntensities(initialSymptoms);
    } catch (error) {
      console.error("Error fetching symptoms from symptomDisplay:", error);

@@ -19,64 +19,95 @@ const SymptomChart = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchSymptoms = async () => {
-      try {
-        setLoading(true);
-        const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
-        setWeeklyData(symptomData); // Store the fetched data
-      } catch (error) {
-        console.error("Error fetching symptoms:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+ useEffect(() => {
+   const fetchSymptoms = async () => {
+     try {
+       setLoading(true);
+       const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
+       console.log("Symptom data fetched in CHART:", symptomData);
 
-    fetchSymptoms();
-  }, [userId, selectedDate]);
+       // Check if the fetched data is an array
+       if (!Array.isArray(symptomData)) {
+         throw new Error("Expected symptomData to be an array");
+       }
 
-  // Prepare data for the LineChart
-  const chartData = {
-    labels: [], // Days of the week
-    datasets: [], // Symptom datasets
-  };
+       // Transform the data for the chart
+       const formattedData = symptomData.map((symptom) => ({
+         name: symptom.name,
+         intensity: symptom.intensity,
+         date: symptom.date, // Ensure that date is included
+       }));
 
-  // Track which symptoms are present across days
-  const symptoms = {};
+       console.log("Formatted data for CHART:", formattedData);
 
-  // Loop through the weeklyData and organize the symptoms
+       // Store the formatted data
+       setWeeklyData(formattedData);
+     } catch (error) {
+       console.error("Error fetching symptoms cHART:", error);
+     } finally {
+       setLoading(false);
+     }
+   };
+
+   fetchSymptoms();
+ }, [userId, selectedDate]);
+
+ // Prepare data for the LineChart
+ const chartData = {
+   labels: [], // Days of the week
+   datasets: [], // Symptom datasets
+ };
+
+ const symptoms = {};
+
+ // Loop through the weeklyData and organize the symptoms
  weeklyData.forEach((dayData) => {
    chartData.labels.push(moment(dayData.date).format("DD/MM")); // Format date as dd/mm
 
-   dayData.symptoms.forEach((entry) => {
-     // Initialize dataset for this symptom if not already present
-     if (!symptoms[entry.symptom]) {
-       symptoms[entry.symptom] = {
-         data: Array(weeklyData.length).fill(0), // Initialize all days with 0
-         color: symptomColorPalette[entry.symptom] || "#000000",
-         strokeWidth: 2,
-       };
-     }
+   // Directly update symptom data based on the `symptom` name
+   if (!symptoms[dayData.name]) {
+     symptoms[dayData.name] = {
+       data: Array(weeklyData.length).fill(0), // Initialize all days with 0
+       color: symptomColorPalette[dayData.name] || "#000000",
+       strokeWidth: 2,
+     };
+   }
 
-     // Find the index of the current day and update the count
-     const dayIndex = chartData.labels.indexOf(
-       moment(dayData.date).format("DD/MM")
-     );
-     symptoms[entry.symptom].data[dayIndex] =
-       (symptoms[entry.symptom].data[dayIndex] || 0) + 1;
-   });
+   // Find the index of the current day and update the count
+   const dayIndex = chartData.labels.indexOf(
+     moment(dayData.date).format("DD/MM")
+   );
+   symptoms[dayData.name].data[dayIndex] = dayData.intensity;
  });
 
+ // Convert symptom data into datasets
+ chartData.datasets = Object.keys(symptoms).map((symptom) => ({
+   data: symptoms[symptom].data,
+   color: () => symptoms[symptom].color,
+   strokeWidth: symptoms[symptom].strokeWidth,
+   withDots: true, // Show points on the line
+   withInnerLines: false,
+   withOuterLines: false,
+ }));
 
-  // Convert symptom data into datasets
-  chartData.datasets = Object.keys(symptoms).map((symptom) => ({
-    data: symptoms[symptom].data,
-    color: () => symptoms[symptom].color,
-    strokeWidth: symptoms[symptom].strokeWidth,
-    withDots: true, // Show points on the line
-    withInnerLines: false,
-    withOuterLines: false,
-  }));
+ // Chart configuration
+ const chartConfig = {
+   backgroundColor: "#cae9f5",
+   backgroundGradientFrom: "#cae9f5",
+   backgroundGradientTo: "#cae9f5",
+   decimalPlaces: 0,
+   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+   style: {
+     borderRadius: 16,
+   },
+   propsForDots: {
+     r: "4", // Size of dots
+     strokeWidth: "2",
+     stroke: "#fff",
+   },
+ };
+
 
   return (
     <View style={styles.container}>
@@ -92,26 +123,11 @@ const SymptomChart = ({ userId, selectedDate }) => {
         <View style={styles.chartWrapper}>
           <LineChart
             data={chartData}
-            width={350} // Adjust width for your layout
-            height={250} // Adjust height for your layout
-            chartConfig={{
-              backgroundColor: "#cae9f5",
-              backgroundGradientFrom: "#cae9f5",
-              backgroundGradientTo: "#cae9f5",
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity}) `,
-              style: {
-                borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6", // Size of dots
-                strokeWidth: "2",
-                stroke: "#fff",
-              },
-            }}
-            bezier // Use Bezier curve for smooth lines
-            fromZero={true} // Start from zero for better visibility
+            width={350} 
+            height={250} 
+            yAxisInterval={1}
+            chartConfig={chartConfig}
+            bezier 
           />
         </View>
       )}
