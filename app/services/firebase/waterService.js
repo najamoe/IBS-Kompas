@@ -10,16 +10,40 @@ export const addWaterIntake = async (userId, amount) => {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-    const waterLogsRef = collection(firestore, `users/${userId}/waterlogs`); // Use firestore instance
+    const date = moment().format("YYYY-MM-DD"); // Use moment for local date
+    console.log("date", date);
+
+    const waterLogsRef = collection(
+      firestore,
+      `users/${userId}/waterlogs/`
+    ); // Use firestore instance
     const waterRef = doc(waterLogsRef, date);
 
     await setDoc(waterRef, { total: amount }, { merge: true });
-
+    console.log("Water intake saved successfully.", date);
   } catch (error) {
     console.error("Error saving water intake:", error);
     throw error;
   }
+};
+
+// Function to subscribe to daily water intake changes
+export const subscribeToDailyWaterIntake = (userId, date, callback) => {
+  
+  const waterDocRef = doc(firestore, `users/${userId}/waterlogs/${date}`); // Use firestore instance
+
+  // Set up a snapshot listener to watch for changes in this document
+  const unsubscribe = onSnapshot(waterDocRef, (docSnapshot) => {
+    if (docSnapshot.exists()) {
+      const totalWaterIntake = docSnapshot.data().total || 0; // Assuming the field is 'total'
+      callback(totalWaterIntake);
+    } else {
+      // Handle case when the document does not exist (could be zero water intake)
+      callback(0);
+    }
+  });
+
+  return unsubscribe; // Return unsubscribe function to stop listening when needed
 };
 
 export const subscribeToWeeklyWaterIntake = (
