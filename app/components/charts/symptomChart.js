@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 350, // Adjust container height
+    height: 380, 
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
