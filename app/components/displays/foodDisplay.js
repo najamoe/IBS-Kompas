@@ -38,7 +38,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     console.log("SelectedType:", selectedType);
     console.log("Selected type:", type);
     setSelectedType(type);
-    setIsFoodModalVisible(true); // Open the FoodModal
+    setIsFoodModalVisible(true); 
   };
 
   const handleDeleteItem = async (item) => {
@@ -65,20 +65,28 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       <View style={styles.titleContainer}>
         <Text style={styles.mealTypeTitle}>{mealTypeLabels[type]}</Text>
         <TouchableOpacity onPress={handleFoodModal}>
-          <AntDesign name="pluscircleo" size={24} color="black" style={styles.addIcon} />
+          <AntDesign
+            name="pluscircleo"
+            size={20}
+            color="black"
+            style={styles.addIcon}
+          />
         </TouchableOpacity>
       </View>
+
+      <View style={styles.separator} />
+
       <View style={styles.foodContent}>
         {foodData.length === 0 ? (
-          <Text>Ingen madindtag fundet for denne dag.</Text>
+          <Text style={styles.noFoodText}>Intet mad tilføjet.</Text>
         ) : (
           foodData.map((item, index) => (
             <View
               key={`${item.name}-${item.quantity}-${index}`}
               style={styles.foodItem}
             >
-              <Text>{item.name}</Text>
-              <Text>{item.quantity}</Text>
+              <Text style={styles.foodItemText}>{item.name}</Text>
+              <Text style={styles.foodItemText}>{item.quantity}</Text>
 
               <View style={styles.deleteIcon}>
                 <TouchableOpacity
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
   foodContainer: {
     width: "90%",
     padding: 20,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#F0F8FF",
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -132,15 +140,33 @@ const styles = StyleSheet.create({
   addIcon: {
     marginLeft: 10,
   },
+  separator: {
+    height: 1,
+    backgroundColor: "#ccc", // Choose the color you prefer for the line
+    marginTop: 10, // Space between the title and the line
+    width: "100%", // Make sure it spans the whole width of the container
+  },
   foodContent: {
     marginTop: 10,
+    padding: 10,
     flexDirection: "column",
+    backgroundColor: "white",
+    borderRadius: 5,
   },
   foodItem: {
     marginBottom: 10,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "white",
     padding: 10,
     borderRadius: 5,
+  },
+  foodItemText: {
+    fontSize: 14,
+    fontWeight: 400,
+  },
+  noFoodText: {
+    fontSize: 12,
+    textAlign: "center",
+    color: "gray",
   },
   deleteIcon: {
     position: "absolute",
