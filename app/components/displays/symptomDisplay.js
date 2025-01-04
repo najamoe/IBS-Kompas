@@ -35,7 +35,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
      // Map fetched symptoms into the state object, including intensity values
      const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
        const fetchedSymptom = symptomsFromFirestore.find(
-         (s) => s.symptom === symptom.value
+         (s) => s.name === symptom.value
        );
        acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
        return acc;

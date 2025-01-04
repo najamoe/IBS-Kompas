@@ -4,7 +4,6 @@ import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db;
 
-
 export const addSymptoms = async (userId, date, symptoms) => {
   try {
     if (!firestore || !userId) {
@@ -67,7 +66,7 @@ export const fetchSymptoms = async (userId, date) => {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-console.log("Received userId:", userId, "Type of userId:", typeof userId);
+    console.log("Received userId:", userId, "Type of userId:", typeof userId);
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
 
     console.log("Fetching symptoms for date:", date);
@@ -95,7 +94,6 @@ console.log("Received userId:", userId, "Type of userId:", typeof userId);
     throw error;
   }
 };
-
 
 // Fetch symptoms for a week
 export const fetchSymptomsForWeek = async (userId, selectedDate) => {
