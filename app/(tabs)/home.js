@@ -175,6 +175,7 @@ const Home = () => {
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
+    { label: "diarre", value: "diarre" },
     { label: "Oppustethed", value: "oppustethed" },
     { label: "halsbrand", value: "halsbrand" },
     { label: "feber", value: "feber" },
