@@ -1,39 +1,46 @@
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   ActivityIndicator,
   ScrollView,
+  Dimensions,
+  TouchableOpacity,
 } from "react-native";
-import React, { useState, useEffect } from "react";
-import { fetchFoodIntakeForWeek } from "../../services/firebase/foodService";
+import { fetchFoodIntake } from "../../services/firebase/foodService"; 
 import moment from "moment";
+import GestureRecognizer from "react-native-swipe-gestures"; 
 
-const FoodChart = ({ userId, selectedDate }) => {
-  const [foodData, setFoodData] = useState({}); // Store food data categorized by date and meal type
+const FoodChart = ({ userId, initialDate }) => {
+  const [foodData, setFoodData] = useState({});
+  const [selectedDate, setSelectedDate] = useState(initialDate || moment());
   const [loading, setLoading] = useState(true);
 
-  // Fetch data whenever selectedDate or userId changes
+  // Fetch food data for the selected date
   useEffect(() => {
     const fetchFoodData = async () => {
+      setLoading(true);
       try {
-        setLoading(true); // Start loading whenever the data is being fetched
-        const fetchedFoodData = await fetchFoodIntakeForWeek(
-          userId,
-          selectedDate
-        );
-        if (fetchedFoodData) {
-          setFoodData(fetchedFoodData); // Update the state with new data
+        const dateString = selectedDate.format("YYYY-MM-DD");
+        const meals = ["breakfast", "lunch", "dinner", "snack"];
+        const fetchedData = {};
+
+        for (const meal of meals) {
+          const foodForMeal = await fetchFoodIntake(userId, dateString, meal);
+          fetchedData[meal] = foodForMeal;
         }
+
+        setFoodData(fetchedData);
       } catch (error) {
         console.error("Error fetching food data:", error);
       } finally {
-        setLoading(false); // Stop loading after the fetch is done
+        setLoading(false);
       }
     };
 
     fetchFoodData();
-  }, [userId, selectedDate]); // Re-run the effect when userId or selectedDate changes
+  }, [userId, selectedDate]);
 
   const mealTypeTranslation = {
     breakfast: "Morgenmad",
@@ -42,40 +49,61 @@ const FoodChart = ({ userId, selectedDate }) => {
     snack: "Snack",
   };
 
-  return (
-    <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <ScrollView>
-          {Object.keys(foodData).map((date) => (
-            <View key={date} style={styles.dayContainer}>
-              <Text style={styles.dateTitle}>
-                {moment(date).format("dddd, MMMM Do YYYY")}
-              </Text>
+  // Swipe handlers
+  const handleSwipeLeft = () => {
+    setSelectedDate((prevDate) => moment(prevDate).add(1, "days"));
+  };
 
-              {["breakfast", "lunch", "dinner", "snack"].map((mealType) => (
+  const handleSwipeRight = () => {
+    setSelectedDate((prevDate) => moment(prevDate).subtract(1, "days"));
+  };
+
+  return (
+    <GestureRecognizer
+      onSwipeLeft={handleSwipeLeft}
+      onSwipeRight={handleSwipeRight}
+      style={styles.container}
+    >
+      <View>
+        <View style={styles.dateNavigation}>
+          <TouchableOpacity onPress={handleSwipeRight}>
+            <Text style={styles.navButton}>◀</Text>
+          </TouchableOpacity>
+          <Text style={styles.dateText}>
+            {selectedDate.format("dddd, MMMM Do YYYY")}
+          </Text>
+          <TouchableOpacity onPress={handleSwipeLeft}>
+            <Text style={styles.navButton}>▶</Text>
+          </TouchableOpacity>
+        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <ScrollView>
+            {["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
+              const mealData = foodData[mealType];
+              if (!mealData || mealData.length === 0) {
+                return null; // Skip rendering if no data for the meal type
+              }
+
+              return (
                 <View key={mealType} style={styles.mealTypeContainer}>
                   <Text style={styles.mealTypeTitle}>
                     {mealTypeTranslation[mealType] || mealType}
                   </Text>
-                  {foodData[date][mealType]?.length ? (
-                    foodData[date][mealType].map((item, index) => (
-                      <View key={index} style={styles.foodItem}>
-                        <Text>{item.name}</Text>
-                        <Text>{item.quantity}</Text>
-                      </View>
-                    ))
-                  ) : (
-                    <Text>Ingen {mealType} logged</Text>
-                  )}
+                  {mealData.map((item, index) => (
+                    <View key={index} style={styles.foodItem}>
+                      <Text>{item.name}</Text>
+                      <Text>{item.quantity}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
+              );
+            })}
+          </ScrollView>
+        )}
+      </View>
+    </GestureRecognizer>
   );
 };
 
@@ -83,25 +111,30 @@ export default FoodChart;
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    marginVertical: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
   },
-  dayContainer: {
-    marginBottom: 20,
+  dateNavigation: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
   },
-  dateTitle: {
+  navButton: {
+    fontSize: 24,
+    color: "blue",
+  },
+  dateText: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   mealTypeContainer: {
     marginBottom: 15,
