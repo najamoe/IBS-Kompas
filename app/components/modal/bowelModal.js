@@ -184,112 +184,115 @@ const BowelModal = ({ isVisible, onClose }) => {
             <Text style={styles.modalTitle}>Detaljer</Text>
             <Text style={styles.subtitle}>Udfyld afføringslogdetaljer</Text>
             <View style={styles.detailPageContainer}>
-            <View style={styles.toggleContainer}>
-              <Text style={styles.titleText}>
-                Smerter <Text style={styles.painText}>{pain}</Text>
-              </Text>
+              <View style={styles.toggleContainer}>
+                <Text style={styles.titleText}>
+                  Smerter <Text style={styles.painText}>{pain}</Text>
+                </Text>
 
-              {/* Custom Slider with Gradient Background */}
-              <LinearGradient
-                colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
-                start={{ x: 0, y: 0 }} // Start from left (green)
-                end={{ x: 1, y: 0 }} // End at right (red)
-                style={styles.gradientBackground}
-              >
-                <Slider
-                  value={pain}
-                  onValueChange={handleSliderChange}
-                  style={styles.slider}
-                  minimumValue={0}
-                  maximumValue={10}
-                  step={1} 
-                  minimumTrackTintColor="transparent" // Set track colors via gradient background
-                  maximumTrackTintColor="transparent"
-                  thumbTintColor="#ffffff"
-                  animateTransitions={true} // Enable transitions for smoother animation
-                  animationType="spring" // Adds a spring-like smooth animation
-                  animationConfig={{
-                    friction: 7, // Adjust friction for speed
-                    tension: 10, // Adjust tension for responsiveness
-                  }}
-                />
-              </LinearGradient>
+                {/* Custom Slider with Gradient Background */}
+                <LinearGradient
+                  colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
+                  start={{ x: 0, y: 0 }} // Start from left (green)
+                  end={{ x: 1, y: 0 }} // End at right (red)
+                  style={styles.gradientBackground}
+                >
+                  <Slider
+                    value={pain}
+                    onValueChange={handleSliderChange}
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={10}
+                    step={1}
+                    minimumTrackTintColor="transparent" // Set track colors via gradient background
+                    maximumTrackTintColor="transparent"
+                    thumbTintColor="#ffffff"
+                    animateTransitions={true} // Enable transitions for smoother animation
+                    animationType="spring" // Adds a spring-like smooth animation
+                    animationConfig={{
+                      friction: 7, // Adjust friction for speed
+                      tension: 10, // Adjust tension for responsiveness
+                    }}
+                  />
+                </LinearGradient>
 
                 {/* Display the intensity value at the center of the screen */}
-                    {showIntensity && currentIntensity !== null && (
-                      <Text style={styles.centeredIntensity}>{currentIntensity}</Text>
-                    )}
-                
-            </View>
+                {showIntensity && currentIntensity !== null && (
+                  <Text style={styles.centeredIntensity}>
+                    {currentIntensity}
+                  </Text>
+                )}
+              </View>
 
-            <View style={styles.toggleContainer}>
-              <Text style={styles.titleText}>Blod</Text>
-              <SwitchToggle
-                switchOn={blood}
-                onPress={() => setBlood(!blood)}
-                backgroundColorOn="#86C5D8"
-                backgroundColorOff="black"
-                containerStyle={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                  width: 60,
-                  height: 30,
-                  borderRadius: 25,
-                }}
-                circleStyle={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 20,
-                }}
+              <View style={styles.toggleContainer}>
+                <Text style={styles.titleText}>Blod</Text>
+                <SwitchToggle
+                  switchOn={blood}
+                  onPress={() => setBlood(!blood)}
+                  backgroundColorOn="#017d0c"
+                  backgroundColorOff="#960e0b"
+                  circleColorOff="#c2c0bc"
+                  circleColorOn="#ffffff"
+                  containerStyle={{
+                    width: 100,
+                    height: 30,
+                    borderRadius: 25,
+                    padding: 5,
+                  }}
+                  circleStyle={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 20,
+                  }}
+                />
+              </View>
+
+              {/* Hastende Toggle */}
+              <View style={styles.toggleContainer}>
+                <Text style={styles.titleText}>Hastende</Text>
+                <SwitchToggle
+                  switchOn={urgent}
+                  onPress={() => setUrgent(!urgent)}
+                  backgroundColorOn="#017d0c"
+                  backgroundColorOff="#960e0b"
+                  circleColorOff="#c2c0bc"
+                  circleColorOn="#ffffff"
+                  containerStyle={{
+                    width: 100,
+                    height: 30,
+                    borderRadius: 25,
+                    padding: 5,
+                  }}
+                  circleStyle={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 20,
+                  }}
+                />
+              </View>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Noter"
+                multiline
+                value={notes}
+                onChangeText={setNotes}
               />
-            </View>
 
-            {/* Hastende Toggle */}
-            <View style={styles.toggleContainer}>
-              <Text style={styles.titleText}>Hastende</Text>
-              <SwitchToggle
-                switchOn={urgent}
-                onPress={() => setUrgent(!urgent)}
-                backgroundColorOn="#86C5D8"
-                backgroundColorOff="black"
-                containerStyle={{
-                  marginTop: 10,
-                  marginBottom: 10,
-                  width: 60,
-                  height: 30,
-                  borderRadius: 25,
-                }}
-                circleStyle={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 20,
-                }}
-              />
-            </View>
+              <View style={styles.saveandbackbtn}>
+                <TouchableOpacity
+                  onPress={handleGoBack}
+                  style={styles.backButton}
+                >
+                  <Text style={styles.backButtonText}>Tilbage</Text>
+                </TouchableOpacity>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Noter"
-              multiline
-              value={notes}
-              onChangeText={setNotes}
-            />
-
-            <View style={styles.saveandbackbtn}>
-              <TouchableOpacity
-                onPress={handleGoBack}
-                style={styles.backButton}
-              >
-                <Text style={styles.backButtonText}>Tilbage</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleSaveLog}
-                style={styles.saveButton}
-              >
-                <Text style={styles.saveButtonText}>Gem Log</Text>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity
+                  onPress={handleSaveLog}
+                  style={styles.saveButton}
+                >
+                  <Text style={styles.saveButtonText}>Gem Log</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </>
         )}
@@ -414,8 +417,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
+    alignSelf: "center",
     justifyContent: "space-between",
-    marginVertical: 8,
+    marginVertical: 16,
     paddingHorizontal: 20,
   },
   titleText: {
@@ -449,9 +453,10 @@ const styles = StyleSheet.create({
   centeredIntensity: {
     position: "absolute",
     top: "150%", // Center it vertically
-    left: "45%", 
-    fontSize: 100, 
+    left: "42%",
+    fontSize: 90,
     fontWeight: "bold",
+    zIndex: 10,
     color: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
     backgroundColor: "transparent", // Transparent background
   },
