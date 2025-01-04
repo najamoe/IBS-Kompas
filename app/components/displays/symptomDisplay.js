@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
+import { LinearGradient } from "expo-linear-gradient"; // Import expo-linear-gradient
 import {
   addSymptoms,
   fetchSymptoms,
@@ -8,8 +9,8 @@ import {
 
 const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptomIntensities, setSymptomIntensities] = useState({});
-
-  
+  const [currentIntensity, setCurrentIntensity] = useState(null); // To track the currently selected intensity
+  const [showIntensity, setShowIntensity] = useState(false); // Controls visibility of intensity value
 
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
@@ -23,35 +24,43 @@ const SymptomDisplay = ({ user, selectedDate }) => {
 
   useEffect(() => {
     const initializeSymptoms = async () => {
-   try {
- 
-     // Fetch symptoms for the selected user and date
-     const symptomsFromFirestore = await fetchSymptoms(user.uid, selectedDate);
+      try {
+        // Fetch symptoms for the selected user and date
+        const symptomsFromFirestore = await fetchSymptoms(
+          user.uid,
+          selectedDate
+        );
 
-     // Map fetched symptoms into the state object, including intensity values
-     const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
-       const fetchedSymptom = symptomsFromFirestore.find(
-         (s) => s.name === symptom.value
-       );
-       acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
-       return acc;
-     }, {});
-     
-     setSymptomIntensities(initialSymptoms);
-   } catch (error) {
-     console.error("Error fetching symptoms from symptomDisplay:", error);
-   }
+        // Map fetched symptoms into the state object, including intensity values
+        const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
+          const fetchedSymptom = symptomsFromFirestore.find(
+            (s) => s.name === symptom.value
+          );
+          acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
+          return acc;
+        }, {});
+
+        setSymptomIntensities(initialSymptoms);
+      } catch (error) {
+        console.error("Error fetching symptoms from symptomDisplay:", error);
+      }
     };
 
     initializeSymptoms();
   }, [user, selectedDate]);
-
 
   const handleSliderChange = (symptom, value) => {
     setSymptomIntensities((prev) => ({
       ...prev,
       [symptom]: value,
     }));
+    setCurrentIntensity(value); // Update the displayed intensity value as the slider changes
+    setShowIntensity(true); // Show the intensity when the slider is touched
+
+    // Hide intensity after 3 seconds
+    setTimeout(() => {
+      setShowIntensity(false);
+    }, 1500);
   };
 
   const handleSliderRelease = async () => {
@@ -61,7 +70,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     }));
 
     try {
-      await addSymptoms(user.uid, selectedDate, symptomsToSave); // Pass user.id instead of uid
+      await addSymptoms(user.uid, selectedDate, symptomsToSave);
       console.log("Symptoms saved successfully", user.uid);
     } catch (error) {
       console.error("Error saving symptoms:", error);
@@ -72,23 +81,42 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     <View style={styles.container}>
       <Text style={styles.logTitle}>Symptomer</Text>
 
-      {symptomOptions.map((symptomOption) => (
-        <View key={symptomOption.value} style={styles.symptomContainer}>
-          <Text>{symptomOption.label}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={10}
-            step={1}
-            value={symptomIntensities[symptomOption.value]} // Get the current intensity value
-            onValueChange={(value) =>
-              handleSliderChange(symptomOption.value, value)
-            } // Update intensity when slider changes
-            onSlidingComplete={handleSliderRelease} // Save symptoms when sliding is complete
-          />
-          <Text>Intensity: {symptomIntensities[symptomOption.value]}</Text>
-        </View>
-      ))}
+      <View style={styles.symptomsWrapper}>
+        {symptomOptions.map((symptomOption) => (
+          <View key={symptomOption.value} style={styles.symptomContainer}>
+            <Text style={styles.symptomLabel}>{symptomOption.label}</Text>
+
+            <Text style={styles.valueText}> {symptomIntensities[symptomOption.value]}</Text>
+            {/* Custom Slider with Gradient Background */}
+            <LinearGradient
+              colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
+              start={{ x: 0, y: 0 }} // Start from left (green)
+              end={{ x: 1, y: 0 }} // End at right (red)
+              style={styles.gradientBackground}
+            >
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+                value={symptomIntensities[symptomOption.value]} // Get the current intensity value
+                onValueChange={(value) =>
+                  handleSliderChange(symptomOption.value, value)
+                } // Update intensity when slider changes
+                onSlidingComplete={handleSliderRelease} // Save symptoms when sliding is complete
+                minimumTrackTintColor="transparent" // Set track colors via gradient background
+                maximumTrackTintColor="transparent"
+                thumbTintColor="white" // White thumb color for better visibility
+              />
+            </LinearGradient>
+          </View>
+        ))}
+      </View>
+
+      {/* Display the intensity value at the center of the screen */}
+      {showIntensity && currentIntensity !== null && (
+        <Text style={styles.centeredIntensity}>{currentIntensity}</Text>
+      )}
     </View>
   );
 };
@@ -97,29 +125,64 @@ export default SymptomDisplay;
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: 20,
-    width: "90%",
+    marginTop: 20,
+    alignItems: "center", 
+    justifyContent: "flex-start", 
+    width: "100%", 
     padding: 10,
-    borderRadius: 20,
-    marginTop: 10,
-    marginBottom: 100,
     backgroundColor: "white",
-    alignItems: "center",
-    elevation: 10,
+    borderRadius: 20,
+  },
+  logTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center", // Center the title text
+  },
+  symptomsWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center", // Center symptoms horizontally
+    width: "100%",
+    marginRight: 10,
   },
   symptomContainer: {
-    marginLeft: 20,
-    width: "90%",
+    width: "45%", 
     padding: 10,
     borderRadius: 20,
-    marginTop: 10,
+    margin: 5,
     backgroundColor: "white",
     alignItems: "center",
     elevation: 10,
+    marginBottom: 10,
+  },
+  symptomLabel: {
+    marginBottom: 5,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   slider: {
     width: "100%",
     height: 30,
-    color: "#1fb28a",
+  },
+  gradientBackground: {
+    width: "100%",
+    height: 20,
+    justifyContent: "center",
+    borderRadius: 15,
+  },
+  centeredIntensity: {
+    position: "absolute",
+    top: "-10%", // Center it vertically
+    left: "45%", // Center it horizontally// Offset to truly center
+    fontSize: 100, // Large font size
+    fontWeight: "bold",
+    color: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
+    backgroundColor: "transparent", // Transparent background
+  },
+  valueText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });

@@ -47,6 +47,7 @@ const Home = () => {
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
 
+
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     formatDateStorage(new Date())
@@ -189,6 +190,7 @@ const Home = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{ paddingBottom: 100 }} // Adjust to ensure content can scroll fully
       >
         <View style={styles.dateContainer}>
           {/* Header with date navigation */}
@@ -423,9 +425,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   bowelContainer: {
-    marginLeft: 20,
     backgroundColor: "white",
-    width: "90%",
+    width: "100%",
     padding: 10,
     borderRadius: 20,
     marginTop: 10,
@@ -454,8 +455,7 @@ const styles = StyleSheet.create({
     margin: 6,
   },
   WellnessContainer: {
-    marginLeft: 20,
-    width: "90%",
+    width: "100%",
     padding: 10,
     borderRadius: 20,
     marginTop: 10,
@@ -477,35 +477,6 @@ const styles = StyleSheet.create({
   selectedEmoticon: {
     backgroundColor: "#86C5D8",
     padding: 2,
-  },
-  symptomContainer: {
-    marginLeft: 20,
-    width: "90%",
-    padding: 10,
-    borderRadius: 20,
-    marginTop: 10,
-    marginBottom: 100,
-    backgroundColor: "white",
-    alignItems: "center",
-    elevation: 10,
-  },
-  symptomItem: {
-    marginBottom: 0,
-  },
-  symptomLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  slider: {
-    width: "100%",
-    height: 40,
-    color: "#1fb28a",
-  },
-  sliderValue: {
-    textAlign: "center",
-    fontSize: 16,
-    marginTop: 5,
   },
   logTitleContainer: {
     flexDirection: "row",
