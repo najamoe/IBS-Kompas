@@ -30,7 +30,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
      console.log("User ID from symptomDisplay:", user.uid); // Check if user.id is available
 
      // Fetch symptoms for the selected user and date
-     const symptomsFromFirestore = await fetchSymptoms(user, selectedDate);
+     const symptomsFromFirestore = await fetchSymptoms(user.uid, selectedDate);
 
      // Map fetched symptoms into the state object, including intensity values
      const initialSymptoms = symptomOptions.reduce((acc, symptom) => {

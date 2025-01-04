@@ -1,16 +1,9 @@
-import {
-  doc,
-  collection,
-  setDoc,
-  getDoc,
-  getDocs,
-  addDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import moment from "moment";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db;
+
 
 export const addSymptoms = async (userId, date, symptoms) => {
   try {
@@ -68,25 +61,33 @@ export const addSymptoms = async (userId, date, symptoms) => {
   }
 };
 
-
-
 // Fetch symptoms for a specific user on a specific date, including intensity values
 export const fetchSymptoms = async (userId, date) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-
-    // Reference to the specific symptom log document for the given date
+console.log("Received userId:", userId, "Type of userId:", typeof userId);
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
+
+    console.log("Fetching symptoms for date:", date);
+
     const snapshot = await getDoc(symptomDocRef);
 
+    console.log("Symptom doc ref path:", symptomDocRef.path);
     if (snapshot.exists()) {
       const data = snapshot.data();
-      // Ensure data.symptoms is always an array with symptom-intensity pairs
-      return data.symptoms || [];
+      console.log("Document data for date:", date, data);
+
+      // Ensure data.symptoms is always an array
+      const symptoms = data.symptoms || [];
+
+      return symptoms.map((symptom) => ({
+        name: symptom.symptom,
+        intensity: symptom.intensity,
+      }));
     } else {
-      console.log("No symptom log found for this date from symptomservice.js");
+      console.log("No symptom log found for this date:", date);
       return []; // Return an empty array if no document exists
     }
   } catch (error) {
