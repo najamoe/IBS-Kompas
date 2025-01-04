@@ -367,8 +367,7 @@ const styles = StyleSheet.create({
     fontWeight: 600,
   },
   foodContainer: {
-    marginLeft: 20,
-    width: "90%",
+    width: "100%",
     padding: 10,
     borderRadius: 20,
     marginTop: 5,
@@ -394,8 +393,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   waterContainer: {
-    marginLeft: 20,
-    width: "90%",
+    width: "100%",
     padding: 10,
     borderRadius: 20,
     marginTop: 10,
