@@ -140,8 +140,8 @@ const handleAddItem = () => {
                 style={styles.item}
                 onPress={() => handleSelectItem(item)} // Handle item selection
               >
-                <Text>{item.title}</Text>
-            
+                <Text>{item.name}</Text>
+                <Text>{item.brand}</Text>
               </TouchableOpacity>
             )}
             keyExtractor={(item, index) => index.toString()} // Use index as key since product might not have unique ids
@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
     height: 50,
   },
   dropdownContainer: {
-    maxHeight: 200,
-    backgroundColor: "pink",
+    maxHeight: 300,
+    backgroundColor: "white",
     borderColor: "grey",
     borderWidth: 0.5,
     elevation: 5,

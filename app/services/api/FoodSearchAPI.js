@@ -1,32 +1,37 @@
 import axios from "axios";
 
-const API_KEY = "9cb90b57ed2243d880531c5041bafea4"; // Store API key securely in environment variables
-const BASE_URL = "https://api.spoonacular.com/food/products/search";
+const BASE_URL = "https://world.openfoodfacts.net";
 
-async function searchProducts(query) {
+/**
+ * Search for food products by name.
+ * @param {string} query - The name of the food product to search for.
+ * @param {number} page - Page number for paginated results.
+ * @returns {Promise<object[]>} - Array of food products.
+ */
+export const searchProducts = async (query, page = 1) => {
   try {
-    const response = await axios.get(BASE_URL, {
+    const response = await axios.get(`${BASE_URL}/cgi/search.pl`, {
       params: {
-        apiKey: API_KEY,
-        query: query,
-        number: 10, // Adjust number based on how many results you want
+        search_terms: query,
+        page,
+        json: true,
       },
     });
 
-    // Check if the response has the expected structure
-    if (response && response.data && response.data.products) {
-      return response.data.products; // Return the list of products
-    } else {
-      console.error("No products found in response");
-      return [];
-    }
+    return response.data.products.map((product) => ({
+      name: product.product_name || "Unknown",
+      brand: product.brands || "Unknown",
+      image: product.image_url || null,
+      ingredients: product.ingredients_text || "No ingredients listed",
+      nutrition: product.nutriments || {},
+      categories: product.categories
+        ? product.categories.split(",").map((cat) => cat.trim())
+        : [], // Parse and clean categories
+    }));
   } catch (error) {
-    console.error(
-      "Error fetching data:",
-      error.response?.data || error.message
-    );
-    throw error; // Propagate error to caller
+    console.error("Error searching products:", error.message);
+    throw error;
   }
-}
+};
 
-export { searchProducts };
+export default { searchProducts };
