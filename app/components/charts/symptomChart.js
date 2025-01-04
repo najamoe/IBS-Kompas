@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import { LineChart } from "react-native-chart-kit"; // Import LineChart
+import { LineChart } from "react-native-chart-kit";
 import { fetchSymptomsForWeek } from "../../services/firebase/symptomService";
 import moment from "moment";
 
@@ -19,95 +19,105 @@ const SymptomChart = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-   const fetchSymptoms = async () => {
-     try {
-       setLoading(true);
-       const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
-       console.log("Symptom data fetched in CHART:", symptomData);
+  useEffect(() => {
+    const fetchSymptoms = async () => {
+      try {
+        setLoading(true);
+        const symptomData = await fetchSymptomsForWeek(userId, selectedDate);
 
-       // Check if the fetched data is an array
-       if (!Array.isArray(symptomData)) {
-         throw new Error("Expected symptomData to be an array");
-       }
+        // Check if the fetched data is an array
+        if (!Array.isArray(symptomData)) {
+          throw new Error("Expected symptomData to be an array");
+        }
 
-       // Transform the data for the chart
-       const formattedData = symptomData.map((symptom) => ({
-         name: symptom.name,
-         intensity: symptom.intensity,
-         date: symptom.date, // Ensure that date is included
-       }));
+        // Transform the data for the chart
+        const formattedData = symptomData.map((symptom) => ({
+          name: symptom.name,
+          intensity: symptom.intensity,
+          date: symptom.date, // Ensure that date is included
+        }));
 
-       console.log("Formatted data for CHART:", formattedData);
+        // Store the formatted data
+        setWeeklyData(formattedData);
+      } catch (error) {
+        console.error("Error fetching symptoms chart:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-       // Store the formatted data
-       setWeeklyData(formattedData);
-     } catch (error) {
-       console.error("Error fetching symptoms cHART:", error);
-     } finally {
-       setLoading(false);
-     }
-   };
+    fetchSymptoms();
+  }, [userId, selectedDate]);
 
-   fetchSymptoms();
- }, [userId, selectedDate]);
+  // Prepare data for the LineChart
+  const chartData = {
+    labels: [], // Days of the week
+    datasets: [], // Symptom datasets
+  };
 
- // Prepare data for the LineChart
- const chartData = {
-   labels: [], // Days of the week
-   datasets: [], // Symptom datasets
- };
+  const symptoms = {};
 
- const symptoms = {};
+  // Start with the selected date
+  const startOfWeek = moment(selectedDate).startOf("week"); // Get the first day of the week
 
- // Loop through the weeklyData and organize the symptoms
- weeklyData.forEach((dayData) => {
-   chartData.labels.push(moment(dayData.date).format("DD/MM")); // Format date as dd/mm
+  // Generate the dates for the whole week (7 days)
+  for (let i = 0; i < 7; i++) {
+    const date = startOfWeek.clone().add(i, "days"); // Increment by 1 day
+    chartData.labels.push(date.format("DD/MM")); // Format date as dd/mm
+  }
 
-   // Directly update symptom data based on the `symptom` name
-   if (!symptoms[dayData.name]) {
-     symptoms[dayData.name] = {
-       data: Array(weeklyData.length).fill(0), // Initialize all days with 0
-       color: symptomColorPalette[dayData.name] || "#000000",
-       strokeWidth: 2,
-     };
-   }
+  // Loop through the weeklyData and organize the symptoms
+  weeklyData.forEach((dayData) => {
+    const dateFormatted = moment(dayData.date).format("DD/MM");
+    // Directly update symptom data based on the `symptom` name
+    if (!symptoms[dayData.name]) {
+      symptoms[dayData.name] = {
+        data: Array(7).fill(0), // Initialize all days with 0
+        color: symptomColorPalette[dayData.name] || "#000000",
+        strokeWidth: 2,
+      };
+    }
 
-   // Find the index of the current day and update the count
-   const dayIndex = chartData.labels.indexOf(
-     moment(dayData.date).format("DD/MM")
-   );
-   symptoms[dayData.name].data[dayIndex] = dayData.intensity;
- });
+    // Find the index of the current day and update the count
+    const dayIndex = chartData.labels.indexOf(dateFormatted);
+    if (dayIndex !== -1) {
+      symptoms[dayData.name].data[dayIndex] = dayData.intensity;
+    }
+  });
 
- // Convert symptom data into datasets
- chartData.datasets = Object.keys(symptoms).map((symptom) => ({
-   data: symptoms[symptom].data,
-   color: () => symptoms[symptom].color,
-   strokeWidth: symptoms[symptom].strokeWidth,
-   withDots: true, // Show points on the line
-   withInnerLines: false,
-   withOuterLines: false,
- }));
+  // Convert symptom data into datasets
+  chartData.datasets = Object.keys(symptoms).map((symptom) => ({
+    data: symptoms[symptom].data,
+    color: () => symptoms[symptom].color,
+    strokeWidth: symptoms[symptom].strokeWidth,
+    withDots: true, // Show points on the line
+    withInnerLines: false,
+    withOuterLines: false,
+    // Add dashed lines for overlapping lines (optional)
+    dash: symptoms[symptom].data.some((val, index, arr) => {
+      return arr.filter((v) => v === val).length > 1; // If multiple points have the same value
+    })
+      ? [6, 3]
+      : [], // Dash style for overlapping lines
+  }));
 
- // Chart configuration
- const chartConfig = {
-   backgroundColor: "#cae9f5",
-   backgroundGradientFrom: "#cae9f5",
-   backgroundGradientTo: "#cae9f5",
-   decimalPlaces: 0,
-   color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-   style: {
-     borderRadius: 16,
-   },
-   propsForDots: {
-     r: "4", // Size of dots
-     strokeWidth: "2",
-     stroke: "#fff",
-   },
- };
-
+  // Chart configuration
+  const chartConfig = {
+    backgroundColor: "#cae9f5",
+    backgroundGradientFrom: "#cae9f5",
+    backgroundGradientTo: "#cae9f5",
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: "4", // Size of dots
+      strokeWidth: "2",
+      stroke: "#fff",
+    },
+  };
 
   return (
     <View style={styles.container}>
@@ -123,14 +133,29 @@ const SymptomChart = ({ userId, selectedDate }) => {
         <View style={styles.chartWrapper}>
           <LineChart
             data={chartData}
-            width={350} 
-            height={250} 
+            width={350}
+            height={250}
             yAxisInterval={1}
             chartConfig={chartConfig}
-            bezier 
+            bezier
           />
         </View>
       )}
+
+      {/* Custom Legend */}
+      <View style={styles.legendContainer}>
+        {Object.keys(symptoms).map((symptomName) => (
+          <View key={symptomName} style={styles.legendItem}>
+            <View
+              style={[
+                styles.colorCircle,
+                { backgroundColor: symptoms[symptomName].color },
+              ]}
+            />
+            <Text style={styles.legendText}>{symptomName}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -139,10 +164,11 @@ export default SymptomChart;
 
 const styles = StyleSheet.create({
   container: {
+    width: "98%",
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 300, // Adjust container height
+    height: 350, // Adjust container height
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -172,5 +198,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#0000ff",
+  },
+  legendContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 10,
+    marginBottom: 5,
+  },
+  colorCircle: {
+    width: 15,
+    height: 15,
+    borderRadius: 50,
+    marginRight: 5,
+  },
+  legendText: {
+    fontSize: 14,
+    color: "#000",
   },
 });

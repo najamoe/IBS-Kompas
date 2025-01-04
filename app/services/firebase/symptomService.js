@@ -136,7 +136,6 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
         //console.log("No symptom log found for this date:", date);
       }
     }
-    console.log("Symptoms for the week fetched successfully:", symptomsForWeek);
     return symptomsForWeek; // Return the collected symptoms for the entire week
 
   } catch (error) {
