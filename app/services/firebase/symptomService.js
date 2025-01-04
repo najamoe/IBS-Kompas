@@ -55,7 +55,7 @@ export const addSymptoms = async (userId, date, symptoms) => {
       await updateDoc(symptomDocRef, {
         symptoms: updatedSymptoms, // Replace the entire symptoms array
       });
-      console.log("Symptoms updated successfully");
+      console.log("Symptoms updated successfully", updatedSymptoms);
     } else {
       await setDoc(symptomDocRef, {
         symptoms: updatedSymptoms, // Create the new document with the symptoms
@@ -70,28 +70,31 @@ export const addSymptoms = async (userId, date, symptoms) => {
 
 
 
-// Fetch symptoms for a specific user on a specific date
+// Fetch symptoms for a specific user on a specific date, including intensity values
 export const fetchSymptoms = async (userId, date) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
+
     // Reference to the specific symptom log document for the given date
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
     const snapshot = await getDoc(symptomDocRef);
 
     if (snapshot.exists()) {
-      const data = snapshot.data(); // Fetch the document data
-      return data.symptoms || []; // Return the symptoms array or an empty array
+      const data = snapshot.data();
+      // Ensure data.symptoms is always an array with symptom-intensity pairs
+      return data.symptoms || [];
     } else {
       console.log("No symptom log found for this date.");
       return []; // Return an empty array if no document exists
     }
   } catch (error) {
-    console.error("Error fetching symptoms:", error);
+    console.error("Error fetching symptoms from symptomservice.js:", error);
     throw error;
   }
 };
+
 
 // Fetch symptoms for a week
 export const fetchSymptomsForWeek = async (userId, selectedDate) => {

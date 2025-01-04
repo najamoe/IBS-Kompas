@@ -1,64 +1,79 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import Slider from "@react-native-community/slider"; // Add Slider import if it's missing
-import { addSymptoms } from "../../services/firebase/symptomService";
-import Toast from "react-native-toast-message"; // Import Toast to show notifications
+import Slider from "@react-native-community/slider";
+import {
+  addSymptoms,
+  fetchSymptoms,
+} from "../../services/firebase/symptomService";
 
 const SymptomDisplay = ({ user, selectedDate }) => {
-  const [symptoms, setSymptoms] = useState([]);
-  const [symptomIntensities, setSymptomIntensities] = useState({}); // Initialize as an object
+  const [symptomIntensities, setSymptomIntensities] = useState({});
 
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
-    { label: "diarré", value: "diarré" },
+    { label: "Diarré", value: "diarré" },
     { label: "Oppustethed", value: "oppustethed" },
-    { label: "halsbrand", value: "halsbrand" },
-    { label: "feber", value: "feber" },
-    { label: "forstoppelse", value: "forstoppelse" },
+    { label: "Halsbrand", value: "halsbrand" },
+    { label: "Feber", value: "feber" },
+    { label: "Forstoppelse", value: "forstoppelse" },
   ];
 
-  // Initialize all symptoms with default intensity (0) in the state
   useEffect(() => {
-    const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
-      acc[symptom.value] = 0; // Set initial intensity to 0
-      return acc;
-    }, {});
-    console.log("systemOptions", symptomOptions);
-    setSymptoms(symptomOptions);
-    console.log("initialSymptoms", initialSymptoms);
-    setSymptomIntensities(initialSymptoms);
-  }, []);
+    const initializeSymptoms = async () => {
+   try {
+     if (!user) {
+       console.error("No user provided");
+       return;
+     }
 
-  const handleSliderChange = async (symptom, value) => {
-    // Update the intensity of the changed symptom in the state
+     console.log("User ID from symptomDisplay:", user); // Check if user.id is available
+
+     // Fetch symptoms for the selected user and date
+     const symptomsFromFirestore = await fetchSymptoms(user, selectedDate);
+
+     // Map fetched symptoms into the state object, including intensity values
+     const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
+       const fetchedSymptom = symptomsFromFirestore.find(
+         (s) => s.symptom === symptom.value
+       );
+       acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
+       return acc;
+     }, {});
+
+     setSymptomIntensities(initialSymptoms);
+   } catch (error) {
+     console.error("Error fetching symptoms from symptomDisplay:", error);
+   }
+    };
+
+    initializeSymptoms();
+  }, [user, selectedDate]);
+
+
+  const handleSliderChange = (symptom, value) => {
     setSymptomIntensities((prev) => ({
       ...prev,
       [symptom]: value,
     }));
+  };
 
-    // Ensure that all symptoms are included, even the ones that haven't been modified
+  const handleSliderRelease = async () => {
     const symptomsToSave = symptomOptions.map((option) => ({
       symptom: option.value,
-      intensity: symptomIntensities[option.value] || 0, // Default to 0 if intensity is not set
+      intensity: symptomIntensities[option.value] || 0,
     }));
 
-    console.log("Symptoms to save:", symptomsToSave);
-
-    // Save the symptoms data to Firestore
     try {
-      await addSymptoms(user.uid, selectedDate, symptomsToSave);
-        console.log("Symptoms saved successfully");
+      await addSymptoms(user.id, selectedDate, symptomsToSave); // Pass user.id instead of uid
+      console.log("Symptoms saved successfully", user.id);
     } catch (error) {
-      console.error("Error saving symptom:", error);
-    
+      console.error("Error saving symptoms:", error);
     }
   };
 
-
-
   return (
-    <View style={styles.symptomContainer}>
+    <View style={styles.container}>
       <Text style={styles.logTitle}>Symptomer</Text>
 
       {symptomOptions.map((symptomOption) => (
@@ -73,6 +88,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             onValueChange={(value) =>
               handleSliderChange(symptomOption.value, value)
             } // Update intensity when slider changes
+            onSlidingComplete={handleSliderRelease} // Save symptoms when sliding is complete
           />
           <Text>Intensity: {symptomIntensities[symptomOption.value]}</Text>
         </View>
@@ -84,7 +100,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
 export default SymptomDisplay;
 
 const styles = StyleSheet.create({
-  symptomContainer: {
+  container: {
     marginLeft: 20,
     width: "90%",
     padding: 10,
@@ -95,22 +111,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 10,
   },
-  symptomItem: {
-    marginBottom: 0,
-  },
-  symptomLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
+  symptomContainer: {
+    marginLeft: 20,
+    width: "90%",
+    padding: 10,
+    borderRadius: 20,
+    marginTop: 10,
+    backgroundColor: "white",
+    alignItems: "center",
+    elevation: 10,
   },
   slider: {
     width: "100%",
-    height: 40,
+    height: 30,
     color: "#1fb28a",
-  },
-  sliderValue: {
-    textAlign: "center",
-    fontSize: 16,
-    marginTop: 5,
   },
 });
