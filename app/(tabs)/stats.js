@@ -87,6 +87,18 @@ const Stats = () => {
           </View>
         </View>
 
+        <View>
+          {user ? (
+            <SymptomChart
+              style={styles.graphContainer}
+              userId={user.uid}
+              selectedDate={selectedDate}
+            />
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </View>
+
         {/* Update FoodChart with the new selectedDate */}
         <View>
           {user ? (
@@ -142,18 +154,6 @@ const Stats = () => {
         <View>
           {user ? (
             <WellnessChart
-              style={styles.graphContainer}
-              userId={user.uid}
-              selectedDate={selectedDate}
-            />
-          ) : (
-            <ActivityIndicator size="large" color="#0000ff" />
-          )}
-        </View>
-
-        <View>
-          {user ? (
-            <SymptomChart
               style={styles.graphContainer}
               userId={user.uid}
               selectedDate={selectedDate}
