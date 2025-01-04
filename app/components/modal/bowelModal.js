@@ -11,6 +11,7 @@ import {
 import Modal from "react-native-modal";
 import SwitchToggle from "react-native-switch-toggle";
 import Slider from "@react-native-community/slider";
+import { LinearGradient } from "expo-linear-gradient";
 import { addBowelLog } from "../../services/firebase/bowelService";
 import { getAuth, validatePassword } from "firebase/auth";
 
@@ -45,6 +46,9 @@ const BowelModal = ({ isVisible, onClose }) => {
   const [urgent, setUrgent] = useState(false);
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState(currentDate);
+  // states for intensity text
+  const [showIntensity, setShowIntensity] = useState(false);
+  const [currentIntensity, setCurrentIntensity] = useState(null);
 
   const handleInfoPress = (type) => {
     setInfoText(bowelTypeInfo[type]);
@@ -58,6 +62,15 @@ const BowelModal = ({ isVisible, onClose }) => {
   const handleBowelTypeSelect = (type) => {
     setSelectedBowelType(type);
     setCurrentStep(2);
+  };
+
+  const handleSliderChange = (value) => {
+    setPain(value);
+    setCurrentIntensity(value);
+    setShowIntensity(true);
+    setTimeout(() => {
+      setShowIntensity(false);
+    }, 1500);
   };
 
   const handleSaveLog = async () => {
@@ -132,8 +145,8 @@ const BowelModal = ({ isVisible, onClose }) => {
       style={styles.modal}
     >
       <View style={styles.container}>
-           {/* Close Button (X) */}
-           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+        {/* Close Button (X) */}
+        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <Entypo name="cross" size={30} color="black" />
         </TouchableOpacity>
         {currentStep === 1 && (
@@ -170,20 +183,43 @@ const BowelModal = ({ isVisible, onClose }) => {
           <>
             <Text style={styles.modalTitle}>Detaljer</Text>
             <Text style={styles.subtitle}>Udfyld afføringslogdetaljer</Text>
-
+            <View style={styles.detailPageContainer}>
             <View style={styles.toggleContainer}>
               <Text style={styles.titleText}>
                 Smerter <Text style={styles.painText}>{pain}</Text>
               </Text>
 
-              <Slider
-                value={pain}
-                onValueChange={(value) => setPain(value)}
-                style={styles.painStyle}
-                minimumValue={0}
-                maximumValue={10}
-                step={1}
-              />
+              {/* Custom Slider with Gradient Background */}
+              <LinearGradient
+                colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
+                start={{ x: 0, y: 0 }} // Start from left (green)
+                end={{ x: 1, y: 0 }} // End at right (red)
+                style={styles.gradientBackground}
+              >
+                <Slider
+                  value={pain}
+                  onValueChange={handleSliderChange}
+                  style={styles.slider}
+                  minimumValue={0}
+                  maximumValue={10}
+                  step={1} 
+                  minimumTrackTintColor="transparent" // Set track colors via gradient background
+                  maximumTrackTintColor="transparent"
+                  thumbTintColor="#ffffff"
+                  animateTransitions={true} // Enable transitions for smoother animation
+                  animationType="spring" // Adds a spring-like smooth animation
+                  animationConfig={{
+                    friction: 7, // Adjust friction for speed
+                    tension: 10, // Adjust tension for responsiveness
+                  }}
+                />
+              </LinearGradient>
+
+                {/* Display the intensity value at the center of the screen */}
+                    {showIntensity && currentIntensity !== null && (
+                      <Text style={styles.centeredIntensity}>{currentIntensity}</Text>
+                    )}
+                
             </View>
 
             <View style={styles.toggleContainer}>
@@ -254,6 +290,7 @@ const BowelModal = ({ isVisible, onClose }) => {
                 <Text style={styles.saveButtonText}>Gem Log</Text>
               </TouchableOpacity>
             </View>
+            </View>
           </>
         )}
       </View>
@@ -292,7 +329,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    zIndex: 10, 
+    zIndex: 10,
   },
   modalTitle: {
     fontSize: 24,
@@ -371,6 +408,7 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     width: "80%",
+    height: 60,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
@@ -381,20 +419,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   titleText: {
-    flex: 1,
-    fontSize: 16,
-    marginLeft: -10,
-    color: "grey",
+    fontSize: 18, // Customize the font size as needed
+    fontWeight: "300",
+    color: "#333",
+  },
+  detailPageContainer: {
+    marginTop: 60,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 20,
   },
   painText: {
-    fontWeight: "bold",
-    color: "black",
+    fontSize: 16, // Adjust the size for pain text
+    fontWeight: "400",
+    color: "#333",
   },
-  painStyle: {
-    width: 140,
-    height: 50,
-    marginLeft: 0,
-
+  slider: {
+    height: 30,
+  },
+  gradientBackground: {
+    width: "50%",
+    height: 30,
+    justifyContent: "center",
+    borderRadius: 15,
+  },
+  centeredIntensity: {
+    position: "absolute",
+    top: "150%", // Center it vertically
+    left: "45%", 
+    fontSize: 100, 
+    fontWeight: "bold",
+    color: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
+    backgroundColor: "transparent", // Transparent background
   },
   saveandbackbtn: {
     flexDirection: "row",
