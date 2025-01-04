@@ -27,7 +27,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
        return;
      }
 
-     console.log("User ID from symptomDisplay:", user); // Check if user.id is available
+     console.log("User ID from symptomDisplay:", user.uid); // Check if user.id is available
 
      // Fetch symptoms for the selected user and date
      const symptomsFromFirestore = await fetchSymptoms(user, selectedDate);
@@ -65,8 +65,8 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     }));
 
     try {
-      await addSymptoms(user.id, selectedDate, symptomsToSave); // Pass user.id instead of uid
-      console.log("Symptoms saved successfully", user.id);
+      await addSymptoms(user.uid, selectedDate, symptomsToSave); // Pass user.id instead of uid
+      console.log("Symptoms saved successfully", user.uid);
     } catch (error) {
       console.error("Error saving symptoms:", error);
     }

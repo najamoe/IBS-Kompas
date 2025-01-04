@@ -86,7 +86,7 @@ export const fetchSymptoms = async (userId, date) => {
       // Ensure data.symptoms is always an array with symptom-intensity pairs
       return data.symptoms || [];
     } else {
-      console.log("No symptom log found for this date.");
+      console.log("No symptom log found for this date from symptomservice.js");
       return []; // Return an empty array if no document exists
     }
   } catch (error) {
