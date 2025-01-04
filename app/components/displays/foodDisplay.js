@@ -13,7 +13,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
   const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [updatedItems, setUpdatedItems] = useState([]);
-  const [SelectedType, setSelectedType] = useState(type);
+  const [selectedType, setSelectedType] = useState(type);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +22,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
           const fetchedFood = await fetchFoodIntake(
             user.uid,
             selectedDate,
-            SelectedType
+            selectedType
           );
 
           setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
@@ -32,9 +32,11 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       }
     };
     fetchData();
-  }, [user, selectedDate, SelectedType]);
+  }, [user, selectedDate, selectedType]);
 
   const handleFoodModal = () => {
+    console.log("SelectedType:", selectedType);
+    console.log("Selected type:", type);
     setSelectedType(type);
     setIsFoodModalVisible(true); // Open the FoodModal
   };
@@ -100,7 +102,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
           userId={user?.uid}
           selectedItems={selectedItems}
           updatedItem={updatedItems}
-          SelectedType={SelectedType}
+          selectedType={selectedType}
         />
       </View>
     </View>

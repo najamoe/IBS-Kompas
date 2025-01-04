@@ -11,7 +11,7 @@ import {
 import SearchField from "../searchfield";
 import { addFoodIntake } from "../../services/firebase/foodService";
 
-const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
+const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState(null);
@@ -49,10 +49,14 @@ const FoodModal = ({ modalVisible, setModalVisible, userId }) => {
           name: item.name,
           brand: item.brand,
           quantity: `${item.quantity} ${item.unit}`,
-          type: selectedType,
+          categories:
+            item.categories && item.categories.length > 0
+              ? item.categories
+              : ["ukendt"], // Default to "ukendt" if categories are missing
+         
         };
 
-        await addFoodIntake(userId, foodData);
+        await addFoodIntake(userId, foodData, selectedType); // Save the food item
 
       }
       setModalVisible(false); // Close the modal after saving

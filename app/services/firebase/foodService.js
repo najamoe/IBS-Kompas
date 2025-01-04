@@ -38,6 +38,10 @@ export const addFoodIntake = async (userId, foodData, type) => {
       type,
       date,
       timestamp, // Ensure timestamp exists
+      categories:
+        foodData.categories && foodData.categories.length > 0
+          ? foodData.categories
+          : ["ukendt"], // Default to "ukendt" if categories are missing
     });
 
     console.log(`Successfully added food to ${type} log.`);
