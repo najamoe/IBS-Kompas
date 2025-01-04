@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Slider from "@react-native-community/slider";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodDisplay from "../components/displays/foodDisplay";
+import SymptomDisplay from "../components/displays/symptomDisplay";
 import {
   addWaterIntake,
   fetchWaterIntake,
@@ -31,7 +33,6 @@ import {
   fetchSymptoms,
   deleteSymptom,
 } from "../services/firebase/symptomService";
-import Checkbox from "../components/Checkbox";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -57,6 +58,7 @@ const Home = () => {
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
+  const [symptoms, setSymptoms] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
@@ -64,8 +66,7 @@ const Home = () => {
   const [bowelLogs, setBowelLogs] = useState([]);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
-  const [symptoms, setSymptoms] = useState([]);
-  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+ 
 
   // Check if the user is signed in
   useEffect(() => {
@@ -172,43 +173,8 @@ const Home = () => {
     }
   };
 
-  const symptomOptions = [
-    { label: "Krampe", value: "krampe" },
-    { label: "Kvalme", value: "kvalme" },
-    { label: "diarre", value: "diarre" },
-    { label: "Oppustethed", value: "oppustethed" },
-    { label: "halsbrand", value: "halsbrand" },
-    { label: "feber", value: "feber" },
-    { label: "forstoppelse", value: "forstoppelse" },
-  ];
+  
 
-  // useEffect to mark symptoms that are already in the array in firestore
-  useEffect(() => {
-    // going through the array of symptoms in firestore
-    const activeSymptoms = symptoms.map((symptom) => symptom.symptom);
-    setSelectedSymptoms(activeSymptoms); // Set checked symptoms
-  }, [symptoms]); // effect that runs if symptom changes
-
-  //handling deletion of a symptom
-  const handleCheckboxChange = async (symptom, isChecked) => {
-    if (user) {
-      try {
-        if (isChecked) {
-          // If the checkbox is checked, add the symptom
-          setSelectedSymptoms((prev) => [...prev, symptom]);
-          await addSymptoms(user.uid, symptom, selectedDate); // Add the symptom to Firestore
-        } else {
-          // If the checkbox is unchecked, remove the symptom
-          setSelectedSymptoms((prev) =>
-            prev.filter((selectedSymptom) => selectedSymptom !== symptom)
-          );
-          await deleteSymptom(user.uid, symptom, selectedDate); // Remove the symptom from Firestore
-        }
-      } catch (error) {
-        //Insert error handling
-      }
-    }
-  };
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -365,22 +331,13 @@ const Home = () => {
           </View>
         </View>
 
-        {/* symptom container */}
-        <View style={styles.symptomContainer}>
-          <Text style={styles.logTitle}>Vælg dine symptomer</Text>
-          <View style={styles.symptomListContainer}>
-            {/* Map over symptomOptions and render Checkbox for each symptom */}
-            {symptomOptions.map(({ label, value }) => (
-              <Checkbox
-                key={value} // Ensures each Checkbox has a unique key
-                label={label} // Passes the symptom label
-                value={value} // Passes the value of the symptom
-                isChecked={selectedSymptoms.includes(value)} // Check if the symptom is selected
-                onChange={(isChecked) => handleCheckboxChange(value, isChecked)} // Handle checkbox change
-              />
-            ))}
-          </View>
-        </View>
+        {/* Symptom Section */}
+        <SymptomDisplay
+          user={user}
+          selectedDate={selectedDate}
+          symptoms={symptoms}
+          setSymptoms={setSymptoms}
+        />
 
         <Toast />
       </ScrollView>
@@ -543,9 +500,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 10,
   },
-  symptomListContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+  symptomItem: {
+    marginBottom: 0,
+  },
+  symptomLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  slider: {
+    width: "100%",
+    height: 40,
+    color: "#1fb28a",
+  },
+  sliderValue: {
+    textAlign: "center",
+    fontSize: 16,
+    marginTop: 5,
   },
   logTitleContainer: {
     flexDirection: "row",
