@@ -11,7 +11,7 @@ const symptomColorPalette = {
   oppustethed: "#32CD32", // LimeGreen for Oppustethed
   halsbrand: "#1E90FF", // DodgerBlue for Halsbrand
   feber: "#FF4500", // OrangeRed for Feber
-  diarre: "#FF69B4", // HotPink for Diarre
+  diarré: "#FF69B4", // HotPink for Diarre
   forstoppelse: "#8A2BE2", // BlueViolet for Forstoppelse
 };
 
@@ -45,25 +45,28 @@ const SymptomChart = ({ userId, selectedDate }) => {
   const symptoms = {};
 
   // Loop through the weeklyData and organize the symptoms
-  weeklyData.forEach((dayData) => {
-    chartData.labels.push(dayData.date); // Add date as label
+ weeklyData.forEach((dayData) => {
+   chartData.labels.push(moment(dayData.date).format("DD/MM")); // Format date as dd/mm
 
-    dayData.symptoms.forEach((entry) => {
-      // Initialize dataset for this symptom if not already present
-      if (!symptoms[entry.symptom]) {
-        symptoms[entry.symptom] = {
-          data: Array(weeklyData.length).fill(0), // Initialize all days with 0
-          color: symptomColorPalette[entry.symptom] || "#000000",
-          strokeWidth: 2,
-        };
-      }
+   dayData.symptoms.forEach((entry) => {
+     // Initialize dataset for this symptom if not already present
+     if (!symptoms[entry.symptom]) {
+       symptoms[entry.symptom] = {
+         data: Array(weeklyData.length).fill(0), // Initialize all days with 0
+         color: symptomColorPalette[entry.symptom] || "#000000",
+         strokeWidth: 2,
+       };
+     }
 
-      // Find the index of the current day and update the count
-      const dayIndex = chartData.labels.indexOf(dayData.date);
-      symptoms[entry.symptom].data[dayIndex] =
-        (symptoms[entry.symptom].data[dayIndex] || 0) + 1;
-    });
-  });
+     // Find the index of the current day and update the count
+     const dayIndex = chartData.labels.indexOf(
+       moment(dayData.date).format("DD/MM")
+     );
+     symptoms[entry.symptom].data[dayIndex] =
+       (symptoms[entry.symptom].data[dayIndex] || 0) + 1;
+   });
+ });
+
 
   // Convert symptom data into datasets
   chartData.datasets = Object.keys(symptoms).map((symptom) => ({
@@ -92,12 +95,12 @@ const SymptomChart = ({ userId, selectedDate }) => {
             width={350} // Adjust width for your layout
             height={250} // Adjust height for your layout
             chartConfig={{
-              backgroundColor: "#1e2923",
-              backgroundGradientFrom: "#08130D",
-              backgroundGradientTo: "#08130D",
+              backgroundColor: "#cae9f5",
+              backgroundGradientFrom: "#cae9f5",
+              backgroundGradientTo: "#cae9f5",
               decimalPlaces: 0,
               color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity}) `,
               style: {
                 borderRadius: 16,
               },

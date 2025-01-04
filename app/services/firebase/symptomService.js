@@ -6,17 +6,13 @@ import {
   getDocs,
   addDoc,
   updateDoc,
-  arrayUnion,
-  query,
-  where,
 } from "firebase/firestore";
 import moment from "moment";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db;
 
-// Add a symptom for a specific user with a given date
-export const addSymptoms = async (userId, symptom, date) => {
+export const addSymptoms = async (userId, date, symptoms) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
@@ -25,32 +21,54 @@ export const addSymptoms = async (userId, symptom, date) => {
     // Reference to the specific date document in symptomLogs
     const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
 
-    // Prepare the symptom with the current timestamp
-    const symptomWithTime = {
-      symptom,
-      time: new Date().toISOString(), // Store the current timestamp
-    };
+    // Fetch the current symptom logs to check for existing symptoms
+    const symptomDoc = await getDoc(symptomDocRef);
+    let existingSymptoms = [];
 
-    // Add the new symptom to the symptoms array in the date document
-    await updateDoc(symptomDocRef, {
-      symptoms: arrayUnion(symptomWithTime),
-    }).catch(async (error) => {
-      if (error.code === "not-found") {
-        // If the document doesn't exist, create it with the symptoms array
-        await setDoc(symptomDocRef, {
-          symptoms: [symptomWithTime],
-        });
+    if (symptomDoc.exists()) {
+      // If the document exists, retrieve the existing symptoms
+      existingSymptoms = symptomDoc.data().symptoms || [];
+    }
+
+    // Prepare the updated symptoms
+    const updatedSymptoms = symptoms.map((symptom) => {
+      const existingSymptom = existingSymptoms.find(
+        (s) => s.symptom === symptom.symptom
+      );
+      if (existingSymptom) {
+        // If the symptom exists, update the intensity
+        return {
+          ...existingSymptom,
+          intensity: symptom.intensity,
+        };
       } else {
-        throw error;
+        // If the symptom doesn't exist, create a new one
+        return {
+          symptom: symptom.symptom,
+          intensity: symptom.intensity || 0,
+        };
       }
     });
 
-    console.log("Symptom added:", symptomWithTime);
+    // If the document doesn't exist, create it; otherwise, update it
+    if (symptomDoc.exists()) {
+      await updateDoc(symptomDocRef, {
+        symptoms: updatedSymptoms, // Replace the entire symptoms array
+      });
+      console.log("Symptoms updated successfully");
+    } else {
+      await setDoc(symptomDocRef, {
+        symptoms: updatedSymptoms, // Create the new document with the symptoms
+      });
+      console.log("Symptoms added successfully");
+    }
   } catch (error) {
-    console.error("Error adding symptom:", error);
+    console.error("Error adding or updating symptoms:", error);
     throw error;
   }
 };
+
+
 
 // Fetch symptoms for a specific user on a specific date
 export const fetchSymptoms = async (userId, date) => {
@@ -119,41 +137,6 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
     return symptomsForWeek;
   } catch (error) {
     console.error("Error fetching symptoms for the week:", error);
-    throw error;
-  }
-};
-
-
-
-// used in home.js
-export const deleteSymptom = async (userId, symptomToRemove, date) => {
-  try {
-    if (!firestore || !userId) {
-      throw new Error("Firestore instance or userId is missing.");
-    }
-
-    const symptomDocRef = doc(firestore, `users/${userId}/symptomLogs/${date}`);
-    const snapshot = await getDoc(symptomDocRef);
-
-    if (snapshot.exists()) {
-      const currentSymptoms = snapshot.data().symptoms || [];
-
-      // Filter out the symptom to remove
-      const updatedSymptoms = currentSymptoms.filter(
-        (symptom) => symptom.symptom !== symptomToRemove
-      );
-
-      // Update the symptom log in Firestore with the new symptoms array
-      await updateDoc(symptomDocRef, {
-        symptoms: updatedSymptoms,
-      });
-
-      console.log("Symptom removed:", symptomToRemove);
-    } else {
-      console.log("No symptoms found for this date.");
-    }
-  } catch (error) {
-    console.error("Error removing symptom:", error);
     throw error;
   }
 };

@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Slider from "@react-native-community/slider";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -28,11 +27,6 @@ import {
   addWellnessLog,
   fetchWellnessLog,
 } from "../services/firebase/wellnessService";
-import {
-  addSymptoms,
-  fetchSymptoms,
-  deleteSymptom,
-} from "../services/firebase/symptomService";
 
 const Home = () => {
   // Format date function to display in DD/MM/YYYY format
@@ -91,11 +85,6 @@ const Home = () => {
 
           const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
           setSelectedMood(wellnesslog || null);
-
-          // Fetch logged symptoms for the selected date
-
-          const symptoms = await fetchSymptoms(user.uid, selectedDate);
-          setSymptoms(symptoms);
 
           // Fetch bowel logs for the selected date
 

@@ -6,7 +6,6 @@ import Toast from "react-native-toast-message"; // Import Toast to show notifica
 
 const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptoms, setSymptoms] = useState([]);
-  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [symptomIntensities, setSymptomIntensities] = useState({}); // Initialize as an object
 
   const symptomOptions = [
@@ -19,37 +18,44 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     { label: "forstoppelse", value: "forstoppelse" },
   ];
 
+  // Initialize all symptoms with default intensity (0) in the state
+  useEffect(() => {
+    const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
+      acc[symptom.value] = 0; // Set initial intensity to 0
+      return acc;
+    }, {});
+    console.log("systemOptions", symptomOptions);
+    setSymptoms(symptomOptions);
+    console.log("initialSymptoms", initialSymptoms);
+    setSymptomIntensities(initialSymptoms);
+  }, []);
+
   const handleSliderChange = async (symptom, value) => {
+    // Update the intensity of the changed symptom in the state
     setSymptomIntensities((prev) => ({
       ...prev,
       [symptom]: value,
     }));
 
-    if (!selectedSymptoms.includes(symptom)) {
-      setSelectedSymptoms((prev) => [...prev, symptom]);
-    }
+    // Ensure that all symptoms are included, even the ones that haven't been modified
+    const symptomsToSave = symptomOptions.map((option) => ({
+      symptom: option.value,
+      intensity: symptomIntensities[option.value] || 0, // Default to 0 if intensity is not set
+    }));
 
-    // Save the symptom data immediately when the slider is changed
+    console.log("Symptoms to save:", symptomsToSave);
+
+    // Save the symptoms data to Firestore
     try {
-      const symptomsToSave = [
-        {
-          symptom: symptom,
-          intensity: value || 0, // Default to 0 if intensity is not set
-        },
-      ];
       await addSymptoms(user.uid, selectedDate, symptomsToSave);
-      Toast.show({
-        type: "success",
-        text1: "Symptom saved successfully!",
-      });
+        console.log("Symptoms saved successfully");
     } catch (error) {
       console.error("Error saving symptom:", error);
-      Toast.show({
-        type: "error",
-        text1: "Failed to save symptom. Please try again.",
-      });
+    
     }
   };
+
+
 
   return (
     <View style={styles.symptomContainer}>
@@ -63,12 +69,12 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             minimumValue={0}
             maximumValue={10}
             step={1}
-            value={symptomIntensities[symptomOption.value] || 0} // Use 0 as default if no intensity
+            value={symptomIntensities[symptomOption.value]} // Get the current intensity value
             onValueChange={(value) =>
               handleSliderChange(symptomOption.value, value)
-            }
+            } // Update intensity when slider changes
           />
-          <Text>Intensity: {symptomIntensities[symptomOption.value] || 0}</Text>
+          <Text>Intensity: {symptomIntensities[symptomOption.value]}</Text>
         </View>
       ))}
     </View>
