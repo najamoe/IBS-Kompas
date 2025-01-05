@@ -54,7 +54,7 @@ const onRefresh = useCallback(() => {
 
   setTimeout(() => {
     setRefreshing(false);
-  }, 200); // Adjust the timeout duration as needed
+  }, 200); 
 }, []);
 
 
