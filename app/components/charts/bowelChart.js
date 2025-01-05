@@ -5,10 +5,8 @@ import { LineChart } from "react-native-chart-kit";
 import {
   fetchWeeklyBowelLogByFrequency,
   fetchWeeklyBowelLogByType,
-  averageBowelLogs,
-  fetchAverageBloodLogs,
-  fetchAveragePainLogs,
-  fetchAverageUrgentLogs,
+  fetchBowelLogDetails
+ 
 } from "../../services/firebase/bowelService";
 
 // Import bowel type images
@@ -176,12 +174,34 @@ export const BowelDetails = ({ userId, selectedDate }) => {
     const fetchBowelData = async () => {
       try {
         setLoading(true);
-        const average = await averageBowelLogs(userId, selectedDate);
-        setAverageLogs(average.toFixed(2));
 
-        setBloodLogsData(await fetchAverageBloodLogs(userId, selectedDate));
-        setPainLogsData(await fetchAveragePainLogs(userId, selectedDate));
-        setUrgentLogsData(await fetchAverageUrgentLogs(userId, selectedDate));
+        // Fetch the details for each log type
+        const averageLogs = await fetchBowelLogDetails(
+          userId,
+          selectedDate,
+          "averageBowelLogs"
+        );
+        const bloodLogs = await fetchBowelLogDetails(
+          userId,
+          selectedDate,
+          "bloodLogs"
+        );
+        const painLogs = await fetchBowelLogDetails(
+          userId,
+          selectedDate,
+          "painLogs"
+        );
+        const urgentLogs = await fetchBowelLogDetails(
+          userId,
+          selectedDate,
+          "urgentLogs"
+        );
+
+        // Set the fetched data to the state
+        setAverageLogs(averageLogs.toFixed(2)); // Average for the week
+        setBloodLogsData(bloodLogs); // Blood logs count
+        setPainLogsData(painLogs); // Pain logs average
+        setUrgentLogsData(urgentLogs); // Urgent logs count
       } catch (error) {
         console.error("Error fetching detailed bowel logs:", error);
       } finally {
@@ -215,6 +235,8 @@ export const BowelDetails = ({ userId, selectedDate }) => {
     </View>
   );
 };
+
+
 
 // Styles
 const styles = StyleSheet.create({
