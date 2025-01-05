@@ -30,21 +30,20 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
   const [unit, setUnit] = useState(""); // Unit input
 
   // Function to handle search input
-const handleSearch = debounce(async (query) => {
-  console.log("Searching for:", query);
-  setLoading(true);
-  try {
-    const results = await searchProducts(query);
-    console.log("Search results:", results); 
-    setSearchResults(results || []);
-  } catch (error) {
-    console.error("Error during search:", error.message);
-    setSearchResults([]);
-  } finally {
-    setLoading(false);
-  }
-}, 500);
-
+  const handleSearch = debounce(async (query) => {
+    console.log("Searching for:", query);
+    setLoading(true);
+    try {
+      const results = await searchProducts(query);
+      console.log("Search results:", results);
+      setSearchResults(results || []);
+    } catch (error) {
+      console.error("Error during search:", error.message);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }, 500);
 
   // Function to handle modal close for resetting inputs
   const handleCloseModal = () => {
@@ -61,44 +60,46 @@ const handleSearch = debounce(async (query) => {
     setSelectedItem(item); // Store the selected item
     setItemName(item.name); // Store the selected item name
     setShowModal(true); // Show the modal to input quantity and unit
+  
+    //Clearing the search query when an item is selected
+    setQuery("");
   };
 
   // Function to handle adding the item with quantity and unit to selectedItems
-const handleAddItem = () => {
-  console.log("item from searchfield:", quantity, unit, itemName);
+  const handleAddItem = () => {
+    console.log("item from searchfield:", quantity, unit, itemName);
 
-  if (itemName && quantity && unit) {
-    const newItem = { ...selectedItem, name: itemName, quantity, unit };
+    if (itemName && quantity && unit) {
+      const newItem = { ...selectedItem, name: itemName, quantity, unit };
 
-    setSelectedItems((prevItems) => {
-      // Check if an item with the same name already exists
-      const existingItemIndex = prevItems.findIndex(
-        (item) => item.name === newItem.name
-      );
+      setSelectedItems((prevItems) => {
+        // Check if an item with the same name already exists
+        const existingItemIndex = prevItems.findIndex(
+          (item) => item.name === newItem.name
+        );
 
-      if (existingItemIndex !== -1) {
-        // Replace the existing item with the new one
-        const updatedItems = [...prevItems];
-        updatedItems[existingItemIndex] = newItem;
-        return updatedItems;
-      } else {
-        // Append the new item to the list
-        return [...prevItems, newItem];
-      }
-    });
+        if (existingItemIndex !== -1) {
+          // Replace the existing item with the new one
+          const updatedItems = [...prevItems];
+          updatedItems[existingItemIndex] = newItem;
+          return updatedItems;
+        } else {
+          // Append the new item to the list
+          return [...prevItems, newItem];
+        }
+      });
 
-    // Reset fields and close modal
-    setItemName("");
-    setQuantity("");
-    setUnit("");
-    setShowModal(false);
+      // Reset fields and close modal
+      setItemName("");
+      setQuantity("");
+      setUnit("");
+      setShowModal(false);
 
-    setSearchResults([]); // Clear search results
-  } else {
-    alert("Please enter both quantity and unit.");
-  }
-};
-
+      setSearchResults([]); // Clear search results
+    } else {
+      alert("Please enter both quantity and unit.");
+    }
+  };
 
   // Function to handle editing an existing item in the selectedItems list
   const handleEditItem = (item) => {
