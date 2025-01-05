@@ -15,14 +15,13 @@ import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodDisplay from "../components/displays/foodDisplay";
 import SymptomDisplay from "../components/displays/symptomDisplay";
+import BowelDisplay from "../components/displays/bowelDisplay";
 import {
   addWaterIntake,
-  fetchWaterIntake,
+  subscribeToDailyWaterIntake,
   removeWaterIntake,
 } from "../services/firebase/waterService";
 import WaterModal from "../components/modal/waterModal";
-import BowelModal from "../components/modal/bowelModal";
-import { fetchBowelLog } from "../services/firebase/bowelService";
 import {
   addWellnessLog,
   fetchWellnessLog,
@@ -47,7 +46,6 @@ const Home = () => {
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
 
-
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     formatDateStorage(new Date())
@@ -56,12 +54,8 @@ const Home = () => {
   const [symptoms, setSymptoms] = useState([]);
   const [waterIntake, setWaterIntake] = useState(0);
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
-  const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
-  const [bowelStep, setBowelStep] = useState(1);
-  const [bowelLogs, setBowelLogs] = useState([]);
   const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
- 
 
   // Check if the user is signed in
   useEffect(() => {
@@ -73,33 +67,42 @@ const Home = () => {
   }, []);
 
   // Fetch daily when the selected date changes
-  useEffect(() => {
+  const fetchData = async () => {
     if (user) {
-      const fetchData = async () => {
-        try {
-          // Fetch water intake
-
-          const intake = await fetchWaterIntake(user.uid, selectedDate);
-          setWaterIntake(intake);
-
-          // Fetch wellness log
-
-          const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
-          setSelectedMood(wellnesslog || null);
-
-          // Fetch bowel logs for the selected date
-
-          const bowelLogData = await fetchBowelLog(user.uid, selectedDate);
-          setBowelLogs(bowelLogData || []);
-        } catch (error) {
-          console.error("Error fetching data from home.js:", error); //LOGS
-        }
-      };
-      fetchData();
+      try {
+        // Fetch wellness log
+        const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
+        setSelectedMood(wellnesslog || null);
+      } catch (error) {
+        console.error("Error fetching data from home.js:", error); //LOGS
+      }
     }
-  }, [user, selectedDate]);
+  };
 
-  useEffect(() => {}, [waterIntake, selectedMood]);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    // Fetch data again when pulling to refresh
+    await fetchData(); // Reuse fetchData function here
+    setRefreshing(false);
+  }, [user, selectedDate]); // Add dependencies if needed
+
+  useEffect(() => {}, [selectedMood]);
+
+  useEffect(() => {
+    if (user && selectedDate) {
+      // Subscribe to daily water intake updates in Firestore
+      const unsubscribe = subscribeToDailyWaterIntake(
+        user.uid,
+        selectedDate,
+        (total) => {
+          setWaterIntake(total); // Update state when water intake changes
+        }
+      );
+
+      // Cleanup function to unsubscribe when the component unmounts or user changes
+      return () => unsubscribe();
+    }
+  }, [user, selectedDate]); // Keeping selectedDate as a dependency for the right date
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -115,6 +118,7 @@ const Home = () => {
         setWaterIntake(newWaterIntake); // Update the local state
       } catch (error) {
         //Insert error handling
+        console.error("Error adding water intake:", error);
       }
     } else {
       alert("Please sign in to log your water intake.");
@@ -153,7 +157,6 @@ const Home = () => {
       //Insert error handling
       return;
     }
-
     try {
       setSelectedMood(emoticon);
       // Call addWellnessLog service to log the emoticon
@@ -162,26 +165,6 @@ const Home = () => {
       console.error("Error saving emoticon:", error.message);
     }
   };
-
-  
-
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    // Fetch data again when pulling to refresh
-    const fetchData = async () => {
-      if (user) {
-        try {
-          // Fetch the same data you load in useEffect
-          await fetchData();
-        } catch (error) {
-          console.error("Error refreshing data:", error);
-        }
-      }
-    };
-
-    setRefreshing(false);
-  }, [user, selectedDate]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -261,42 +244,9 @@ const Home = () => {
           onAddWater={isAdding ? handleAddWater : handleRemoveWater}
         />
 
-        {/* Bowel Container */}
-        <View style={styles.bowelContainer}>
-          <View style={styles.logTitleContainer}>
-            <Text style={styles.logTitle}>Log toiletbesøg</Text>
-          </View>
-
-          <View style={styles.bowelContent}>
-            {bowelLogs.length > 0 ? (
-              bowelLogs.map((log) => (
-                <View key={log.id} style={styles.bowelLogItem}>
-                  <MaterialCommunityIcons
-                    name="emoticon-poop"
-                    size={30}
-                    color="#8c4c1f"
-                  />
-                </View>
-              ))
-            ) : (
-              <Text>No bowel logs found for this user.</Text>
-            )}
-          </View>
-
-          <TouchableOpacity
-            onPress={() => {
-              setIsBowelModalVisible(true);
-              setBowelStep(1);
-            }}
-          >
-            <Text style={styles.addBowel}>Tilføj</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Bowel Modal */}
-        <BowelModal
-          isVisible={isBowelModalVisible}
-          onClose={() => setIsBowelModalVisible(false)}
+        <BowelDisplay 
+        user={user} 
+        selectedDate={selectedDate} 
         />
 
         {/* Wellness container */}
@@ -422,36 +372,7 @@ const styles = StyleSheet.create({
     width: "34%",
     paddingHorizontal: 15,
   },
-  bowelContainer: {
-    backgroundColor: "white",
-    width: "100%",
-    padding: 10,
-    borderRadius: 20,
-    marginTop: 10,
-    alignItems: "center",
-    elevation: 10,
-  },
-  bowelContent: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  addBowel: {
-    fontSize: 16,
-    fontWeight: "500",
-    borderColor: "black",
-    borderWidth: 0.2,
-    padding: 5,
-    borderRadius: 50,
-    width: 120,
-    textAlign: "center",
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  bowelLogItem: {
-    margin: 6,
-  },
+  
   WellnessContainer: {
     width: "100%",
     padding: 10,
