@@ -4,8 +4,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import FoodModal from "../modal/foodModal";
 import {
-  fetchFoodIntake,
+  subscribeUpdateFood,
   deleteFoodIntake,
+  editItem, 
 } from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
@@ -19,20 +20,30 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     const fetchData = async () => {
       try {
         if (user) {
-          const fetchedFood = await fetchFoodIntake(
+          // Subscribe to real-time updates
+          const unsubscribe = subscribeUpdateFood(
             user.uid,
             selectedDate,
-            selectedType
+            type,
+            (updatedFood) => {
+              console.log("SelectedDate:", updatedFood);
+              setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
+            }
           );
 
-          setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
+          
+
+          // Cleanup subscription when component unmounts or dependencies change
+          return () => unsubscribe();
         }
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
     };
+
     fetchData();
   }, [user, selectedDate, selectedType]);
+
 
   const handleFoodModal = () => {
     console.log("SelectedType:", selectedType);
@@ -40,6 +51,21 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setSelectedType(type);
     setIsFoodModalVisible(true); 
   };
+ 
+  const editFood = async (item) => {
+    try {
+      await editItem(user.uid, item, type);
+      const updatedFoodData = foodData.filter(
+        (foodItem) => foodItem.name !== item.name
+      );
+      setFoodData(updatedFoodData);
+
+    }
+    catch (error) {
+      console.error("Error editing food item:", error);
+    }
+  }
+
 
   const handleDeleteItem = async (item) => {
     try {
@@ -85,9 +111,11 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               key={`${item.name}-${item.quantity}-${index}`}
               style={styles.foodItem}
             >
+            <TouchableOpacity onPress={() => editFood(item)}>
               <Text style={styles.foodItemText}>{item.name}</Text>
               <Text style={styles.foodItemText}>{item.quantity}</Text>
 
+            </TouchableOpacity>
               <View style={styles.deleteIcon}>
                 <TouchableOpacity
                   onPress={() => handleDeleteItem(item)}

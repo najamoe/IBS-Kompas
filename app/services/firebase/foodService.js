@@ -6,6 +6,7 @@ import {
   query,
   where,
   deleteDoc,
+  onSnapshot
 } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 import moment from "moment";
@@ -75,6 +76,94 @@ export const fetchFoodIntake = async (userId, date, type) => {
   }
 };
 
+export const subscribeUpdateFood = async (userId, date, type, callback) => {
+  if (!firestore) {
+    throw new Error("Firestore instance is missing.");
+  }
+  if (!userId || !date || !type) {
+    throw new Error("Required parameters (userId, date, or type) are missing.");
+  }
+
+  try {
+    const foodLogRef = collection(
+      firestore,
+      `users/${userId}/foodLogs/${date}/${type}`
+    );
+
+    // Listen to real-time updates
+    const unsubscribe = onSnapshot(foodLogRef, (snapshot) => {
+      const updatedFood = []; // Collect the updated food data
+
+      snapshot.docChanges().forEach((change) => {
+        const foodData = { id: change.doc.id, ...change.doc.data() };
+
+        switch (change.type) {
+          case "added":
+
+            updatedFood.push(foodData);
+            break;
+          case "modified":
+      
+            updatedFood.push(foodData);
+            break;
+          case "removed":
+            
+            console.log("Removed food intake:", foodData);
+            break;
+          default:
+            console.warn("Unknown change type:", change.type);
+        }
+      });
+
+      // Call the callback with the updated food array
+      if (callback) {
+        callback(updatedFood);
+      }
+    });
+
+    return unsubscribe; // Return unsubscribe function for cleanup
+  } catch (error) {
+    console.error("Error subscribing to food intake:", error);
+    throw error; // Propagate the error to the caller
+  }
+};
+
+
+export const editItem = async (userId, foodData, type) => {
+  if (!firestore) {
+    throw new Error("Firestore instance is missing.");
+  }
+  if (!userId || !foodData?.name || !type) {
+    throw new Error(
+      "Required parameters (userId, foodData.name, or type) are missing."
+    );
+  }
+
+  try {
+    const date = moment().format("YYYY-MM-DD");
+    const foodLogRef = collection(
+      firestore,
+      `users/${userId}/foodLogs/${date}/${type}`
+    );
+
+    // Query for the document by its name
+    const q = query(foodLogRef, where("name", "==", foodData.name));
+    const snapshot = await getDocs(q);
+
+    for (const doc of snapshot.docs) {
+      await setDoc(doc.ref, foodData);
+      console.log(`Edited food intake: ${doc.id}`);
+    }
+
+    if (snapshot.empty) {
+      console.warn("No matching food intake found to edit.");
+    }
+  } catch (error) {
+    console.error("Error editing food intake:", error);
+    throw error;
+  }
+};
+
 export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
   try {
     if (!firestore || !userId) {
@@ -126,33 +215,37 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
   }
 };
 
-
-
-
 export const deleteFoodIntake = async (userId, foodData, type) => {
-  try {
-    if (!firestore || !userId || !foodData || !type) {
-      throw new Error(
-        "Firestore instance, userId, foodData, or type is missing."
-      );
-    }
+  if (!firestore) {
+    throw new Error("Firestore instance is missing.");
+  }
+  if (!userId || !foodData?.name || !type) {
+    throw new Error(
+      "Required parameters (userId, foodData.name, or type) are missing."
+    );
+  }
 
+  try {
     const date = moment().format("YYYY-MM-DD");
     const foodLogRef = collection(
       firestore,
       `users/${userId}/foodLogs/${date}/${type}`
     );
 
-    // Query for the document by its name or other unique identifier
+    // Query for the document by its name
     const q = query(foodLogRef, where("name", "==", foodData.name));
-
     const snapshot = await getDocs(q);
-    snapshot.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
 
-   
+    for (const doc of snapshot.docs) {
+      await deleteDoc(doc.ref);
+      console.log(`Deleted food intake: ${doc.id}`);
+    }
+
+    if (snapshot.empty) {
+      console.warn("No matching food intake found to delete.");
+    }
   } catch (error) {
     console.error("Error deleting food intake:", error);
+    throw error;
   }
 };
