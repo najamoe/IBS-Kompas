@@ -324,7 +324,7 @@ export const editBowelLog = async (
   }
 };
 
-export const removeBowelLog = async (userId, date) => {
+export const deleteBowelLog = async (userId, date) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
