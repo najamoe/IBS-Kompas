@@ -41,11 +41,11 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             selectedDate,
             type,
             (updatedFood) => {
-              console.log("Updated food data from display:", updatedFood); // Log updated food data
+             
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
             }
           );
-          console.log("Fetching food", foodData);
+       
           // Cleanup subscription when component unmounts or dependencies change
           return () => unsubscribe();
         }
