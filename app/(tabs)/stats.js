@@ -45,12 +45,18 @@ const Stats = () => {
     setSelectedDate(newDate); // This will trigger re-render for all charts
   };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 200);
-  }, []);
+const onRefresh = useCallback(() => {
+  setRefreshing(true);
+
+  // Trigger a date change, for example, refresh the current week or previous week
+  const newDate = moment(); // You can adjust this as needed (e.g., go to today or refresh the week)
+  setSelectedDate(newDate); // This will trigger the re-render of the charts with the updated date
+
+  setTimeout(() => {
+    setRefreshing(false);
+  }, 200); // Adjust the timeout duration as needed
+}, []);
+
 
   // Get the start and end of the current week using moment
   const startOfWeek = (selectedDate || moment()).clone().startOf("isoweek");
