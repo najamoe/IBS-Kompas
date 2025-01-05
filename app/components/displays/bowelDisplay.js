@@ -78,7 +78,8 @@ const BowelDisplay = ({ user, selectedDate }) => {
                   size={30}
                   color="#8c4c1f"
                 />
-                <Text>{moment(log.date).format(" HH:mm")}</Text>
+                {/* Inserting time from firestore*/}
+                <Text style={styles.timeStamp}>  {log.timestamp}</Text>
               </View>
             ))
           ) : (
@@ -139,6 +140,7 @@ const styles = StyleSheet.create({
   bowelLogItem: {
     margin: 6,
     alignItems: "center",
+    backgroundColor: "grey",
   },
   addBowelButton: {
     borderColor: "black",
@@ -156,4 +158,8 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
+  timeStamp: {
+    fontSize: 16,
+    color: "black"
+  }
 });

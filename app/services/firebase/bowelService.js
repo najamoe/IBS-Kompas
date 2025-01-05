@@ -83,7 +83,7 @@ export const subscribeBowelLog = (userId, date, callback) => {
           ...doc.data() // Spread the rest of the document data
         }));
         callback(bowelLogs); // Pass the updated logs to the callback
-
+  
       } else {
         console.log("Ingen toiletbesøg idag.");
         callback(null); // No bowel log found for the given date
