@@ -24,7 +24,7 @@ import {
 import WaterModal from "../components/modal/waterModal";
 import {
   addWellnessLog,
-  subscribeWellnessLog
+  subscribeWellnessLog,
 } from "../services/firebase/wellnessService";
 
 const Home = () => {
@@ -81,7 +81,6 @@ const Home = () => {
     }
   }, [user, selectedDate]);
 
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     // Fetch data again when pulling to refresh
@@ -106,7 +105,7 @@ const Home = () => {
       // Cleanup function to unsubscribe when the component unmounts or user changes
       return () => unsubscribe();
     }
-  }, [user, selectedDate]); 
+  }, [user, selectedDate]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -373,7 +372,7 @@ const styles = StyleSheet.create({
     width: "34%",
     paddingHorizontal: 15,
   },
-  
+
   WellnessContainer: {
     width: "100%",
     padding: 10,

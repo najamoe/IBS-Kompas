@@ -41,11 +41,10 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             selectedDate,
             type,
             (updatedFood) => {
-             
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
             }
           );
-       
+
           // Cleanup subscription when component unmounts or dependencies change
           return () => unsubscribe();
         }

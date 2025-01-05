@@ -66,7 +66,7 @@ export const subscribeFood = async (userId, date, type, callback) => {
 
       snapshot.forEach((doc) => {
         const foodData = { id: doc.id, ...doc.data() };
-    
+
         updatedFood.push(foodData);
       });
 
@@ -99,13 +99,12 @@ export const updateFoodItem = async (
       firestore,
       `users/${userId}/foodLogs/${date}/${type}/${itemId}`
     );
-  
+
     // Update the food item in Firestore
     await updateDoc(foodRef, {
       quantity: updatedItem.quantity,
       unit: updatedItem.unit,
     });
-  
   } catch (error) {
     console.error("Error updating item:", error);
     throw error;
