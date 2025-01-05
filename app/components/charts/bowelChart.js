@@ -20,7 +20,7 @@ import type5 from "../../../assets/images/bowel/type5.png";
 import type6 from "../../../assets/images/bowel/type6.png";
 import type7 from "../../../assets/images/bowel/type7.png";
 
-// Helper function to render loading or data state
+// Helper function for loading or data state
 const LoadingOrData = ({
   loading,
   data,
@@ -34,26 +34,21 @@ const LoadingOrData = ({
       </View>
     );
   }
-  return data ? <Text>{data}</Text> : <Text>{noDataMessage}</Text>;
+  return <Text>{data || noDataMessage}</Text>;
 };
 
-// Chart configuration for bowel frequency
+// Chart configuration
 const chartConfig = {
   backgroundGradientFrom: "#fff",
   backgroundGradientTo: "#fff",
   decimalPlaces: 0,
   color: (opacity = 1) => `rgba(0, 102, 255, ${opacity})`,
   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-  style: {
-    borderRadius: 16,
-  },
-  propsForDots: {
-    r: "2",
-    strokeWidth: "2",
-    stroke: "red",
-  },
+  style: { borderRadius: 16 },
+  propsForDots: { r: "2", strokeWidth: "2", stroke: "red" },
 };
 
+// Chart by frequency 
 export const BowelChartByFrequency = ({ userId, selectedDate }) => {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +65,6 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
           date: day.date,
           total: isNaN(day.total) ? 0 : day.total,
         }));
-        console.log("formattedData", formattedData);
         setWeeklyData(formattedData);
       } catch (error) {
         console.error("Error fetching weekly bowel log by frequency:", error);
@@ -78,29 +72,25 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
         setLoading(false);
       }
     };
+
     fetchBowelData();
-  }, [userId,  selectedDate]);
+  }, [userId, selectedDate]);
 
   const chartData = {
     labels: weeklyData.map((day) => moment(day.date).format("ddd")),
-    datasets: [
-      {
-        data: weeklyData.map((day) => day.total),
-      },
-    ],
+    datasets: [{ data: weeklyData.map((day) => day.total) }],
   };
 
   return (
     <View style={styles.chartContainer}>
       <Text style={styles.title}>Toiletbesøg</Text>
       {loading || !weeklyData.length ? (
-        <LoadingOrData loading={loading} data={null} />
+        <LoadingOrData loading={loading} />
       ) : (
         <LineChart
           data={chartData}
           width={310}
           height={240}
-          verticalLabelRotation={0}
           chartConfig={chartConfig}
         />
       )}
@@ -108,93 +98,125 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
   );
 };
 
-export const BowelDetails = ({ userId,  selectedDate }) => {
+// Chart by type 
+export const BowelChartByType = ({ userId, selectedDate }) => {
   const [loading, setLoading] = useState(true);
   const [mostFrequentType, setMostFrequentType] = useState(null);
-  const [formattedAverageLogs, setFormattedAverageLogs] = useState(null);
-  const [bloodLogsData, setBloodLogsData] = useState(null);
-  const [painLogsData, setPainLogsData] = useState(null);
-  const [urgentLogsData, setUrgentLogsData] = useState(null);
 
+  const bowelTypeImages = {
+    type1,
+    type2,
+    type3,
+    type4,
+    type5,
+    type6,
+    type7,
+  };
+  const formatBowelType = (type) => {
+    if (!type) return null;
+    return type.replace(/type(\d)/, "Type $1"); // Converts "type4" to "Type 4"
+  };
 
   useEffect(() => {
-    const fetchBowelTypeData = async () => {
+    const fetchBowelByType = async () => {
       try {
         setLoading(true);
-        const { mostFrequentType } = await fetchWeeklyBowelLogByType(userId, selectedDate);
-        setMostFrequentType(mostFrequentType);
-
-        const average = await averageBowelLogs(userId, selectedDate);
-        setFormattedAverageLogs(average.toFixed(2));
-
-        const bloodLogs = await fetchAverageBloodLogs(userId, selectedDate);
-        setBloodLogsData(bloodLogs);
-
-        const painLogs = await fetchAveragePainLogs(userId, selectedDate);
-        setPainLogsData(painLogs);
-
-        const urgentLogs = await fetchAverageUrgentLogs(userId, selectedDate);
-        setUrgentLogsData(urgentLogs);
-
+        const data = await fetchWeeklyBowelLogByType(userId, selectedDate);
+        setMostFrequentType(data?.mostFrequentType);
       } catch (error) {
         console.error("Error fetching bowel log by type:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchBowelTypeData();
+
+    fetchBowelByType();
   }, [userId, selectedDate]);
 
-  const bowelTypeImages = {
-    type1: type1,
-    type2: type2,
-    type3: type3,
-    type4: type4,
-    type5: type5,
-    type6: type6,
-    type7: type7,
-  };
+  // Render content based on loading state and data availability
+  if (loading) {
+    return <LoadingOrData loading={loading} />;
+  }
+
+  if (!mostFrequentType) {
+    return (
+      <View style={styles.detailContainer}>
+        <Text>Ingen data tilgængelig for denne uge.</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.frequentContainer}>
+      <Text style={styles.typeText}>Type</Text>
+      <Text style= {styles.frequentText}>
+        Din mest almindelige afføringstype denne uge er{" "} {"\n"}
+        <Text style={styles.boldText}>{formatBowelType(mostFrequentType)}</Text>
+      </Text>
+      {mostFrequentType && bowelTypeImages[mostFrequentType] && (
+        <Image
+          source={bowelTypeImages[mostFrequentType]}
+          style={styles.typeImage}
+          resizeMode="contain"
+        />
+      )}
+    </View>
+  );
+};
+
+// Detailed bowel data component
+export const BowelDetails = ({ userId, selectedDate }) => {
+  const [loading, setLoading] = useState(true);
+  const [averageLogs, setAverageLogs] = useState(null);
+  const [bloodLogsData, setBloodLogsData] = useState(null);
+  const [painLogsData, setPainLogsData] = useState(null);
+  const [urgentLogsData, setUrgentLogsData] = useState(null);
+
+  useEffect(() => {
+    const fetchBowelData = async () => {
+      try {
+        setLoading(true);
+        const average = await averageBowelLogs(userId, selectedDate);
+        setAverageLogs(average.toFixed(2));
+
+        setBloodLogsData(await fetchAverageBloodLogs(userId, selectedDate));
+        setPainLogsData(await fetchAveragePainLogs(userId, selectedDate));
+        setUrgentLogsData(await fetchAverageUrgentLogs(userId, selectedDate));
+      } catch (error) {
+        console.error("Error fetching detailed bowel logs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBowelData();
+  }, [userId, selectedDate]);
 
   return (
     <View style={styles.detailContainer}>
       {loading ? (
-        <LoadingOrData loading={loading} data={null} />
+        <LoadingOrData loading={loading} />
       ) : (
         <View style={styles.TextContainer}>
           <Text style={styles.title}>Detaljer</Text>
           <Text style={styles.message}>
             I denne uge har du gennemsnitligt haft{" "}
-            <Text style={styles.boldText}>{formattedAverageLogs}</Text>{" "}
-            toiletbesøg per dag.
-            {"\n"}
-            Du har observeret blod{" "}
+            <Text style={styles.boldText}>{averageLogs}</Text> toiletbesøg per
+            dag.
+            {"\n"}Du har observeret blod{" "}
             <Text style={styles.boldText}>{bloodLogsData}</Text> antal gange.
-            {"\n"}
-            Din gennemsnitlige smerte var{" "}
-            <Text style={styles.boldText}>{painLogsData}</Text>.{"\n"}
-            Du havde <Text style={styles.boldText}>{urgentLogsData}</Text> gange
-            hvor det var hastende.
-            {"\n"}
-            Din mest almindelige afføringstype denne uge er{" "}
-            <Text style={styles.boldText}>
-              {mostFrequentType
-                ? mostFrequentType
-                : "Ingen type tilgængelig for denne uge."}
-            </Text>
+            {"\n"}Din gennemsnitlige smerte var{" "}
+            <Text style={styles.boldText}>{painLogsData}</Text>.{"\n"}Du havde{" "}
+            <Text style={styles.boldText}>{urgentLogsData}</Text> gange hvor det
+            var hastende.
           </Text>
-          {mostFrequentType && bowelTypeImages[mostFrequentType] && (
-            <Image
-              source={bowelTypeImages[mostFrequentType]}
-              style={styles.typeImage}
-              resizeMode="contain"
-            />
-          )}
         </View>
       )}
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   chartContainer: {
     marginTop: 20,
@@ -209,11 +231,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
-  },
-  chartWrapper: {
-    alignSelf: "flex-start",
-    alignItems: "center",
-    justifyContent: "center",
   },
   title: {
     fontSize: 14,
@@ -232,12 +249,31 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   detailContainer: {
-    flexDirection: "row",
-    padding: 20,
+    padding: 5,
     backgroundColor: "white",
     borderRadius: 10,
     height: 250,
-    marginVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  typeText: {
+    fontSize: 20,
+    fontWeight: "400",
+    marginBottom: 10,
+  },
+  frequentText: {
+    textAlign: "center",
+  },
+  frequentContainer: {
+    padding: 5,
+    backgroundColor: "white",
+    borderRadius: 10,
+    height: 250,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
