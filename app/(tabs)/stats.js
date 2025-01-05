@@ -17,7 +17,7 @@ import WaterIntakeChart from "../components/charts/waterChart";
 import WellnessChart from "../components/charts/wellnessChart";
 import {
   BowelChartByFrequency,
-
+  BowelChartByType,
   BowelDetails,
 } from "../components/charts/bowelChart";
 import SymptomChart from "../components/charts/symptomChart";
@@ -99,7 +99,6 @@ const Stats = () => {
           )}
         </View>
 
-        {/* Update FoodChart with the new selectedDate */}
         <View>
           {user ? (
             <FoodChart
@@ -112,7 +111,6 @@ const Stats = () => {
           )}
         </View>
 
-        {/* Repeat for other charts (WaterIntakeChart, WellnessChart, etc.) */}
         <View>
           {user ? (
             <WaterIntakeChart
@@ -125,7 +123,6 @@ const Stats = () => {
           )}
         </View>
 
-        {/* Other charts */}
         <View>
           {user ? (
             <BowelChartByFrequency
@@ -138,20 +135,33 @@ const Stats = () => {
           )}
         </View>
 
-        {/* Other chart components */}
-        <View>
-          {user ? (
-            <BowelDetails
-              style={styles.graphContainer}
-              userId={user.uid}
-              selectedDate={selectedDate}
-            />
-          ) : (
-            <ActivityIndicator size="large" color="#0000ff" />
-          )}
+        <View style={styles.bowelContainer}>
+          <View style={styles.bowelChild}>
+            {user ? (
+              <BowelChartByType
+                style={styles.graphContainer}
+                userId={user.uid}
+                selectedDate={selectedDate}
+              />
+            ) : (
+              <ActivityIndicator size="large" color="#0000ff" />
+            )}
+          </View>
+
+          <View style={styles.bowelChild}>
+            {user ? (
+              <BowelDetails
+                style={styles.graphContainer}
+                userId={user.uid}
+                selectedDate={selectedDate}
+              />
+            ) : (
+              <ActivityIndicator size="large" color="#0000ff" />
+            )}
+          </View>
         </View>
 
-        <View>
+        <View style={styles.childContainer}>
           {user ? (
             <WellnessChart
               style={styles.graphContainer}
@@ -166,7 +176,6 @@ const Stats = () => {
     </SafeAreaView>
   );
 };
-
 
 export default Stats;
 
@@ -211,12 +220,10 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   graphContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#86C5D8",
     borderRadius: 10,
     width: "100%",
     height: 100,
-
-    marginLeft: "3%", // Center horizontally by balancing left/right
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -224,5 +231,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3, // Optional: add shadow for better design
+  },
+  bowelContainer: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    paddingHorizontal: 8,
+  },
+  bowelChild: {
+    width: "49%",
+    backgroundColor: "#86C5D8",
+    borderRadius: 10,
+    padding: 5,
+    elevation: 3,
+  },
+  childContainer: {
+    backgroundColor: "#86C5D8",
+    borderRadius: 10,
+    padding: 5,
+    elevation: 3,
   },
 });
