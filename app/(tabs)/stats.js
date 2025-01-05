@@ -48,9 +48,9 @@ const Stats = () => {
 const onRefresh = useCallback(() => {
   setRefreshing(true);
 
-  // Trigger a date change, for example, refresh the current week or previous week
-  const newDate = moment(); // You can adjust this as needed (e.g., go to today or refresh the week)
-  setSelectedDate(newDate); // This will trigger the re-render of the charts with the updated date
+
+  const newDate = moment();
+  setSelectedDate(newDate); 
 
   setTimeout(() => {
     setRefreshing(false);
