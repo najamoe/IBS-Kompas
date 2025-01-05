@@ -1,20 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Alert,
+} from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import RNPickerSelect from "react-native-picker-select";
 import { AntDesign } from "@expo/vector-icons";
+import CustomButton from "../CustomButton";
 import FoodModal from "../modal/foodModal";
 import {
   subscribeUpdateFood,
   deleteFoodIntake,
-  editItem, 
+  addFoodItem,
+  updateFoodItem,
 } from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
   const [foodData, setFoodData] = useState([]);
-  const [isFoodModalVisible, setIsFoodModalVisible] = useState([false]);
+  const [isFoodModalVisible, setIsFoodModalVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [updatedItems, setUpdatedItems] = useState([]);
   const [selectedType, setSelectedType] = useState(type);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [itemName, setItemName] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [unit, setUnit] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,12 +43,9 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             selectedDate,
             type,
             (updatedFood) => {
-              console.log("SelectedDate:", updatedFood);
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
             }
           );
-
-          
 
           // Cleanup subscription when component unmounts or dependencies change
           return () => unsubscribe();
@@ -44,39 +58,110 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     fetchData();
   }, [user, selectedDate, selectedType]);
 
-
   const handleFoodModal = () => {
-    console.log("SelectedType:", selectedType);
-    console.log("Selected type:", type);
     setSelectedType(type);
-    setIsFoodModalVisible(true); 
+    setIsFoodModalVisible(true);
   };
- 
-  const editFood = async (item) => {
-    try {
-      await editItem(user.uid, item, type);
-      const updatedFoodData = foodData.filter(
-        (foodItem) => foodItem.name !== item.name
-      );
-      setFoodData(updatedFoodData);
 
-    }
-    catch (error) {
-      console.error("Error editing food item:", error);
-    }
-  }
-
+  // Function to handle editing an existing item in the selectedItems list
+  const handleEditItem = (item) => {
+    setSelectedItem(item); // Store the selected item to edit
+    setItemName(item.name); // Pre-fill the item name
+    setQuantity(item.quantity); // Pre-fill the quantity
+    setUnit(item.unit); // Pre-fill the unit
+    setShowModal(true); // Open the modal
+  };
 
   const handleDeleteItem = async (item) => {
     try {
+      // Call the deleteFoodIntake function
       await deleteFoodIntake(user.uid, item, type);
+
+      // Update foodData to remove the deleted item
       const updatedFoodData = foodData.filter(
         (foodItem) => foodItem.name !== item.name
       );
+
+      // Update the state to reflect the changes in foodData
       setFoodData(updatedFoodData);
     } catch (error) {
       console.error("Error deleting food item:", error);
     }
+  };
+
+  // Function to handle adding a new item
+  const handleAddItem = async () => {
+    if (itemName && quantity && unit) {
+      const newItem = { name: itemName, quantity, unit };
+
+      try {
+        // Call Firestore function to add the item
+        await addFoodItem(user.uid, newItem, selectedType, selectedDate);
+
+        // Update the local state to reflect the changes
+        setFoodData((prevData) => [...prevData, newItem]);
+
+        // Reset the form fields and close the modal
+        setItemName("");
+        setQuantity("");
+        setUnit("");
+        setShowModal(false);
+
+        setSearchResults([]); // Clear any search results
+      } catch (error) {
+        Alert.alert("Fejl, prøv igen.");
+        console.error("Error adding food item:", error);
+      }
+    } else {
+      Alert.alert("Fejl", "Udfyld venligst alle felter.");
+    }
+  };
+
+  // Function to handle updating an existing item
+  const handleUpdateItem = async () => {
+    if (itemName && quantity && unit) {
+      const updatedItem = { name: itemName, quantity, unit };
+
+      try {
+        // Call Firestore function to update the item
+        await updateFoodItem(
+          user.uid,
+          selectedItem.id,
+          updatedItem,
+          selectedType,
+          selectedDate
+        );
+
+        // Update the local state to reflect the changes
+        const updatedFoodData = foodData.map((foodItem) =>
+          foodItem.id === selectedItem.id
+            ? { ...foodItem, ...updatedItem }
+            : foodItem
+        );
+        setFoodData(updatedFoodData);
+
+        // Reset the form fields and close the modal
+        setItemName("");
+        setQuantity("");
+        setUnit("");
+        setShowModal(false);
+
+        setSearchResults([]); // Clear any search results
+      } catch (error) {
+        Alert.alert("Fejl, prøv igen.");
+        console.error("Error updating food item:", error);
+      }
+    } else {
+      Alert.alert("Fejl", "Udfyld venligst alle felter.");
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedItems([]); // Clear selected items
+    setItemName(""); // Reset item name
+    setQuantity(""); // Reset quantity
+    setUnit(""); // Reset unit
   };
 
   const mealTypeLabels = {
@@ -111,11 +196,10 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               key={`${item.name}-${item.quantity}-${index}`}
               style={styles.foodItem}
             >
-            <TouchableOpacity onPress={() => editFood(item)}>
-              <Text style={styles.foodItemText}>{item.name}</Text>
-              <Text style={styles.foodItemText}>{item.quantity}</Text>
-
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleEditItem(item)}>
+                <Text style={styles.foodItemText}>{item.name}</Text>
+                <Text style={styles.foodItemText}>{item.quantity}</Text>
+              </TouchableOpacity>
               <View style={styles.deleteIcon}>
                 <TouchableOpacity
                   onPress={() => handleDeleteItem(item)}
@@ -141,6 +225,65 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
           selectedType={selectedType}
         />
       </View>
+
+      {/* Modal for quantity and unit input */}
+      {showModal && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          onRequestClose={handleCloseModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.addItemTitle}>Indtast mængde</Text>
+              <View style={{ flexDirection: "row" }}>
+                <TextInput
+                  placeholder="Mængde"
+                  keyboardType="numeric"
+                  value={quantity}
+                  onChangeText={setQuantity}
+                  style={styles.input}
+                />
+                <RNPickerSelect
+                  value={unit}
+                  useNativeAndroidPickerStyle={false}
+                  onValueChange={(value) => {
+                    setUnit(value);
+                  }}
+                  items={[
+                    { label: "stk", value: "stk" },
+                    { label: "gram", value: "gram" },
+                    { label: "kg", value: "kg" },
+                    { label: "mL", value: "ml" },
+                    { label: "dL", value: "dl" },
+                    { label: "L", value: "l" },
+                  ]}
+                  style={pickerSelectStyles}
+                  placeholder={{
+                    label: "enhed",
+                    value: null,
+                  }}
+                />
+              </View>
+
+              <View style={{ flexDirection: "row" }}>
+                <CustomButton
+                  customStyles={[styles.cancelButton]}
+                  title="Afbryd"
+                  handlePress={() => setShowModal(false)}
+                />
+
+                <CustomButton
+                  customStyles={[styles.addButton]}
+                  title={selectedItem ? "Opdater vare" : "Tilføj til liste"}
+                  handlePress={selectedItem ? handleUpdateItem : handleAddItem}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -200,5 +343,63 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 4,
     top: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  input: {
+    width: "40%",
+    marginTop: 20,
+    marginRight: 20,
+    padding: 10,
+    textAlign: "center",
+    justifyContent: "center",
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  cancelButton: {
+    backgroundColor: "grey",
+    width: "40%",
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#86C5D8",
+    width: "45%",
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    width: "100%",
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+  },
+  inputAndroid: {
+    width: "100%",
+    padding: 10,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginTop: 20,
   },
 });

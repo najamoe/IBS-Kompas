@@ -1,4 +1,3 @@
-// SearchField.js (Child)
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -53,7 +52,6 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
 
   // Function to handle selecting an item from the dropdown
   const handleSelectItem = (item) => {
-    console.log("Selected item in searchfield:", item);
     setSelectedItem(item); // Store the selected item
     setItemName(item.name); // Store the selected item name
     setShowModal(true); // Show the modal to input quantity and unit
@@ -92,7 +90,7 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
 
       setSearchResults([]); // Clear search results
     } else {
-      alert("Please enter both quantity and unit.");
+      Alert.alert("Fejl", "Udfyld venligst alle felter.");
     }
   };
 

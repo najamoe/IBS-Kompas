@@ -5,8 +5,9 @@ import {
   getDocs,
   query,
   where,
+  updateDoc,
   deleteDoc,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 import moment from "moment";
@@ -44,8 +45,6 @@ export const addFoodIntake = async (userId, foodData, type) => {
           ? foodData.categories
           : ["ukendt"], // Default to "ukendt" if categories are missing
     });
-
-    console.log(`Successfully added food to ${type} log.`);
   } catch (error) {
     console.error("Error adding food intake:", error);
   }
@@ -77,13 +76,9 @@ export const fetchFoodIntake = async (userId, date, type) => {
 };
 
 export const subscribeUpdateFood = async (userId, date, type, callback) => {
-  if (!firestore) {
+  if (!firestore || !userId) {
     throw new Error("Firestore instance is missing.");
   }
-  if (!userId || !date || !type) {
-    throw new Error("Required parameters (userId, date, or type) are missing.");
-  }
-
   try {
     const foodLogRef = collection(
       firestore,
@@ -99,15 +94,12 @@ export const subscribeUpdateFood = async (userId, date, type, callback) => {
 
         switch (change.type) {
           case "added":
-
             updatedFood.push(foodData);
             break;
           case "modified":
-      
             updatedFood.push(foodData);
             break;
           case "removed":
-            
             console.log("Removed food intake:", foodData);
             break;
           default:
@@ -128,38 +120,31 @@ export const subscribeUpdateFood = async (userId, date, type, callback) => {
   }
 };
 
-
-export const editItem = async (userId, foodData, type) => {
-  if (!firestore) {
-    throw new Error("Firestore instance is missing.");
-  }
-  if (!userId || !foodData?.name || !type) {
-    throw new Error(
-      "Required parameters (userId, foodData.name, or type) are missing."
-    );
-  }
-
+export const updateFoodItem = async (
+  userId,
+  itemId,
+  updatedItem,
+  type,
+  date, 
+) => {
   try {
-    const date = moment().format("YYYY-MM-DD");
-    const foodLogRef = collection(
+    if (!firestore) {
+      throw new Error("Firestore instance is missing.");
+    }
+    const foodRef = doc(
       firestore,
-      `users/${userId}/foodLogs/${date}/${type}`
+      `users/${userId}/foodLogs/${date}/${type}/${itemId}`
     );
 
-    // Query for the document by its name
-    const q = query(foodLogRef, where("name", "==", foodData.name));
-    const snapshot = await getDocs(q);
+    // Update the food item in Firestore
+    await updateDoc(foodRef, {
+      name: updatedItem.name,
+      quantity: updatedItem.quantity,
+      unit: updatedItem.unit,
+    });
 
-    for (const doc of snapshot.docs) {
-      await setDoc(doc.ref, foodData);
-      console.log(`Edited food intake: ${doc.id}`);
-    }
-
-    if (snapshot.empty) {
-      console.warn("No matching food intake found to edit.");
-    }
   } catch (error) {
-    console.error("Error editing food intake:", error);
+    console.error("Error updating item:", error);
     throw error;
   }
 };
@@ -235,10 +220,10 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
     // Query for the document by its name
     const q = query(foodLogRef, where("name", "==", foodData.name));
     const snapshot = await getDocs(q);
+    console.log("Snapshot fetched:", snapshot); // Log the entire snapshot
 
     for (const doc of snapshot.docs) {
       await deleteDoc(doc.ref);
-      console.log(`Deleted food intake: ${doc.id}`);
     }
 
     if (snapshot.empty) {
