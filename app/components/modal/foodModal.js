@@ -55,7 +55,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
               : ["ukendt"], // Default to "ukendt" if categories are missing
          
         };
-
+        console.log("added food item", foodData);
         await addFoodIntake(userId, foodData, selectedType); // Save the food item
 
       }

@@ -14,7 +14,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "../CustomButton";
 import FoodModal from "../modal/foodModal";
 import {
-  subscribeUpdateFood,
+  subscribeFood,
   deleteFoodIntake,
   addFoodItem,
   updateFoodItem,
@@ -38,7 +38,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       try {
         if (user) {
           // Subscribe to real-time updates
-          const unsubscribe = subscribeUpdateFood(
+          const unsubscribe = subscribeFood(
             user.uid,
             selectedDate,
             type,
@@ -46,7 +46,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
             }
           );
-
           // Cleanup subscription when component unmounts or dependencies change
           return () => unsubscribe();
         }
@@ -61,15 +60,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
   const handleFoodModal = () => {
     setSelectedType(type);
     setIsFoodModalVisible(true);
-  };
-
-  // Function to handle editing an existing item in the selectedItems list
-  const handleEditItem = (item) => {
-    setSelectedItem(item); // Store the selected item to edit
-    setItemName(item.name); // Pre-fill the item name
-    setQuantity(item.quantity); // Pre-fill the quantity
-    setUnit(item.unit); // Pre-fill the unit
-    setShowModal(true); // Open the modal
   };
 
   const handleDeleteItem = async (item) => {
@@ -89,33 +79,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     }
   };
 
-  // Function to handle adding a new item
-  const handleAddItem = async () => {
-    if (itemName && quantity && unit) {
-      const newItem = { name: itemName, quantity, unit };
-
-      try {
-        // Call Firestore function to add the item
-        await addFoodItem(user.uid, newItem, selectedType, selectedDate);
-
-        // Update the local state to reflect the changes
-        setFoodData((prevData) => [...prevData, newItem]);
-
-        // Reset the form fields and close the modal
-        setItemName("");
-        setQuantity("");
-        setUnit("");
-        setShowModal(false);
-
-        setSearchResults([]); // Clear any search results
-      } catch (error) {
-        Alert.alert("Fejl, prøv igen.");
-        console.error("Error adding food item:", error);
-      }
-    } else {
-      Alert.alert("Fejl", "Udfyld venligst alle felter.");
-    }
-  };
 
   // Function to handle updating an existing item
   const handleUpdateItem = async () => {
@@ -132,26 +95,22 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
           selectedDate
         );
 
-        // Update the local state to reflect the changes
-        const updatedFoodData = foodData.map((foodItem) =>
-          foodItem.id === selectedItem.id
-            ? { ...foodItem, ...updatedItem }
-            : foodItem
+        // Update the foodData array with the updated item
+        const updatedFoodData = foodData.map((item) =>
+          item.id === selectedItem.id ? { id: selectedItem.id, ...updatedItem } : item
         );
+
+        // Update the state to reflect the changes in foodData
         setFoodData(updatedFoodData);
 
-        // Reset the form fields and close the modal
-        setItemName("");
-        setQuantity("");
-        setUnit("");
+        // Close the modal
         setShowModal(false);
-
-        setSearchResults([]); // Clear any search results
       } catch (error) {
-        Alert.alert("Fejl, prøv igen.");
-        console.error("Error updating food item:", error);
+        console.error("Error updating item:", error);
+
       }
     } else {
+      console.log("update item error");
       Alert.alert("Fejl", "Udfyld venligst alle felter.");
     }
   };
@@ -163,6 +122,16 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setQuantity(""); // Reset quantity
     setUnit(""); // Reset unit
   };
+
+ const openModal = (item) => {
+   console.log("Selected Item:", item); // Debugging line
+   setSelectedItem(item);
+   setItemName(item.name);
+   setQuantity(item.quantity);
+   setUnit(item.unit);
+   setShowModal(true);
+ };
+
 
   const mealTypeLabels = {
     breakfast: "Morgenmad",
@@ -196,7 +165,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               key={`${item.name}-${item.quantity}-${index}`}
               style={styles.foodItem}
             >
-              <TouchableOpacity onPress={() => handleEditItem(item)}>
+              <TouchableOpacity onPress={openModal}>
                 <Text style={styles.foodItemText}>{item.name}</Text>
                 <Text style={styles.foodItemText}>{item.quantity}</Text>
               </TouchableOpacity>
@@ -255,8 +224,8 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                     { label: "stk", value: "stk" },
                     { label: "gram", value: "gram" },
                     { label: "kg", value: "kg" },
-                    { label: "mL", value: "ml" },
-                    { label: "dL", value: "dl" },
+                    { label: "m", value: "ml" },
+                    { label: "dl", value: "dl" },
                     { label: "L", value: "l" },
                   ]}
                   style={pickerSelectStyles}
@@ -276,8 +245,8 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
 
                 <CustomButton
                   customStyles={[styles.addButton]}
-                  title={selectedItem ? "Opdater vare" : "Tilføj til liste"}
-                  handlePress={selectedItem ? handleUpdateItem : handleAddItem}
+                  title={"Opdater"}
+                  handlePress={handleUpdateItem }
                 />
               </View>
             </View>
