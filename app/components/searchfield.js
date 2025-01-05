@@ -31,14 +31,11 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
 
   // Function to handle search input
   const handleSearch = debounce(async (query) => {
-    console.log("Searching for:", query);
     setLoading(true);
     try {
       const results = await searchProducts(query);
-      console.log("Search results:", results);
       setSearchResults(results || []);
     } catch (error) {
-      console.error("Error during search:", error.message);
       setSearchResults([]);
     } finally {
       setLoading(false);
@@ -67,8 +64,6 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
 
   // Function to handle adding the item with quantity and unit to selectedItems
   const handleAddItem = () => {
-    console.log("item from searchfield:", quantity, unit, itemName);
-
     if (itemName && quantity && unit) {
       const newItem = { ...selectedItem, name: itemName, quantity, unit };
 
