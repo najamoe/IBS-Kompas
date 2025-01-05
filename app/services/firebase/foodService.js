@@ -50,8 +50,6 @@ export const addFoodIntake = async (userId, foodData, type) => {
   }
 };
 
-
-
 export const subscribeFood = async (userId, date, type, callback) => {
   if (!firestore || !userId) {
     throw new Error("Firestore instance is missing.");
@@ -77,7 +75,6 @@ export const subscribeFood = async (userId, date, type, callback) => {
             updatedFood.push(foodData);
             break;
           case "removed":
-        
             break;
           default:
             console.warn("Unknown change type:", change.type);
@@ -102,9 +99,11 @@ export const updateFoodItem = async (
   itemId,
   updatedItem,
   type,
-  date, 
+  date
 ) => {
   try {
+    console.log("Updated Item:", updatedItem); // Check the structure and data of updatedItem
+
     if (!firestore) {
       throw new Error("Firestore instance is missing.");
     }
@@ -112,19 +111,20 @@ export const updateFoodItem = async (
       firestore,
       `users/${userId}/foodLogs/${date}/${type}/${itemId}`
     );
-    console.log("foodRef", foodRef);
+    console.log("Food Document Reference:", foodRef);
 
-    console.log("updating item in firestore")
+    console.log("Updating item in Firestore...");
     // Update the food item in Firestore
     await updateDoc(foodRef, {
-      name: updatedItem.name,
       quantity: updatedItem.quantity,
       unit: updatedItem.unit,
     });
-    console.log("Food item updated:", updatedItem);
-    console.log("quanity", updatedItem.quantity);
-    console.log("unit", updatedItem.unit);
- console.log("Food item updated:", updatedItem);
+    console.log(
+      "Food item updated successfully with quantity:",
+      updatedItem.quantity,
+      "and unit:",
+      updatedItem.unit
+    );
   } catch (error) {
     console.error("Error updating item:", error);
     throw error;

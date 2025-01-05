@@ -44,8 +44,10 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             type,
             (updatedFood) => {
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
+              console.log("Updated food data:", updatedFood);
             }
           );
+          console.log("Fetching food", foodData);
           // Cleanup subscription when component unmounts or dependencies change
           return () => unsubscribe();
         }
@@ -79,26 +81,36 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     }
   };
 
-
   // Function to handle updating an existing item
   const handleUpdateItem = async () => {
-    if (itemName && quantity && unit) {
+    if (itemName && quantity && unit && selectedItem) {
+      // Make sure selectedItem is available
       const updatedItem = { name: itemName, quantity, unit };
+       console.log("quantity:", quantity, "unit:", unit);
+
+      console.log("Updated item data:", updatedItem);
+      console.log("Selected item data:", selectedItem);
 
       try {
         // Call Firestore function to update the item
-        await updateFoodItem(
+        const result = await updateFoodItem(
           user.uid,
-          selectedItem.id,
+          selectedItem.id, // Ensure the selectedItem has an id
           updatedItem,
           selectedType,
           selectedDate
         );
 
+        console.log("Result from updateFoodItem:", result);
+
         // Update the foodData array with the updated item
         const updatedFoodData = foodData.map((item) =>
-          item.id === selectedItem.id ? { id: selectedItem.id, ...updatedItem } : item
+          item.id === selectedItem.id
+            ? { id: selectedItem.id, ...updatedItem }
+            : item
         );
+
+        console.log("Updated food data array:", updatedFoodData);
 
         // Update the state to reflect the changes in foodData
         setFoodData(updatedFoodData);
@@ -107,13 +119,18 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
         setShowModal(false);
       } catch (error) {
         console.error("Error updating item:", error);
-
+        Alert.alert(
+          "Fejl",
+          "Der opstod en fejl under opdatering af elementet."
+        );
       }
     } else {
-      console.log("update item error");
+      console.log("update item error: Missing data");
       Alert.alert("Fejl", "Udfyld venligst alle felter.");
     }
   };
+
+
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -122,16 +139,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setQuantity(""); // Reset quantity
     setUnit(""); // Reset unit
   };
-
- const openModal = (item) => {
-   console.log("Selected Item:", item); // Debugging line
-   setSelectedItem(item);
-   setItemName(item.name);
-   setQuantity(item.quantity);
-   setUnit(item.unit);
-   setShowModal(true);
- };
-
 
   const mealTypeLabels = {
     breakfast: "Morgenmad",
@@ -165,7 +172,15 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               key={`${item.name}-${item.quantity}-${index}`}
               style={styles.foodItem}
             >
-              <TouchableOpacity onPress={openModal}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedItem(item); // Set the selected item here
+                  setItemName(item.name); // Optional: Pre-fill input fields
+                  setQuantity(item.quantity); // Optional: Pre-fill input fields
+                  setUnit(item.unit); // Optional: Pre-fill input fields
+                  setShowModal(true); // Show the modal
+                }}
+              >
                 <Text style={styles.foodItemText}>{item.name}</Text>
                 <Text style={styles.foodItemText}>{item.quantity}</Text>
               </TouchableOpacity>
@@ -224,7 +239,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                     { label: "stk", value: "stk" },
                     { label: "gram", value: "gram" },
                     { label: "kg", value: "kg" },
-                    { label: "m", value: "ml" },
+                    { label: "ml", value: "ml" },
                     { label: "dl", value: "dl" },
                     { label: "L", value: "l" },
                   ]}
@@ -246,7 +261,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                 <CustomButton
                   customStyles={[styles.addButton]}
                   title={"Opdater"}
-                  handlePress={handleUpdateItem }
+                  handlePress={handleUpdateItem}
                 />
               </View>
             </View>
