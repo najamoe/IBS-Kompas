@@ -13,7 +13,7 @@ import SwitchToggle from "react-native-switch-toggle";
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient";
 import { addBowelLog } from "../../services/firebase/bowelService";
-import { getAuth, validatePassword } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 import { Entypo } from "@expo/vector-icons";
 
