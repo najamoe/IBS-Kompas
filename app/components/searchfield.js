@@ -216,8 +216,8 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
                     { label: "stk", value: "stk" },
                     { label: "gram", value: "gram" },
                     { label: "kg", value: "kg" },
-                    { label: "mL", value: "ml" },
-                    { label: "dL", value: "dl" },
+                    { label: "ml", value: "ml" },
+                    { label: "dl", value: "dl" },
                     { label: "L", value: "l" },
                   ]}
                   style={pickerSelectStyles}
