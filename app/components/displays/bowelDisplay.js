@@ -8,7 +8,6 @@ import {
   RefreshControl,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import moment from "moment";
 import BowelModal from "../modal/bowelModal";
 import { subscribeBowelLog } from "../../services/firebase/bowelService";
 
