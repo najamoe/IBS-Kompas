@@ -24,7 +24,7 @@ import {
 import WaterModal from "../components/modal/waterModal";
 import {
   addWellnessLog,
-  fetchWellnessLog,
+  subscribeWellnessLog
 } from "../services/firebase/wellnessService";
 
 const Home = () => {
@@ -66,18 +66,21 @@ const Home = () => {
     }
   }, []);
 
-  // Fetch daily when the selected date changes
-  const fetchData = async () => {
-    if (user) {
-      try {
-        // Fetch wellness log
-        const wellnesslog = await fetchWellnessLog(user.uid, selectedDate);
-        setSelectedMood(wellnesslog || null);
-      } catch (error) {
-        console.error("Error fetching data from home.js:", error); //LOGS
-      }
+  // Subscribe to real-time updates when user is set
+  useEffect(() => {
+    if (user && selectedDate) {
+      const unsubscribe = subscribeWellnessLog(
+        user.uid,
+        selectedDate,
+        (emoticonType) => {
+          setSelectedMood(emoticonType);
+        }
+      );
+      // Cleanup on component unmount
+      return () => unsubscribe();
     }
-  };
+  }, [user, selectedDate]);
+
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -88,6 +91,7 @@ const Home = () => {
 
   useEffect(() => {}, [selectedMood]);
 
+  //Water intake subscribe
   useEffect(() => {
     if (user && selectedDate) {
       // Subscribe to daily water intake updates in Firestore
@@ -102,7 +106,7 @@ const Home = () => {
       // Cleanup function to unsubscribe when the component unmounts or user changes
       return () => unsubscribe();
     }
-  }, [user, selectedDate]); // Keeping selectedDate as a dependency for the right date
+  }, [user, selectedDate]); 
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -244,10 +248,7 @@ const Home = () => {
           onAddWater={isAdding ? handleAddWater : handleRemoveWater}
         />
 
-        <BowelDisplay 
-        user={user} 
-        selectedDate={selectedDate} 
-        />
+        <BowelDisplay user={user} selectedDate={selectedDate} />
 
         {/* Wellness container */}
         <View style={styles.WellnessContainer}>

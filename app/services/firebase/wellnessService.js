@@ -1,4 +1,4 @@
-import { doc, collection, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, collection, setDoc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import FirebaseConfig from "../../firebase/FirebaseConfig"; 
 import moment from "moment";
 
@@ -37,25 +37,32 @@ export const addWellnessLog = async (userId, emoticonType) => {
     throw error;
   }
 };
-//Used in home.js 
-export const fetchWellnessLog = async (userId, date) => {
-  try {
-      if (!firestore || !userId) {
-          throw new Error("Fire store instance or userId is missing");
-      }
-
-      const logRef = doc(firestore, `users/${userId}/wellnessLogs/${date}`);
-      const snapshot = await getDoc(logRef);
-
-      if (snapshot.exists()) {
-          return snapshot.data().emoticonType;
-      } else {
-          return 0;
-      }
-  } catch (error) {
-      console.log("Error fetching emoticonType:", error);
-      throw error;
+// Used in home.js 
+export const subscribeWellnessLog = (userId, date, callback) => {
+  if (!firestore || !userId || !date) {
+    throw new Error("Firestore instance, userId, or date is missing");
   }
+
+  const logRef = doc(firestore, `users/${userId}/wellnessLogs/${date}`);
+
+  // Subscribe to the snapshot
+  const unsubscribe = onSnapshot(
+    logRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        callback(snapshot.data().emoticonType);
+      } else {
+        callback(0); // Default value if no document exists
+      }
+    },
+    (error) => {
+      console.log("Error fetching emoticonType:", error);
+      // Handle error if necessary, for example, show a message
+    }
+  );
+
+  // Return the unsubscribe function so it can be used later (e.g., to unsubscribe)
+  return unsubscribe;
 };
 
 export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
