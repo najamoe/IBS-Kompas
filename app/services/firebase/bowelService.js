@@ -5,10 +5,10 @@ import {
   getDoc,
   query,
   getDocs,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import moment from "moment-timezone";
-import FirebaseConfig from "../../firebase/FirebaseConfig"; 
+import FirebaseConfig from "../../firebase/FirebaseConfig";
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
@@ -70,7 +70,6 @@ export const subscribeBowelLog = (userId, date, callback) => {
       firestore,
       `users/${userId}/bowelLogs/${date}/timeLogs`
     );
-    
 
     // Create a query (you can add filters here as needed)
     const q = query(bowelRef);
@@ -80,10 +79,9 @@ export const subscribeBowelLog = (userId, date, callback) => {
       if (!snapshot.empty) {
         const bowelLogs = snapshot.docs.map((doc) => ({
           id: doc.id, // Add the document ID to each bowel log entry
-          ...doc.data() // Spread the rest of the document data
+          ...doc.data(), // Spread the rest of the document data
         }));
         callback(bowelLogs); // Pass the updated logs to the callback
-  
       } else {
         console.log("Ingen toiletbesøg idag.");
         callback(null); // No bowel log found for the given date
@@ -206,15 +204,18 @@ export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
   }
 };
 
-
 export const fetchBowelLogDetails = async (userId, selectedDate, logType) => {
   try {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    const startOfWeek = moment(selectedDate).startOf("isoWeek").format("YYYY-MM-DD");
-    const endOfWeek = moment(selectedDate).endOf("isoWeek").format("YYYY-MM-DD");
+    const startOfWeek = moment(selectedDate)
+      .startOf("isoWeek")
+      .format("YYYY-MM-DD");
+    const endOfWeek = moment(selectedDate)
+      .endOf("isoWeek")
+      .format("YYYY-MM-DD");
 
     const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
     let totalLogs = 0;
@@ -264,10 +265,6 @@ export const fetchBowelLogDetails = async (userId, selectedDate, logType) => {
             throw new Error(`Unknown log type: ${logType}`);
         }
       });
-
-      if (logType === "painLogs" && querySnapshot.docs.length > 0) {
-        totalEntries += querySnapshot.docs.length;
-      }
     }
 
     if (logType === "painLogs") {
