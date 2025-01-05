@@ -16,7 +16,6 @@ import FoodModal from "../modal/foodModal";
 import {
   subscribeFood,
   deleteFoodIntake,
-  addFoodItem,
   updateFoodItem,
 } from "../../services/firebase/foodService";
 
@@ -31,7 +30,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,8 +41,8 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             selectedDate,
             type,
             (updatedFood) => {
+              console.log("Updated food data from display:", updatedFood); // Log updated food data
               setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
-              console.log("Updated food data:", updatedFood);
             }
           );
           console.log("Fetching food", foodData);
@@ -86,7 +84,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     if (itemName && quantity && unit && selectedItem) {
       // Make sure selectedItem is available
       const updatedItem = { name: itemName, quantity, unit };
-       console.log("quantity:", quantity, "unit:", unit);
+      console.log("quantity:", quantity, "unit:", unit);
 
       console.log("Updated item data:", updatedItem);
       console.log("Selected item data:", selectedItem);
@@ -106,11 +104,9 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
         // Update the foodData array with the updated item
         const updatedFoodData = foodData.map((item) =>
           item.id === selectedItem.id
-            ? { id: selectedItem.id, ...updatedItem }
+            ? { id: selectedItem.id, name: itemName, quantity, unit }
             : item
         );
-
-        console.log("Updated food data array:", updatedFoodData);
 
         // Update the state to reflect the changes in foodData
         setFoodData(updatedFoodData);
@@ -129,8 +125,6 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
       Alert.alert("Fejl", "Udfyld venligst alle felter.");
     }
   };
-
-
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -182,7 +176,12 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                 }}
               >
                 <Text style={styles.foodItemText}>{item.name}</Text>
-                <Text style={styles.foodItemText}>{item.quantity}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={[styles.foodItemText, { marginRight: 5 }]}>
+                    {item.quantity}
+                  </Text>
+                  <Text style={styles.foodItemText}>{item.unit}</Text>
+                </View>
               </TouchableOpacity>
               <View style={styles.deleteIcon}>
                 <TouchableOpacity

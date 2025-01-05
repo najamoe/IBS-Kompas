@@ -62,23 +62,17 @@ export const subscribeFood = async (userId, date, type, callback) => {
 
     // Listen to real-time updates
     const unsubscribe = onSnapshot(foodLogRef, (snapshot) => {
-      const updatedFood = []; // Collect the updated food data
+      let updatedFood = []; // Collect the updated food data
 
-      snapshot.docChanges().forEach((change) => {
-        const foodData = { id: change.doc.id, ...change.doc.data() };
-
-        switch (change.type) {
-          case "added":
-            updatedFood.push(foodData);
-            break;
-          case "modified":
-            updatedFood.push(foodData);
-            break;
-          case "removed":
-            break;
-          default:
-            console.warn("Unknown change type:", change.type);
-        }
+      snapshot.forEach((doc) => {
+        const foodData = { id: doc.id, ...doc.data() };
+        console.log("Food data from service:", {
+          id: doc.id,
+          name: foodData.name,
+          quantity: foodData.quantity,
+          unit: foodData.unit,
+        }); 
+        updatedFood.push(foodData);
       });
 
       // Call the callback with the updated food array
@@ -89,8 +83,7 @@ export const subscribeFood = async (userId, date, type, callback) => {
 
     return unsubscribe; // Return unsubscribe function for cleanup
   } catch (error) {
-    console.error("Error subscribing to food intake:", error);
-    throw error; // Propagate the error to the caller
+    console.error("Error subscribing to food data:", error);
   }
 };
 
