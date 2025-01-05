@@ -90,7 +90,6 @@ export const fetchSymptoms = async (userId, date) => {
 };
 
 // Fetch symptoms for a week
-// Fetch symptoms for a week
 export const fetchSymptomsForWeek = async (userId, selectedDate) => {
   try {
     if (!firestore || !userId) {
