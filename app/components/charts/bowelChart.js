@@ -70,6 +70,7 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
           date: day.date,
           total: isNaN(day.total) ? 0 : day.total,
         }));
+        console.log("formattedData", formattedData);
         setWeeklyData(formattedData);
       } catch (error) {
         console.error("Error fetching weekly bowel log by frequency:", error);

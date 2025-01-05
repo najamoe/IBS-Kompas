@@ -4,11 +4,11 @@ import {
   setDoc,
   getDoc,
   query,
-  where,
   getDocs,
+  onSnapshot
 } from "firebase/firestore";
-import moment from "moment";
-import FirebaseConfig from "../../firebase/FirebaseConfig"; // Import the default config
+import moment from "moment-timezone";
+import FirebaseConfig from "../../firebase/FirebaseConfig"; 
 
 const firestore = FirebaseConfig.db; // Access the Firestore instance
 
@@ -24,20 +24,14 @@ export const addBowelLog = async (
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-
+    console.log("UserID in addBowelLog:", { userId });
     // Get the current local date and time
     const localDate = new Date();
 
-    // Format the date to 'YYYY-MM-DD' (ISO format)
-   const date = moment().format("YYYY-MM-DD");  // YYYY-MM-DD
+    // Format the date to 'YYYY-MM-DD'
+    const date = localDate.toISOString().split("T")[0]; // YYYY-MM-DD
+    const time = moment().tz("Europe/Copenhagen").format("HH:mm:ss");
 
-    // Format the time to 'HH:MM:SS' (local time format)
-    const time = localDate
-      .toLocaleTimeString("en-GB", { hour12: false })
-      .split(":")
-      .join(":");
-
-      console.log("time and date", time, date);
     // Reference to the bowelLogs collection under the user
     const bowelLogsRef = collection(
       firestore,
@@ -51,7 +45,7 @@ export const addBowelLog = async (
       blood,
       urgent,
       notes,
-      timestamp: new Date().toISOString(), // Include timestamp for the log entry
+      timestamp: time, // Include timestamp for the log entry
     };
 
     // Use a document reference with date as the ID
@@ -71,12 +65,12 @@ export const subscribeBowelLog = (userId, date, callback) => {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-
     // Reference to the bowelLogs collection under the user
     const bowelRef = collection(
       firestore,
       `users/${userId}/bowelLogs/${date}/timeLogs`
     );
+    
 
     // Create a query (you can add filters here as needed)
     const q = query(bowelRef);
@@ -89,7 +83,7 @@ export const subscribeBowelLog = (userId, date, callback) => {
           ...doc.data() // Spread the rest of the document data
         }));
         callback(bowelLogs); // Pass the updated logs to the callback
-        console.log("Bowel logs updated:", bowelLogs);
+
       } else {
         console.log("Ingen toiletbesøg idag.");
         callback(null); // No bowel log found for the given date
