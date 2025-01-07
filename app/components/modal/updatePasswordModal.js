@@ -11,38 +11,41 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Separate visibility states for each password field
+  // visibility states for each password field
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChangePassword = async () => {
-    if (!email) {
-      Alert.alert("Fejl", "Email mangler");
-    }
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Fejl", "De nye passwords stemmer ikke overens");
+    console.log("Changing password...");
 
-      return;
-    }
-    if (typeof newPassword !== "string" || newPassword.length < 6) {
-      Alert.alert("Fejl", "Password skal være mindst 6 tegn langt");
-      return;
-    }
-
+    // Validate form fields
     if (!currentPassword || !newPassword || !confirmPassword) {
+      console.log("All fields are required");
       Alert.alert("Fejl", "Alle felter skal udfyldes");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      console.log("Passwords do not match");
+      Alert.alert("Fejl", "De nye passwords stemmer ikke overens");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      console.log("Password must be at least 6 characters long");
+      Alert.alert("Fejl", "Password skal være mindst 6 tegn langt");
       return;
     }
 
     try {
       // Step 1: Reauthenticate user
       console.log("Reauthenticating...");
-      await reauthenticateUser(user, currentPassword);
+      await reauthenticateUser(user, currentPassword); 
 
       // Step 2: Update password
       console.log("Updating password...");
-      await updateUserPassword(user, newPassword);
+      await updateUserPassword(user, newPassword); 
 
       // Show success message
       Alert.alert("Success", "Password opdateret");
@@ -54,6 +57,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
       Alert.alert("Fejl", "Kunne ikke opdatere password");
     }
   };
+
 
   return (
     <Modal
@@ -130,14 +134,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly darker background to dim the rest of the screen
+    backgroundColor: "rgba(0, 0, 0, 0.5)", 
   },
   container: {
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
-    width: "80%", // Control the width of the modal
-    maxWidth: 400, // Prevent it from being too wide on larger screens
+    width: "80%", 
+    maxWidth: 400, 
   },
   customField: {
     marginTop: 5,
@@ -146,11 +150,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "400",
     marginTop: 20,
-    textAlign: "center", // Ensure title is centered
+    textAlign: "center", 
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "center", // Distribute buttons evenly
+    justifyContent: "center",
     alignItems: "center",
     margin: 10,
   },
