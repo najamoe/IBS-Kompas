@@ -7,8 +7,15 @@ const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
 
   return (
     <Modal transparent={true} animationType="fade" visible={isVisible}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={onCancel} // Close modal when background is pressed
+      >
+        <TouchableOpacity
+          style={styles.modalContent}
+          activeOpacity={1} // Prevent click-through on the modal content
+        >
           <Text style={styles.modalText}>
             Er du sikker på, at du vil slette?
           </Text>
@@ -26,11 +33,13 @@ const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
               textStyles={styles.buttonText}
             />
           </View>
-        </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 };
+
+export default ConfirmDeleteModal;
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -76,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ConfirmDeleteModal;
+
