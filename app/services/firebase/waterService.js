@@ -10,7 +10,6 @@ export const addWaterIntake = async (userId, amount) => {
       throw new Error("Firestore instance or userId is missing.");
     }
 
-    console.log("Adding water intake:", { userId, amount }); // Log the user ID and amount
     const date = moment().format("YYYY-MM-DD"); // Use moment for local date
 
     const waterLogsRef = collection(

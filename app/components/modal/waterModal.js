@@ -4,7 +4,7 @@ import Modal from "react-native-modal";
 
 const WaterModal = ({ isVisible, onClose, onAddWater }) => {
   const handleAddAmount = (amount) => {
-    onAddWater(amount); // Pass the selected amount back to the parent
+    onAddWater(amount); 
     onClose(); 
   };
 

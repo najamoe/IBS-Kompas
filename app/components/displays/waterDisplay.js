@@ -13,7 +13,7 @@ const WaterDisplay = ({user, selectedDate}) => {
   const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
   const [isAdding, setIsAdding] = useState(true);
 
-  //Water intake subscribe
+  //Water intake 
   useEffect(() => {
     if (user && selectedDate) {
       // Subscribe to daily water intake updates in Firestore
@@ -34,10 +34,10 @@ const WaterDisplay = ({user, selectedDate}) => {
     if (user) {
       const newWaterIntake = waterIntake + amount;
       try {
-        await addWaterIntake(user.uid, newWaterIntake); // Add the new water intake
-        setWaterIntake(newWaterIntake); // Update the local state
+        await addWaterIntake(user.uid, newWaterIntake); //firestore state
+        setWaterIntake(newWaterIntake); // local state
       } catch (error) {
-        //Insert error handling
+       
         console.error("Error adding water intake:", error);
       }
     } else {
