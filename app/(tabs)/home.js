@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   RefreshControl,
@@ -10,7 +10,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
-
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodDisplay from "../components/displays/foodDisplay";
@@ -18,12 +17,23 @@ import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
 import WaterDisplay from "../components/displays/waterDisplay";
 
-import {
-  addWellnessLog,
-  subscribeWellnessLog,
-} from "../services/firebase/wellnessService";
-
 const Home = () => {
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(
+    formatDateStorage(new Date())
+  );
+  const [user, setUser] = useState(null);
+  const [symptoms, setSymptoms] = useState([]);
+
+  // Check if the user is signed in
+  useEffect(() => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUser(currentUser); // Store user info
+    }
+  }, []);
+
   // Format date function to display in DD/MM/YYYY format
   const formatDateDisplay = (date) => {
     const d = new Date(date);
@@ -41,75 +51,11 @@ const Home = () => {
     const year = d.getFullYear();
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
-  const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    formatDateStorage(new Date())
-  );
-  const [user, setUser] = useState(null);
-  const [symptoms, setSymptoms] = useState([]);
-  const [selectedMood, setSelectedMood] = useState(null);
-
-  // Check if the user is signed in
-  useEffect(() => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser); // Store user info
-    }
-  }, []);
-
-  // Subscribe to real-time updates when user is set
-  useEffect(() => {
-    if (user && selectedDate) {
-      const unsubscribe = subscribeWellnessLog(
-        user.uid,
-        selectedDate,
-        (emoticonType) => {
-          setSelectedMood(emoticonType);
-        }
-      );
-      // Cleanup on component unmount
-      return () => unsubscribe();
-    }
-  }, [user, selectedDate]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    // Fetch data again when pulling to refresh
-    await fetchData(); // Reuse fetchData function here
-    setRefreshing(false);
-  }, [user, selectedDate]); // Add dependencies if needed
-
-  useEffect(() => {}, [selectedMood]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(formatDateStorage(newDate));
-  };
-
-  const emoticons = [
-    { name: "emoticon-excited-outline", color: "#006147" },
-    { name: "emoticon-outline", color: "#03a137" },
-    { name: "emoticon-happy-outline", color: "#4CAF50" },
-    { name: "emoticon-neutral-outline", color: "#3228ed" },
-    { name: "emoticon-sad-outline", color: "#ed8505" },
-    { name: "emoticon-cry-outline", color: "#a65c02" },
-    { name: "emoticon-sick-outline", color: "#F44336" },
-  ];
-
-  const handleEmoticonPress = async (emoticon) => {
-    if (!user) {
-      //Insert error handling
-      return;
-    }
-    try {
-      setSelectedMood(emoticon);
-      // Call addWellnessLog service to log the emoticon
-      await addWellnessLog(user.uid, emoticon);
-    } catch (error) {
-      console.error("Error saving emoticon:", error.message);
-    }
   };
 
   return (
@@ -156,28 +102,12 @@ const Home = () => {
 
         <BowelDisplay user={user} selectedDate={selectedDate} />
 
-        {/* Wellness container */}
-        <View style={styles.WellnessContainer}>
-          <Text style={styles.logTitle}>Hvordan har du det idag?</Text>
-          <View style={styles.emoticonContainer}>
-            {emoticons.map((icon) => (
-              <TouchableOpacity
-                key={icon.name}
-                onPress={() => handleEmoticonPress(icon.name)}
-                style={[
-                  styles.emoticonWrapper,
-                  selectedMood === icon.name && styles.selectedEmoticon,
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name={icon.name}
-                  size={selectedMood === icon.name ? 38 : 30} // Increase size if selected
-                  color={selectedMood === icon.name ? "white" : icon.color}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <WellnessDisplay
+          user={user}
+          selectedDate={selectedDate}
+          symptoms={symptoms}
+          setSymptoms={setSymptoms}
+        />
 
         {/* Symptom Section */}
         <SymptomDisplay
@@ -249,6 +179,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 8,
   },
+
   WellnessContainer: {
     width: "100%",
     padding: 10,
