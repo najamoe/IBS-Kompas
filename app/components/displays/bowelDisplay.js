@@ -10,17 +10,19 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
 import BowelModal from "../modal/bowelModal";
-import { subscribeBowelLog } from "../../services/firebase/bowelService";
+import ConfirmDeleteModal from "../modal/confirmDeleteModal"; 
+import {
+  subscribeBowelLog,
+  deleteBowelLog,
+} from "../../services/firebase/bowelService";
 
 const BowelDisplay = ({ user, selectedDate }) => {
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
-  const [bowelStep, setBowelStep] = useState(1);
+  const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false); // State for delete confirmation
   const [bowelLogs, setBowelLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-
-  // Fetch bowel logs on component mount or when `user` or `selectedDate` changes
   useEffect(() => {
     let unsubscribe;
 
@@ -46,12 +48,24 @@ const BowelDisplay = ({ user, selectedDate }) => {
     };
   }, [user, selectedDate]);
 
-
-
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchLogs();
     setRefreshing(false);
+  };
+
+  // Handle delete log action
+  const handleDeleteLog = (logId) => {
+    setIsConfirmDeleteVisible(true);
+  };
+
+  const confirmDelete = (logId) => {
+    deleteBowelLog(logId); // Pass the logId to delete the specific log
+    setIsConfirmDeleteVisible(false); // Close the confirmation modal
+  };
+
+  const cancelDelete = () => {
+    setIsConfirmDeleteVisible(false); // Close the confirmation modal without deleting
   };
 
   return (
@@ -78,8 +92,15 @@ const BowelDisplay = ({ user, selectedDate }) => {
                   size={30}
                   color="#8c4c1f"
                 />
-                {/* Inserting time from firestore*/}
-                <Text style={styles.timeStamp}>  {log.timestamp}</Text>
+                <Text style={styles.timeStamp}>Kl: {log.timestamp}</Text>
+                {/* Add delete button */}
+                <TouchableOpacity onPress={() => handleDeleteLog(log.id)}>
+                  <MaterialCommunityIcons
+                    name="trash-can"
+                    size={20}
+                    color="red"
+                  />
+                </TouchableOpacity>
               </View>
             ))
           ) : (
@@ -88,21 +109,26 @@ const BowelDisplay = ({ user, selectedDate }) => {
         </View>
 
         <CustomButton
-        title={"Tilføj"}
+          title={"Tilføj"}
           handlePress={() => {
             setIsBowelModalVisible(true);
             setBowelStep(1);
           }}
           style={styles.addBowelButton}
         />
-    
-       
       </View>
 
       {/* Bowel Modal */}
       <BowelModal
         isVisible={isBowelModalVisible}
         onClose={() => setIsBowelModalVisible(false)}
+      />
+
+      {/* Confirmation Delete Modal */}
+      <ConfirmDeleteModal
+        isVisible={isConfirmDeleteVisible}
+        onConfirm={() => confirmDelete()}
+        onCancel={cancelDelete}
       />
     </ScrollView>
   );
@@ -141,7 +167,9 @@ const styles = StyleSheet.create({
   bowelLogItem: {
     margin: 6,
     alignItems: "center",
-    backgroundColor: "grey",
+    backgroundColor: "#CAE9F5",
+    borderRadius: 10,
+    padding: 10,
   },
   addBowelButton: {
     borderColor: "black",
@@ -161,6 +189,6 @@ const styles = StyleSheet.create({
   },
   timeStamp: {
     fontSize: 16,
-    color: "black"
-  }
+    color: "black",
+  },
 });
