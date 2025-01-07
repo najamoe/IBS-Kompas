@@ -90,8 +90,6 @@ export const updateFoodItem = async (
   date
 ) => {
   try {
-    console.log("Updated Item:", updatedItem); // Check the structure and data of updatedItem
-
     if (!firestore) {
       throw new Error("Firestore instance is missing.");
     }
@@ -170,7 +168,6 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
       "Required parameters (userId, foodData.name, or type) are missing."
     );
   }
-
   try {
     const date = moment().format("YYYY-MM-DD");
     const foodLogRef = collection(
@@ -181,8 +178,7 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
     // Query for the document by its name
     const q = query(foodLogRef, where("name", "==", foodData.name));
     const snapshot = await getDocs(q);
-    console.log("Snapshot fetched:", snapshot); // Log the entire snapshot
-
+   
     for (const doc of snapshot.docs) {
       await deleteDoc(doc.ref);
     }
