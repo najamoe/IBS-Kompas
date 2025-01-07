@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, ActivityIndicator, Image } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator, Image, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { LineChart } from "react-native-chart-kit";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   fetchWeeklyBowelLogByFrequency,
   fetchWeeklyBowelLogByType,
@@ -218,6 +219,9 @@ export const BowelDetails = ({ userId, selectedDate }) => {
         <LoadingOrData loading={loading} />
       ) : (
         <View style={styles.TextContainer}>
+          <MaterialCommunityIcons name="information-outline" size={24} color="black" style={styles.infoIcon}
+          onPress={() => Alert.alert('Information','Hvis du lige har tilføjet en ny afføringstype, opdater siden for at se de nyeste data.')}
+          />
           <Text style={styles.title}>Detaljer</Text>
           <Text style={styles.message}>
             I denne uge har du gennemsnitligt haft{" "}
@@ -264,6 +268,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     height: 240,
+    backgroundColor: "white",
+    
   },
   typeImage: {
     width: 60,
@@ -282,6 +288,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
+    borderColor: "#86C5D8", 
+    borderWidth: 6,
   },
   typeText: {
     fontSize: 20,
@@ -303,11 +311,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
+    borderColor: "#86C5D8", 
+    borderWidth: 6,
   },
   TextContainer: {
     alignItems: "center",
     justifyContent: "center",
-    width: "80%",
+    width: "90%",
   },
   message: {
     fontSize: 14,
@@ -316,5 +326,10 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
+  },
+  infoIcon: {
+    position: "absolute",
+    right: 5,
+    top: -20,
   },
 });

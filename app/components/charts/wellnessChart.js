@@ -81,24 +81,28 @@ export default WellnessChart;
 
 const styles = StyleSheet.create({
   chartContainer: {
-    marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
     height: 150,
-    marginVertical: 10,
-    alignItems: "center", 
-    justifyContent: "center", 
+    width: "96%",
+    marginVertical: 20,
+    marginHorizontal: 8,
+    alignItems: "center",
+    justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 }, // Increase shadow offset for more elevation
+    shadowOpacity: 0.2, // Slightly increased opacity for stronger shadow
+    shadowRadius: 6, // Increase shadow radius for a larger shadow
+    elevation: 6, // Increase elevation for Android
+    borderColor: "#86C5D8", // Light grey border color
+    borderWidth: 6, // Thicker border to create the elevated effect
   },
+
   chartWrapper: {
     flexDirection: "row",
-    flexWrap: "wrap", 
-    justifyContent: "center", 
-    alignItems: "center", 
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 5,
   },
   title: {
@@ -113,15 +117,15 @@ const styles = StyleSheet.create({
     height: 240,
   },
   emoticonRow: {
-    alignItems: "center", 
+    alignItems: "center",
     marginTop: 10,
-    marginHorizontal: 3, 
+    marginHorizontal: 3,
   },
   iconSpacing: {
-    marginHorizontal: 5, 
+    marginHorizontal: 5,
   },
   countText: {
-    marginTop: 5, 
+    marginTop: 5,
     fontSize: 16,
     fontWeight: "bold",
   },

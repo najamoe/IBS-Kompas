@@ -167,17 +167,16 @@ const onRefresh = useCallback(() => {
           </View>
         </View>
 
-        <View style={styles.childContainer}>
+      
           {user ? (
             <WellnessChart
-              style={styles.graphContainer}
               userId={user.uid}
               selectedDate={selectedDate}
             />
           ) : (
             <ActivityIndicator size="large" color="#0000ff" />
           )}
-        </View>
+        
       </ScrollView>
     </SafeAreaView>
   );
@@ -225,19 +224,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "gray",
   },
-  graphContainer: {
-    backgroundColor: "#86C5D8",
-    borderRadius: 10,
-    width: "100%",
-    height: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3, // Optional: add shadow for better design
-  },
   bowelContainer: {
     flexDirection: "row",
     width: "100%",
@@ -247,15 +233,6 @@ const styles = StyleSheet.create({
   },
   bowelChild: {
     width: "49%",
-    backgroundColor: "#86C5D8",
-    borderRadius: 10,
-    padding: 5,
-    elevation: 3,
   },
-  childContainer: {
-    backgroundColor: "#86C5D8",
-    borderRadius: 10,
-    padding: 5,
-    elevation: 3,
-  },
+
 });
