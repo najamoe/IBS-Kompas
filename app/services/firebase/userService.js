@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; // Modular Firestore imports
-import firebaseConfig from "./FirebaseConfig";
+import firebaseConfig from "../../firebase/FirebaseConfig";
 
 const { db } = firebaseConfig; // Get Firestore instance
 
@@ -28,7 +28,7 @@ export const fetchUserDetails = async (uid) => {
 
 export const updateUserDetails = async (uid, updates) => {
   try {
-    const userRef = doc(db, "users", uid); 
+    const userRef = doc(db, "users", uid);
     await updateDoc(userRef, updates); // Update the document with the provided data
     console.log("User details updated:", updates);
   } catch (error) {

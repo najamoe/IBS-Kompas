@@ -25,10 +25,10 @@ import firebaseConfig from "../firebase/FirebaseConfig";
 import {
   fetchUserDetails,
   updateUserDetails,
-} from "../firebase/firestoreService";
+} from "../services/firebase/userService";
 import UpdatePasswordModal from "../components/modal/updatePasswordModal";
 import icon from "../../assets/icon.png";
-import { Poppins_600SemiBold_Italic } from "@expo-google-fonts/poppins";
+
 
 const { auth } = firebaseConfig;
 

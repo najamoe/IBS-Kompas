@@ -9,14 +9,13 @@ import {
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import FormField from "../components/FormField";
 import CustomButton from "../components/CustomButton";
 import { createUser } from "../firebase/auth";
 import icon from "../../assets/icon.png";
-import { addUserToFirestore } from "../firebase/firestoreService";
+import { addUserToFirestore } from "../services/firebase/userService";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");

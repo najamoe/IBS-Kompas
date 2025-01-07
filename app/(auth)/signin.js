@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform  } from "react-native";
 import React from "react";
 import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { signInUser, resetPassword } from "../firebase/auth";
