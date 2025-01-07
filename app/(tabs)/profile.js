@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Button,
   Image,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +29,6 @@ import {
 } from "../services/firebase/userService";
 import UpdatePasswordModal from "../components/modal/updatePasswordModal";
 import icon from "../../assets/icon.png";
-
 
 const { auth } = firebaseConfig;
 
@@ -107,8 +107,7 @@ const Profile = () => {
         ...prevData,
         [editingField]: editedValue, // Dynamically update the corresponding field
       }));
-
-      console.log(`${editingField} updated successfully!`);
+      Alert.alert("Success", "Dine oplysninger er blevet opdateret");
       setEditingField(null); // Close the edit mode
       setEditedValue(""); // Reset the edited value
     } catch (error) {
@@ -157,7 +156,7 @@ const Profile = () => {
         ...prevData,
         birthday: formattedDate,
       }));
-      console.log("Birthday updated successfully!");
+      Alert.alert("Success", "Din fødselsdato er blevet opdateret");
     } catch (error) {
       console.error("Error updating birthday in Firestore:", error);
     }
@@ -176,8 +175,6 @@ const Profile = () => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -441,7 +438,7 @@ const Profile = () => {
             />
           </View>
         </View>
-        <Toast/>
+        <Toast />
       </ScrollView>
 
       {isUpdateModalVisible && (
@@ -463,24 +460,27 @@ const Profile = () => {
             <Text style={styles.modalTitleDelete}>Slet konto</Text>
             <Text>Er du sikker på du ønsker at slette din konto?</Text>
             <Text>Handlingen kan ikke fortrydes</Text>
-            <CustomButton
-              title="Ja, slet konto"
-              handlePress={handleDeleteUser}
-            />
-            <CustomButton
-              title="Nej, slet ikke min konto"
-              handlePress={() => {
-                console.log("Cancel button pressed");
-                setModalVisible(false);
-              }}
-              style={styles.cancelButton}
-            />
+            <View style={styles.deleteButtonContainer}>
+              <CustomButton
+                title="Nej, slet ikke min konto"
+                textStyles={styles.buttonTextStyle}
+                handlePress={() => {
+                  setModalVisible(false);
+                }}
+                customStyles={styles.cancelButton}
+              />
+              <CustomButton
+                title="Ja, slet konto"
+                handlePress={handleDeleteUser}
+                customStyles={styles.deleteButton}
+                textStyles={styles.buttonTextStyle}
+              />
+            </View>
           </View>
         </View>
       </Modal>
 
       <StatusBar backgroundColor="#161622" style="light" />
-      
     </SafeAreaView>
   );
 };
@@ -649,8 +649,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
     justifyContent: "center",
     alignItems: "center",
+    alignContent: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
+    width: "100%",  },
   modalContentDelete: {
     width: "80%",
     padding: 10,
@@ -673,6 +674,26 @@ const styles = StyleSheet.create({
     height: 40,
     marginTop: 2,
     marginBottom: 6,
+  },
+  deleteButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "grey",
+    width: 120,
+    margin: 10,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    marginTop: 10,
+    height: 40,
+    width: 110,
+  },
+  buttonTextStyle: {
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 
