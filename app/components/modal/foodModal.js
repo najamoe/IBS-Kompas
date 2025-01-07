@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Alert,
 } from "react-native";
@@ -27,19 +26,19 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
     }
   }, [modalVisible]);
 
-  // Function to handle updating selected items from SearchField
+  // Handling updating selected items from SearchField
   const updateSelectedItems = (items) => {
     setSelectedItems(items); // Update the state with selected items
   };
 
-  // Update the food name when a food item is selected
+  // Updating food name when a food item is selected
   const handleFoodSelect = (item) => {
-    setFoodName(item.name); // Update foodName with the selected item's name
+    setFoodName(item.name); 
   };
 
   const handleSaveFood = async () => {
     if (!selectedItems || selectedItems.length === 0) {
-      Alert.alert("Fejl", "Ingen mad valgt"); // Shows an alert if no food is selected
+      Alert.alert("Fejl", "Ingen mad valgt"); 
       return;
     }
 
@@ -52,11 +51,10 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
           categories:
             item.categories && item.categories.length > 0
               ? item.categories
-              : ["ukendt"], // Default to "ukendt" if categories are missing
+              : ["ukendt"], // Defaulti to "ukendt" if categories are missing
          
         };
-        console.log("added food item", foodData);
-        await addFoodIntake(userId, foodData, selectedType); // Save the food item
+        await addFoodIntake(userId, foodData, selectedType); 
 
       }
       setModalVisible(false); // Close the modal after saving
@@ -90,16 +88,16 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
           {/* Search field for food name */}
           <View style={styles.searchContainer}>
             <SearchField
-              userId={userId} // Pass userId to SearchField
-              foodName={foodName} // Bind the state for food name
-              setFoodName={setFoodName} // Pass the setter for food name
+              userId={userId} 
+              foodName={foodName} 
+              setFoodName={setFoodName} 
               onFoodSelect={handleFoodSelect}
               selectedItems={selectedItems}
-              setSelectedItems={updateSelectedItems} // Handle selected food
+              setSelectedItems={updateSelectedItems} 
             />
           </View>
 
-          {/* Save and back buttons */}
+         
           <View style={styles.saveandbackbtn}>
             <TouchableOpacity onPress={handleClose} style={styles.backButton}>
               <Text style={styles.backButtonText}>Tilbage</Text>
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
-    justifyContent: "space-between", // Add this to distribute space
+    justifyContent: "space-between", 
     width: "90%",
     height: 550,
   },
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
   saveandbackbtn: {
     flexDirection: "row",
     justifyContent: "center",
-    width: "100%", // Ensure the buttons take full width
+    width: "100%", 
     marginTop: "auto",
   },
   saveButton: {
