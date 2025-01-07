@@ -12,7 +12,7 @@ import {
 import moment from "moment-timezone";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
-const firestore = FirebaseConfig.db; // Access the Firestore instance
+const firestore = FirebaseConfig.db; // Accessing Firestore instance
 
 export const addBowelLog = async (
   userId,

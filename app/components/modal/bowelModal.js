@@ -92,7 +92,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Gemt", "Informationer er gemt");
       onClose(); // Close the modal after saving
     } catch (error) {
-      console.error("Error saving bowel log:", error);
+      console.error("Error saving bowel log from bowelModal:", error);
       Alert.alert("Fejl", "Noget gik galt - prøv igen");
     }
   };

@@ -40,7 +40,7 @@ const BowelDisplay = ({ user, selectedDate }) => {
       }
     };
 
-    if (user) {
+    if (user && selectedDate) {
       fetchRealTimeData();
     }
 
@@ -126,7 +126,7 @@ const BowelDisplay = ({ user, selectedDate }) => {
       <ConfirmDeleteModal
         isVisible={isConfirmDeleteVisible}
         onConfirm={() => confirmDelete(selectedLogId)}
-        onCancel={cancelDelete}
+        onCancel={() => setIsConfirmDeleteVisible(false)}
       />
     </ScrollView>
   );
