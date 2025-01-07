@@ -111,7 +111,6 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
 
     // If no valid emoticon types were found, return a default value or handle appropriately
     if (dailyMood.length === 0) {
-      console.log("No valid emoticon types found for the entire week.");
       return null; // or you could return a default value or handle it differently
     }
 
