@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar } from "react-native";
 import React from "react";
 import { Tabs, Redirect } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -14,6 +14,7 @@ const TabIcon = ({ name, color, size, iconType }) => {
 const TabsLayout = () => {
   return (
     <>
+     <StatusBar backgroundColor="#ffffff" style="light" />
       <Tabs
         screenOptions={{
           headerShown: false,
