@@ -78,10 +78,12 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Error", "Please select a bowel type.");
       return;
     }
+    const auth = getAuth();
+    const userId = auth.currentUser.uid;
     try {
       // Call the addBowelLog service with the necessary parameters
       await addBowelLog(
-        user.uid,
+      userId,
         selectedBowelType,
         pain,
         blood,

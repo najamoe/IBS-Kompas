@@ -26,7 +26,6 @@ export const addBowelLog = async (
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-    console.log("UserID in addBowelLog:", { userId });
     // Get the current local date and time
     const localDate = new Date();
 
