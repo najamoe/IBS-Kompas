@@ -74,7 +74,10 @@ const FoodChart = ({ userId, initialDate }) => {
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
+        ) : foodData &&
+          Object.keys(foodData).some(
+            (mealType) => foodData[mealType]?.length > 0
+          ) ? (
           <ScrollView>
             {["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
               const mealData = foodData[mealType]; // foodData is now categorized by meal type
@@ -97,6 +100,10 @@ const FoodChart = ({ userId, initialDate }) => {
               );
             })}
           </ScrollView>
+        ) : (
+          <View style={styles.noDataContainer}>
+            <Text>No food logs for this week</Text>
+          </View>
         )}
       </View>
     </GestureRecognizer>
@@ -145,5 +152,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginBottom: 5,
+  },
+  noDataContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 200,
   },
 });
