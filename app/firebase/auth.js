@@ -69,7 +69,7 @@ export const signInUser = async (email, password) => {
     );
     return userCredential;
   } catch (error) {
-    // Handle Firebase errors and show toast notification
+    // Handle Firebase errors and show notification
     console.error("Sign in error:", error.message);
     throw error; // Reject to propagate the error
   }
@@ -130,43 +130,23 @@ export const updateUserPassword = async (user, newPassword) => {
 };
 
 export const deleteUserAccount = async () => {
-  const user = auth.currentUser; // Get the currently authenticated user
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  // user needs to be authenticated
   if (!user) {
-    Toast.show({
-      type: "error",
-      text1: "Deletion failed",
-      text2: "User is not authenticated",
-      visibilityTime: 5000,
-      position: "top",
-    });
-    return Promise.reject("User is not authenticated");
+    throw new Error("User is not authenticated");
   }
-
-  // Delete the user account from Firebase Authentication
   try {
-    await deleteUser(user);
-    console.log("User deleted successfully");
-    // Account deletion successful
-    Toast.show({
-      type: "success",
-      text1: "Konto slettet",
-      text2: "Din konto er slettet",
-      visibilityTime: 5000,
-      position: "top",
-    });
+    await deleteUser(user); // Pass the user object directly
 
-    // redirect user after deletion
-    router.replace("/");
+    // Redirect user after deletion
+    router.replace("/"); 
+    Alert.alert("Konto slettet", "Din konto er slettet");
   } catch (error) {
-    // Handle errors (e.g., user is not signed in or other issues)
+    Alert.alert("Fejl", "Kunne ikke slette kontoen");
     console.error("Error deleting account:", error.message);
-    Toast.show({
-      type: "error",
-      text1: "Account deletion failed",
-      text2: error.message,
-      visibilityTime: 5000,
-      position: "top",
-    });
+
     throw error;
   }
 };
