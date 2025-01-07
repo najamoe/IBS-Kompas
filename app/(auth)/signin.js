@@ -1,8 +1,7 @@
-import { ScrollView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform  } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform, Alert  } from "react-native";
 import React from "react";
 import { useState } from "react";
 import { router } from "expo-router";
-import Toast from "react-native-toast-message";
 import { signInUser, resetPassword } from "../firebase/auth";
 import ResetPasswordModal from "../components/modal/passwordReset";
 import logo from "../../assets/images/logo.png";
@@ -25,11 +24,12 @@ const SignIn = () => {
     signInUser(email, password)
       .then(() => {
         setLoading(false);
+        Alert.alert("Du er nu logget ind");
         router.push("/home");
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert("Fejl, fejl ved login");
+        Alert.alert("Fejl ved login");
       });
 
     setLoading(true);
@@ -96,7 +96,7 @@ const SignIn = () => {
             </Text>
           </View>
         </View>
-        <Toast />
+        
       </ScrollView>
 
       <ResetPasswordModal
