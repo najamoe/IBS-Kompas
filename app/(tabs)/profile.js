@@ -15,6 +15,8 @@ import {
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
+import { getAuth } from "firebase/auth";
+
 import Toast from "react-native-toast-message";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MultiSelect } from "react-native-element-dropdown";
@@ -70,6 +72,7 @@ const Profile = () => {
 
   useEffect(() => {
     const getUserData = async () => {
+      const auth = getAuth();
       const user = auth.currentUser;
       if (!user) {
         console.error("No authenticated user.");
@@ -99,25 +102,25 @@ const Profile = () => {
     if (!user || !editingField || !editedValue) return;
 
     try {
-      // Update the respective field based on `editingField`
+      // Update field based on `editingField`
       await updateUserDetails(user.uid, { [editingField]: editedValue });
 
-      // Update userData state to reflect the change
+      // Update userData state
       setUserData((prevData) => ({
         ...prevData,
-        [editingField]: editedValue, // Dynamically update the corresponding field
+        [editingField]: editedValue, 
       }));
       Alert.alert("Success", "Dine oplysninger er blevet opdateret");
-      setEditingField(null); // Close the edit mode
-      setEditedValue(""); // Reset the edited value
+      setEditingField(null); 
+      setEditedValue(""); 
     } catch (error) {
       console.error(`Error updating ${editingField}:`, error);
     }
   };
 
   const handleFieldEdit = (field) => {
-    setEditingField(field); // Set the field that is being edited (e.g., name, email)
-    setEditedValue(userData[field] || ""); // Preload the field value if it exists
+    setEditingField(field); 
+    setEditedValue(userData[field] || ""); // Preloading the field value if it exists otherwise its set to an empty string
   };
 
   const handleAllergyChange = (selectedItems) => {
@@ -139,7 +142,7 @@ const Profile = () => {
 
   const formatDateToDDMMYYYY = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, "0"); 
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -163,17 +166,22 @@ const Profile = () => {
   };
 
   const handleDeleteUser = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser; 
+
+    if (!user) {
+      console.error("No authenticated user.");
+      return;
+    }
+
     try {
-      console.log("Delete account function triggered");
       await deleteUserAccount();
+
       setModalVisible(false);
     } catch (error) {
       console.error("Something went wrong with account deletion", error);
+      Alert.alert("Fejl", "Der opstod en fejl under sletning af kontoen.");
     }
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
   };
 
   return (
@@ -651,7 +659,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignContent: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    width: "100%",  },
+    width: "100%",
+  },
   modalContentDelete: {
     width: "80%",
     padding: 10,
@@ -678,7 +687,7 @@ const styles = StyleSheet.create({
   deleteButtonContainer: {
     flexDirection: "row",
     justifyContent: "center",
-alignItems: "center",
+    alignItems: "center",
   },
   cancelButton: {
     backgroundColor: "grey",
