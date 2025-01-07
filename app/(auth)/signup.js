@@ -93,7 +93,7 @@ const SignUp = () => {
               <CustomButton
                 customStyles={[
                   styles.buttonStyle,
-                  { backgroundColor: "#a60202" }, // Red button
+                  { backgroundColor: "grey" }, 
                 ]}
                 textStyles={styles.buttonTextStyle}
                 title="Gå tilbage"
@@ -101,7 +101,7 @@ const SignUp = () => {
               />
               <CustomButton
                 customStyles={[styles.buttonStyle]}
-                textStyles={styles.buttonTextStyle} // Ensure consistent usage
+                textStyles={styles.buttonTextStyle} 
                 title={loading ? "Opretter bruger" : "Opret bruger"}
                 handlePress={submitNewUser}
               />
