@@ -128,7 +128,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
         </View>
       ) : weeklyData.length === 0 ? (
         <View style={styles.container}>
-          <Text>No symptoms logged for this week yet</Text>
+          <Text>Du har ikke logget symptomer for denne uge</Text>
         </View>
       ) : (
         // Chart rendering if data is available
