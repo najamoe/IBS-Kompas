@@ -5,12 +5,11 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { fetchFoodIntake } from "../../services/firebase/foodService"; 
+import { fetchFoodIntakeForWeek } from "../../services/firebase/foodService";
 import moment from "moment";
-import GestureRecognizer from "react-native-swipe-gestures"; 
+import GestureRecognizer from "react-native-swipe-gestures";
 
 const FoodChart = ({ userId, initialDate }) => {
   const [foodData, setFoodData] = useState({});
@@ -22,16 +21,13 @@ const FoodChart = ({ userId, initialDate }) => {
     const fetchFoodData = async () => {
       setLoading(true);
       try {
-        const dateString = selectedDate.format("YYYY-MM-DD");
-        const meals = ["breakfast", "lunch", "dinner", "snack"];
-        const fetchedData = {};
+        const foodDataByType = await fetchFoodIntakeForWeek(
+          userId,
+          selectedDate.format("YYYY-MM-DD")
+        );
 
-        for (const meal of meals) {
-          const foodForMeal = await fetchFoodIntake(userId, dateString, meal);
-          fetchedData[meal] = foodForMeal;
-        }
-
-        setFoodData(fetchedData);
+        // Get the food data for the selected date, and ensure it's categorized by meal type
+        setFoodData(foodDataByType[selectedDate.format("YYYY-MM-DD")] || {});
       } catch (error) {
         console.error("Error fetching food data:", error);
       } finally {
@@ -49,7 +45,7 @@ const FoodChart = ({ userId, initialDate }) => {
     snack: "Snack",
   };
 
-  // Swipe handlers
+  // Swipe handlers for changing dates
   const handleSwipeLeft = () => {
     setSelectedDate((prevDate) => moment(prevDate).add(1, "days"));
   };
@@ -81,8 +77,8 @@ const FoodChart = ({ userId, initialDate }) => {
         ) : (
           <ScrollView>
             {["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
-              const mealData = foodData[mealType];
-              if (!mealData || mealData.length === 0) {
+              const mealData = foodData[mealType]; // foodData is now categorized by meal type
+              if (!Array.isArray(mealData) || mealData.length === 0) {
                 return null; // Skip rendering if no data for the meal type
               }
 

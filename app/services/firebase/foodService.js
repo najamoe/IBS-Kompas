@@ -124,7 +124,9 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
       .endOf("isoWeek")
       .format("YYYY-MM-DD");
 
-    const foodDataByType = {}; // Object to hold food data categorized by type
+    const foodDataByType = {}; // Object to hold food data categorized by date and meal type
+
+    const types = ["breakfast", "lunch", "dinner", "snack"];
 
     for (
       let currentDate = moment(startOfWeek);
@@ -132,9 +134,8 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
       currentDate.add(1, "days")
     ) {
       const date = currentDate.format("YYYY-MM-DD");
+      foodDataByType[date] = {};
 
-      // Loop through the meal types (e.g., breakfast, lunch, dinner)
-      const types = ["breakfast", "lunch", "dinner", "snack"];
       for (const type of types) {
         const foodLogRef = collection(
           firestore,
@@ -149,9 +150,6 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
         });
 
         // Organize food data by date and type
-        if (!foodDataByType[date]) {
-          foodDataByType[date] = {};
-        }
         foodDataByType[date][type] = foodData;
       }
     }
@@ -161,6 +159,7 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
     console.error("Error fetching food intake for week:", error);
   }
 };
+
 
 export const deleteFoodIntake = async (userId, foodData, type) => {
   if (!firestore) {
