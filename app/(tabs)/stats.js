@@ -45,18 +45,16 @@ const Stats = () => {
     setSelectedDate(newDate); // This will trigger re-render for all charts
   };
 
-const onRefresh = useCallback(() => {
-  setRefreshing(true);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
 
+    const newDate = moment();
+    setSelectedDate(newDate);
 
-  const newDate = moment();
-  setSelectedDate(newDate); 
-
-  setTimeout(() => {
-    setRefreshing(false);
-  }, 200); 
-}, []);
-
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 200);
+  }, []);
 
   // Get the start and end of the current week using moment
   const startOfWeek = (selectedDate || moment()).clone().startOf("isoweek");
@@ -167,16 +165,11 @@ const onRefresh = useCallback(() => {
           </View>
         </View>
 
-      
-          {user ? (
-            <WellnessChart
-              userId={user.uid}
-              selectedDate={selectedDate}
-            />
-          ) : (
-            <ActivityIndicator size="large" color="#0000ff" />
-          )}
-        
+        {user ? (
+          <WellnessChart userId={user.uid} selectedDate={selectedDate} />
+        ) : (
+          <ActivityIndicator size="large" color="#0000ff" />
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -234,5 +227,4 @@ const styles = StyleSheet.create({
   bowelChild: {
     width: "49%",
   },
-
 });
