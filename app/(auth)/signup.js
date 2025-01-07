@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
@@ -25,13 +26,7 @@ const SignUp = () => {
 
   const submitNewUser = async () => {
     if (password !== confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Oprettelse mislykkedes",
-        text2: "Passwords stemmer ikke overens!",
-        visibilityTime: 5000,
-        position: "top",
-      });
+      Alert.alert("Adgangskoderne matcher ikke.");
       return;
     }
 
@@ -57,6 +52,17 @@ const SignUp = () => {
     } catch (error) {
       setLoading(false);
       console.error("Error during signup:", error);
+      // Handle the Firebase authentication errors with specific messages
+      if (error.code === "auth/email-already-in-use") {
+        Alert.alert("Fejl", "Den emailadresse er allerede i brug!");
+      } else if (error.code === "auth/invalid-email") {
+        Alert.alert("Fejl", "Den angivne emailadresse er ugyldig!");
+      } else if (error.code === "auth/weak-password") {
+        Alert.alert("Fejl", "Adgangskoden skal være over 6 tegn");
+      } else {
+        // Generic error message for other cases
+        Alert.alert("Fejl", "Noget gik galt.");
+      }
     }
   };
 
@@ -66,51 +72,46 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-     
-        <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <Image source={icon} style={styles.icon} />
-          <Text style={styles.signUpText}>Opret bruger</Text>
-          <View style={styles.signupContainer}>
-            <FormField
-              title="Email"
-              value={email}
-              placeholder="Enter your email"
-              handleChangeText={setEmail}
+      <ScrollView contentContainerStyle={{ height: "100%" }}>
+        <Image source={icon} style={styles.icon} />
+        <Text style={styles.signUpText}>Opret bruger</Text>
+        <View style={styles.signupContainer}>
+          <FormField
+            title="Email"
+            value={email}
+            placeholder="Enter your email"
+            handleChangeText={setEmail}
+          />
+          <FormField
+            title="Password"
+            value={password}
+            placeholder="Indtast password"
+            handleChangeText={setPassword}
+          />
+          <FormField
+            title="Verificér Password"
+            value={confirmPassword}
+            placeholder="Indtast password igen"
+            handleChangeText={setConfirmPassword}
+          />
+          <View style={styles.buttonContainer}>
+            <CustomButton
+              customStyles={[styles.buttonStyle, { backgroundColor: "grey" }]}
+              textStyles={styles.buttonTextStyle}
+              title="Gå tilbage"
+              handlePress={handleGoBack}
             />
-            <FormField
-              title="Password"
-              value={password}
-              placeholder="Indtast password"
-              handleChangeText={setPassword}
+            <CustomButton
+              customStyles={[styles.buttonStyle]}
+              textStyles={styles.buttonTextStyle}
+              title={loading ? "Opretter bruger" : "Opret bruger"}
+              handlePress={submitNewUser}
             />
-            <FormField
-              title="Verificér Password"
-              value={confirmPassword}
-              placeholder="Indtast password igen"
-              handleChangeText={setConfirmPassword}
-            />
-            <View style={styles.buttonContainer}>
-              <CustomButton
-                customStyles={[
-                  styles.buttonStyle,
-                  { backgroundColor: "grey" }, 
-                ]}
-                textStyles={styles.buttonTextStyle}
-                title="Gå tilbage"
-                handlePress={handleGoBack}
-              />
-              <CustomButton
-                customStyles={[styles.buttonStyle]}
-                textStyles={styles.buttonTextStyle} 
-                title={loading ? "Opretter bruger" : "Opret bruger"}
-                handlePress={submitNewUser}
-              />
-            </View>
           </View>
-          <Toast />
-        </ScrollView>
-        <StatusBar backgroundColor="#161622" style="light" />
-   
+        </View>
+        <Toast />
+      </ScrollView>
+      <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
 };
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
-    elevation: 10, 
+    elevation: 10,
   },
   label: {
     fontSize: 16,
@@ -163,7 +164,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     flexDirection: "row",
-    
   },
   buttonTextStyle: {
     fontSize: 14,

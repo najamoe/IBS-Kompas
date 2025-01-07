@@ -1,4 +1,13 @@
-import { ScrollView, StyleSheet, Text, View, Image, KeyboardAvoidingView, Platform, Alert  } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from "react-native";
 import React from "react";
 import { useState } from "react";
 import { router } from "expo-router";
@@ -20,6 +29,11 @@ const SignIn = () => {
 
   const submit = () => {
     const { email, password } = form;
+    if (!email || !password) {
+      Alert.alert("Indtast venligst både email og adgangskode.");
+      return;
+    }
+    setLoading(true); // Start loading state
 
     signInUser(email, password)
       .then(() => {
@@ -29,18 +43,23 @@ const SignIn = () => {
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert("Fejl ved login");
-      });
+        console.error("Sign in error:", error); // Log the error for debugging
 
-    setLoading(true);
+        // Handle specific error codes from Firebase
+        if (error.code === "auth/invalid-credential") {
+          Alert.alert("Fejl", "Ugyldig email eller adgangskode. Prøv igen.");
+        }
+      });
   };
 
   const handlePasswordReset = async () => {
     try {
       await resetPassword(resetEmail);
       setModalVisible(false);
+      Alert.alert("Email afsendt", "Tjek din email for at nulstille din adgangskode");
     } catch (error) {
       console.error("Password reset error:", error);
+      Alert.alert("Fejl", "Kunne ikke sende email");
     }
   };
 
@@ -96,7 +115,6 @@ const SignIn = () => {
             </Text>
           </View>
         </View>
-        
       </ScrollView>
 
       <ResetPasswordModal
@@ -127,7 +145,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 34,
     color: "white",
-    
+
     fontWeight: "bold",
     marginLeft: 20,
     marginTop: 90,
@@ -156,7 +174,7 @@ const styles = StyleSheet.create({
     width: "85%",
     alignSelf: "center",
     justifyContent: "center",
-    elevation: 5, // Shadow for Android    
+    elevation: 5, // Shadow for Android
   },
   signupStyle: {
     fontWeight: "bold",
