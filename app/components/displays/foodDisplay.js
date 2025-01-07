@@ -12,6 +12,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import RNPickerSelect from "react-native-picker-select";
 import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "../CustomButton";
+import ConfirmDeleteModal from "../modal/confirmDeleteModal";
 import FoodModal from "../modal/foodModal";
 import {
   subscribeFood,
@@ -30,6 +31,8 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,69 +64,30 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setIsFoodModalVisible(true);
   };
 
-  const handleDeleteItem = async (item) => {
-    try {
-      // Call the deleteFoodIntake function
-      await deleteFoodIntake(user.uid, item, type);
+ const confirmDeleteItem = (item) => {
+   setItemToDelete(item);
+   setIsDeleteModalVisible(true);
+ };
 
-      // Update foodData to remove the deleted item
-      const updatedFoodData = foodData.filter(
-        (foodItem) => foodItem.name !== item.name
-      );
+ const handleDeleteItem = async () => {
+   try {
+     if (itemToDelete) {
+       await deleteFoodIntake(user.uid, itemToDelete, type);
 
-      // Update the state to reflect the changes in foodData
-      setFoodData(updatedFoodData);
-    } catch (error) {
-      console.error("Error deleting food item:", error);
-    }
-  };
+       const updatedFoodData = foodData.filter(
+         (foodItem) => foodItem.name !== itemToDelete.name
+       );
 
-  // Function to handle updating an existing item
-  const handleUpdateItem = async () => {
-    if (itemName && quantity && unit && selectedItem) {
-      // Make sure selectedItem is available
-      const updatedItem = { name: itemName, quantity, unit };
-      console.log("quantity:", quantity, "unit:", unit);
+       setFoodData(updatedFoodData);
+       setIsDeleteModalVisible(false);
+       setItemToDelete(null);
+     }
+   } catch (error) {
+     console.error("Error deleting food item:", error);
+     setIsDeleteModalVisible(false);
+   }
+ };
 
-      console.log("Updated item data:", updatedItem);
-      console.log("Selected item data:", selectedItem);
-
-      try {
-        // Call Firestore function to update the item
-        const result = await updateFoodItem(
-          user.uid,
-          selectedItem.id, // Ensure the selectedItem has an id
-          updatedItem,
-          selectedType,
-          selectedDate
-        );
-
-        console.log("Result from updateFoodItem:", result);
-
-        // Update the foodData array with the updated item
-        const updatedFoodData = foodData.map((item) =>
-          item.id === selectedItem.id
-            ? { id: selectedItem.id, name: itemName, quantity, unit }
-            : item
-        );
-
-        // Update the state to reflect the changes in foodData
-        setFoodData(updatedFoodData);
-
-        // Close the modal
-        setShowModal(false);
-      } catch (error) {
-        console.error("Error updating item:", error);
-        Alert.alert(
-          "Fejl",
-          "Der opstod en fejl under opdatering af elementet."
-        );
-      }
-    } else {
-      console.log("update item error: Missing data");
-      Alert.alert("Fejl", "Udfyld venligst alle felter.");
-    }
-  };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -184,7 +148,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
               </TouchableOpacity>
               <View style={styles.deleteIcon}>
                 <TouchableOpacity
-                  onPress={() => handleDeleteItem(item)}
+                  onPress={() => confirmDeleteItem(item)}
                   style={styles.deleteIcon}
                 >
                   <MaterialCommunityIcons
@@ -266,6 +230,13 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
           </View>
         </Modal>
       )}
+
+      {/* Confirmation Delete Modal */}
+      <ConfirmDeleteModal
+        isVisible={isDeleteModalVisible}
+        onConfirm={handleDeleteItem}
+        onCancel={() => setIsDeleteModalVisible(false)}
+      />
     </View>
   );
 };

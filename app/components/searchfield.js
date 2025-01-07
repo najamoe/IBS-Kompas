@@ -7,9 +7,7 @@ import {
   StyleSheet,
   Modal,
   TextInput,
-  Button,
   Alert,
-  Image,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import debounce from "lodash.debounce";
@@ -76,9 +74,11 @@ const SearchField = ({ selectedItems, setSelectedItems }) => {
           const updatedItems = [...prevItems];
           updatedItems[existingItemIndex] = newItem;
           return updatedItems;
+      
         } else {
-          // Append the new item to the list
+          // Append the new item to the list 
           return [...prevItems, newItem];
+         
         }
       });
 
