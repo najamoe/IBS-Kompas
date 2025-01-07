@@ -11,7 +11,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptomIntensities, setSymptomIntensities] = useState({});
   const [currentIntensity, setCurrentIntensity] = useState(null); // To track the currently selected intensity
   const [showIntensity, setShowIntensity] = useState(false); // Controls visibility of intensity value
-
+  const [loading, setLoading] = useState(false);
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
@@ -24,14 +24,12 @@ const SymptomDisplay = ({ user, selectedDate }) => {
 
   useEffect(() => {
     const initializeSymptoms = async () => {
+      if (!user) return; // Prevent fetch if user is not authenticated
       try {
-        // Fetch symptoms for the selected user and date
         const symptomsFromFirestore = await fetchSymptoms(
           user.uid,
           selectedDate
         );
-
-        // Map fetched symptoms into the state object, including intensity values
         const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
           const fetchedSymptom = symptomsFromFirestore.find(
             (s) => s.name === symptom.value
@@ -39,14 +37,18 @@ const SymptomDisplay = ({ user, selectedDate }) => {
           acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
           return acc;
         }, {});
-
         setSymptomIntensities(initialSymptoms);
       } catch (error) {
-        console.error("Error fetching symptoms from symptomDisplay:", error);
+        console.error("Error fetching symptoms:", error);
+      } finally {
+        setLoading(false); // Stop loading after data is fetched or on error
       }
     };
 
-    initializeSymptoms();
+    if (user) {
+      setLoading(true); // Start loading when user is available
+      initializeSymptoms();
+    }
   }, [user, selectedDate]);
 
   const handleSliderChange = (symptom, value) => {
