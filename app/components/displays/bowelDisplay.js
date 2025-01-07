@@ -19,6 +19,7 @@ import {
 const BowelDisplay = ({ user, selectedDate }) => {
   const [isBowelModalVisible, setIsBowelModalVisible] = useState(false);
   const [isConfirmDeleteVisible, setIsConfirmDeleteVisible] = useState(false); 
+  const [selectedLogId, setSelectedLogId] = useState(null);
   const [bowelLogs, setBowelLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,17 +49,20 @@ const BowelDisplay = ({ user, selectedDate }) => {
     };
   }, [user, selectedDate]);
 
-  
+const handleDeleteLog = (logId) => {
+  setSelectedLogId(logId); // Set the selected log ID
+  setIsConfirmDeleteVisible(true);
+};
 
-  // Handle delete log action
-  const handleDeleteLog = (logId) => {
-    setIsConfirmDeleteVisible(true);
-  };
+ const confirmDelete = (logId) => {
+   if (user && user.uid) {
+     deleteBowelLog(user.uid, logId); // Pass both userId and logId (date)
+   } else {
+     console.error("User ID is missing!");
+   }
+   setIsConfirmDeleteVisible(false);
+ };
 
-  const confirmDelete = (logId) => {
-    deleteBowelLog(logId); 
-    setIsConfirmDeleteVisible(false);
-  };
 
   const cancelDelete = () => {
     setIsConfirmDeleteVisible(false);
@@ -125,7 +129,7 @@ const BowelDisplay = ({ user, selectedDate }) => {
       {/* Confirmation Delete Modal */}
       <ConfirmDeleteModal
         isVisible={isConfirmDeleteVisible}
-        onConfirm={() => confirmDelete()}
+        onConfirm={() => confirmDelete(selectedLogId)}
         onCancel={cancelDelete}
       />
     </ScrollView>
@@ -168,10 +172,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#F0F8FF",
     borderRadius: 10,
     padding: 10,
-    width: "30%", // Ensures the item is centered within the parent container
+    width: "30%", 
   },
   trashIcon: {
     left: 30,
+    padding: 5,
   },
   bowelIcon: {
     marginTop: 6, 

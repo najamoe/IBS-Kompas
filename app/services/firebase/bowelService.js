@@ -4,7 +4,9 @@ import {
   setDoc,
   getDoc,
   query,
+  where,
   getDocs,
+  deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
 import moment from "moment-timezone";
@@ -77,14 +79,17 @@ export const subscribeBowelLog = (userId, date, callback) => {
     // Use onSnapshot to listen for changes in real time
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
-        const bowelLogs = snapshot.docs.map((doc) => ({
-          id: doc.id, // Add the document ID to each bowel log entry
-          ...doc.data(), // Spread the rest of the document data
-        }));
+        // Map through the snapshot.docs array
+        const bowelLogs = snapshot.docs.map((doc) => {
+          return {
+            id: doc.id, // Extract the document ID
+            ...doc.data(), // Spread the rest of the document data
+          };
+        });
+
         callback(bowelLogs); // Pass the updated logs to the callback
       } else {
-        console.log("Ingen toiletbesøg idag.");
-        callback(null); // No bowel log found for the given date
+        callback(null); // No logs for the given date
       }
     });
 
@@ -282,29 +287,34 @@ export const fetchBowelLogDetails = async (userId, selectedDate, logType) => {
   }
 };
 
-
-
-export const deleteBowelLog = async (userId, date) => {
+// Function to delete all bowel logs for a specific timestamp
+export const deleteBowelLog = async (userId, time) => {
   try {
-    if (!firestore || !userId) {
-      throw new Error("Firestore instance or userId is missing.");
+    if (!firestore || !userId || !time) {
+      throw new Error("Firestore instance, userId, or time is missing.");
     }
 
-    const bowelRef = doc(firestore, `users/${userId}/bowelLogs/${date}`);
-    const snapshot = await getDoc(bowelRef);
+    // Calculate the date based on the time
+    const localDate = new Date();
+    const date = localDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
 
-    if (snapshot.exists()) {
-      // Remove the bowel log document
-      await setDoc(bowelRef, {}, { merge: true }); // Clears the document content
+    // Reference to the specific bowel log document
+    const bowelLogsRef = collection(
+      firestore,
+      `users/${userId}/bowelLogs/${date}/timeLogs`
+    );
 
-      console.log("Bowel log removed for date:", date);
-      return null; // Return null to indicate removal
+    const bowelRef = doc(bowelLogsRef, time);
+
+    // Check if the document exists before deleting
+    const docSnapshot = await getDoc(bowelRef);
+    if (docSnapshot.exists()) {
+      await deleteDoc(bowelRef);
     } else {
-      console.log("No bowel log found for this date.");
-      return null;
+      console.log("Bowel log not found at the specified time.");
     }
   } catch (error) {
-    console.error("Error removing bowel log:", error);
+    console.error("Error deleting bowel log:", error);
     throw error;
   }
 };
