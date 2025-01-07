@@ -8,6 +8,7 @@ import {
   RefreshControl,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import CustomButton from "../../components/CustomButton";
 import BowelModal from "../modal/bowelModal";
 import { subscribeBowelLog } from "../../services/firebase/bowelService";
 
@@ -86,15 +87,16 @@ const BowelDisplay = ({ user, selectedDate }) => {
           )}
         </View>
 
-        <TouchableOpacity
-          onPress={() => {
+        <CustomButton
+        title={"Tilføj"}
+          handlePress={() => {
             setIsBowelModalVisible(true);
             setBowelStep(1);
           }}
           style={styles.addBowelButton}
-        >
-          <Text style={styles.addBowelText}>Tilføj</Text>
-        </TouchableOpacity>
+        />
+    
+       
       </View>
 
       {/* Bowel Modal */}
