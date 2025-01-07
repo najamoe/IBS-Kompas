@@ -178,6 +178,7 @@ const Profile = () => {
       await deleteUserAccount();
 
       setModalVisible(false);
+      Alert.alert("Konto slettet", "Din konto er slettet");
     } catch (error) {
       console.error("Something went wrong with account deletion", error);
       Alert.alert("Fejl", "Der opstod en fejl under sletning af kontoen.");

@@ -40,19 +40,9 @@ export const createUser = async (email, password) => {
       email,
       password
     );
-    console.log("User account created & signed in!", userCredential.user);
     return userCredential;
   } catch (error) {
-    let message_1 = "Noget gik galt.";
-    if (error.code === "auth/email-already-in-use") {
-      message_1 = "Den emailadresse er allerede i brug!";
-    } else if (error.code === "auth/invalid-email") {
-      message_1 = "Den angivne emailadresse er ugyldig!";
-    } else if (error.code === "auth/weak-password") {
-      message_1 = "Adgangskoden skal være over 6 tegn";
-    }
-
-    throw new Error(message_1); // Reject the promise to stop further actions
+    throw error;
   }
 };
 
@@ -81,7 +71,6 @@ export const signOutUser = () => {
     .signOut()
     .then(() => {
       router.replace("/");
-      Alert.alert("Du er nu logget ud");
     })
     .catch((error) => {
       console.error("Sign out error:", error.message);
@@ -95,14 +84,8 @@ export const resetPassword = async (email) => {
 
   try {
     await sendPasswordResetEmail(auth, email);
-    Alert.alert(
-      "Email afsendt",
-      "Tjek din email for at nulstille din adgangskode"
-    );
   } catch (error) {
     console.error("Reset error:", error.message);
-    Alert.alert("Fejl", "Kunne ikke sende email");
-
     throw error;
   }
 };
@@ -139,13 +122,10 @@ export const deleteUserAccount = async () => {
     throw new Error("User is not authenticated");
   }
   try {
-    await deleteUser(user); // Pass the user object directly
-
-    // Redirect user after deletion
-    router.replace("/"); 
-    Alert.alert("Konto slettet", "Din konto er slettet");
+    await deleteUser(user); 
+   
+    router.replace("/");
   } catch (error) {
-    Alert.alert("Fejl", "Kunne ikke slette kontoen");
     console.error("Error deleting account:", error.message);
 
     throw error;
