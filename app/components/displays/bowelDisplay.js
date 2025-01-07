@@ -61,11 +61,11 @@ const BowelDisplay = ({ user, selectedDate }) => {
 
   const confirmDelete = (logId) => {
     deleteBowelLog(logId); // Pass the logId to delete the specific log
-    setIsConfirmDeleteVisible(false); // Close the confirmation modal
+    setIsConfirmDeleteVisible(false); 
   };
 
   const cancelDelete = () => {
-    setIsConfirmDeleteVisible(false); // Close the confirmation modal without deleting
+    setIsConfirmDeleteVisible(false); 
   };
 
   return (
@@ -112,7 +112,6 @@ const BowelDisplay = ({ user, selectedDate }) => {
           title={"Tilføj"}
           handlePress={() => {
             setIsBowelModalVisible(true);
-            setBowelStep(1);
           }}
           style={styles.addBowelButton}
         />
@@ -188,6 +187,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   timeStamp: {
+    marginTop: 5,
+    marginBottom: 5,
     fontSize: 16,
     color: "black",
   },

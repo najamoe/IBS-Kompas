@@ -110,6 +110,13 @@ const BowelModal = ({ isVisible, onClose }) => {
   };
 
   const handleClose = () => {
+    setSelectedBowelType(null);
+    setPain("");
+    setBlood(false);
+    setUrgent(false);
+    setNotes("");
+    setDate(currentDate);
+    setCurrentStep(1);
     onClose();
   };
 
