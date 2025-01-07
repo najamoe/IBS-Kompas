@@ -70,7 +70,7 @@ const Home = () => {
             </TouchableOpacity>
             <Text style={styles.dateText}>
               {formatDateDisplay(selectedDate)}
-            </Text>{" "}
+            </Text>
             <TouchableOpacity onPress={() => handleDayChange(1)}>
               <AntDesign style={styles.arrowIcons} name="right" size={22} />
             </TouchableOpacity>
