@@ -32,6 +32,7 @@ export const reauthenticateUser = async (user, currentPassword) => {
     );
   }
 };
+
 export const createUser = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
