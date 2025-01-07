@@ -1,55 +1,39 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Modal } from "react-native";
-import { updateUserPassword, reauthenticateUser } from "../../firebase/auth"; 
+import { StyleSheet, Text, View, Modal, Alert } from "react-native";
+import { updateUserPassword, reauthenticateUser } from "../../firebase/auth";
 import CustomButton from "../CustomButton";
 import FormField from "../FormField";
-import  Toast  from "react-native-toast-message"; 
 
 const UpdatePasswordModal = ({ user, visible, closeModal }) => {
-const [loading, setLoading] = useState(false);
-const [isSubmitting, setIsSubmitting] = useState(false);
-const [currentPassword, setCurrentPassword] = useState("");
-const [newPassword, setNewPassword] = useState("");
-const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-// Separate visibility states for each password field
-const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-const [showNewPassword, setShowNewPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // Separate visibility states for each password field
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChangePassword = async () => {
+    if (!email) {
+      Alert.alert("Fejl", "Email mangler");
+    }
     if (newPassword !== confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Uoverensstemmelse",
-        text2: "De nye passwords stemmer ikke overens",
-        visibilityTime: 5000,
-        position: "bottom",
-      });
+      Alert.alert("Fejl", "De nye passwords stemmer ikke overens");
+
       return;
     }
     if (typeof newPassword !== "string" || newPassword.length < 6) {
-      Toast.show({
-        type: "error",
-        text1: "Invalid Password",
-        text2: "Det nye password skal være mindst 6 tegn langt",
-        visibilityTime: 5000,
-        position: "bottom",
-      });
+      Alert.alert("Fejl", "Password skal være mindst 6 tegn langt");
       return;
     }
 
-    if(!currentPassword || !newPassword || !confirmPassword) {
-      Toast.show({
-        type: "error",
-        text1: "Udfyld alle felter",
-        text2: "Udfyld venligst alle felter for at fortsætte",
-        visibilityTime: 5000,
-        position: "bottom",
-      });
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert("Fejl", "Alle felter skal udfyldes");
       return;
     }
-
 
     try {
       // Step 1: Reauthenticate user
@@ -61,25 +45,13 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
       await updateUserPassword(user, newPassword);
 
       // Show success message
-      Toast.show({
-        type: "success",
-        text1: "Password opdateret",
-        text2: "Dit password er opdateret",
-        visibilityTime: 5000,
-        position: "bottom",
-      });
+      Alert.alert("Success", "Password opdateret");
 
       // Close modal on success
       closeModal();
     } catch (error) {
       console.error("Error updating password:", error.message);
-      Toast.show({
-        type: "error",
-        text1: "Opdatering mislykkedes",
-        text2: error.message,
-        visibilityTime: 5000,
-        position: "bottom",
-      });
+      Alert.alert("Fejl", "Kunne ikke opdatere password");
     }
   };
 
