@@ -1,4 +1,7 @@
-import { getAuth, EmailAuthProvider, reauthenticateWithCredential,
+import {
+  getAuth,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -7,10 +10,9 @@ import { getAuth, EmailAuthProvider, reauthenticateWithCredential,
 } from "firebase/auth";
 import FirebaseConfig from "./FirebaseConfig";
 import { router } from "expo-router";
-import Toast from "react-native-toast-message";
+import { Alert } from "react-native";
 
 const { auth } = FirebaseConfig;
-
 
 export const reauthenticateUser = async (user, currentPassword) => {
   if (!user) {
@@ -32,7 +34,11 @@ export const reauthenticateUser = async (user, currentPassword) => {
 };
 export const createUser = async (email, password) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     console.log("User account created & signed in!", userCredential.user);
     return userCredential;
   } catch (error) {
@@ -45,44 +51,26 @@ export const createUser = async (email, password) => {
       message_1 = "Adgangskoden skal være over 6 tegn";
     }
 
-    // Show the toast message for weak password or other errors
-    Toast.show({
-      type: "error",
-      text1: "Oprettelse mislykkedes",
-      text2: message_1,
-      visibilityTime: 5000,
-      position: "top",
-    });
-
     throw new Error(message_1); // Reject the promise to stop further actions
   }
 };
 
 export const signInUser = async (email, password) => {
   if (!email || !password) {
-    Toast.show({
-      type: "error",
-      text1: "Login mislykkedes",
-      text2: "Indtast både email og password",
-      visibilityTime: 5000,
-      position: "top",
-    });
     return Promise.reject("Email or password missing");
   }
 
   // Call Firebase signInWithEmailAndPassword directly
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     return userCredential;
   } catch (error) {
     // Handle Firebase errors and show toast notification
-    Toast.show({
-      type: "error",
-      text1: "Login mislykkedes",
-      text2: "Brugeren eksisterer ikke",
-      visibilityTime: 5000,
-      position: "top",
-    });
+    console.error("Sign in error:", error.message);
     throw error; // Reject to propagate the error
   }
 };
@@ -92,6 +80,7 @@ export const signOutUser = () => {
     .signOut()
     .then(() => {
       router.replace("/");
+      Alert.alert("Du er nu logget ud");
     })
     .catch((error) => {
       console.error("Sign out error:", error.message);
@@ -100,34 +89,19 @@ export const signOutUser = () => {
 
 export const resetPassword = async (email) => {
   if (!email) {
-    Toast.show({
-      type: "error",
-      text1: "nulstilling mislykkedes",
-      text2: "Indtast en email for at nulstille adgangskoden",
-      visibilityTime: 5000,
-      position: "top",
-    });
     return Promise.reject("Email is missing");
   }
 
   try {
     await sendPasswordResetEmail(auth, email);
-    Toast.show({
-      type: "success",
-      text1: "Email til nulstilling af password afsendt",
-      text2: "Tjek din email for yderligere instruktioner",
-      visibilityTime: 5000,
-      position: "top",
-    });
+    Alert.alert(
+      "Email afsendt",
+      "Tjek din email for at nulstille din adgangskode"
+    );
   } catch (error) {
     console.error("Reset error:", error.message);
-    Toast.show({
-      type: "error",
-      text1: "Nulstilling mislykkedes",
-      text2: "Kunne ikke sende email",
-      visibilityTime: 5000,
-      position: "top",
-    });
+    Alert.alert("Fejl", "Kunne ikke sende email");
+
     throw error;
   }
 };
@@ -154,7 +128,6 @@ export const updateUserPassword = async (user, newPassword) => {
     throw error;
   }
 };
-
 
 export const deleteUserAccount = async () => {
   const user = auth.currentUser; // Get the currently authenticated user
