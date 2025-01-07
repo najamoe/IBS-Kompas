@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import { useState } from "react";
-import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
@@ -109,7 +108,7 @@ const SignUp = () => {
             />
           </View>
         </View>
-        <Toast />
+       
       </ScrollView>
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>

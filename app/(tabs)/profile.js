@@ -17,7 +17,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import { getAuth } from "firebase/auth";
 
-import Toast from "react-native-toast-message";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MultiSelect } from "react-native-element-dropdown";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -108,18 +107,18 @@ const Profile = () => {
       // Update userData state
       setUserData((prevData) => ({
         ...prevData,
-        [editingField]: editedValue, 
+        [editingField]: editedValue,
       }));
       Alert.alert("Success", "Dine oplysninger er blevet opdateret");
-      setEditingField(null); 
-      setEditedValue(""); 
+      setEditingField(null);
+      setEditedValue("");
     } catch (error) {
       console.error(`Error updating ${editingField}:`, error);
     }
   };
 
   const handleFieldEdit = (field) => {
-    setEditingField(field); 
+    setEditingField(field);
     setEditedValue(userData[field] || ""); // Preloading the field value if it exists otherwise its set to an empty string
   };
 
@@ -142,7 +141,7 @@ const Profile = () => {
 
   const formatDateToDDMMYYYY = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); 
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -167,7 +166,7 @@ const Profile = () => {
 
   const handleDeleteUser = async () => {
     const auth = getAuth();
-    const user = auth.currentUser; 
+    const user = auth.currentUser;
 
     if (!user) {
       console.error("No authenticated user.");
@@ -447,7 +446,6 @@ const Profile = () => {
             />
           </View>
         </View>
-        <Toast />
       </ScrollView>
 
       {isUpdateModalVisible && (
@@ -488,8 +486,6 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-
-      
     </SafeAreaView>
   );
 };

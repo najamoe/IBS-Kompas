@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
 import { AntDesign } from "@expo/vector-icons";
 import FoodDisplay from "../components/displays/foodDisplay";
@@ -111,7 +110,7 @@ const Home = () => {
           setSymptoms={setSymptoms}
         />
 
-        <Toast />
+       
       </ScrollView>
     </SafeAreaView>
   );

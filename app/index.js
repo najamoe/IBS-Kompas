@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React, {useEffect, useState} from "react";
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+
 import { SplashScreen } from "expo-splash-screen";
 import { router } from "expo-router";
 import CustomButton from "./components/CustomButton";
@@ -37,7 +37,7 @@ export default function App() {
           />
         </View>
       </ScrollView>
-      <Toast />
+   
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
