@@ -10,18 +10,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
-import Ionicons from "react-native-vector-icons/Ionicons";
+
 import { AntDesign } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodDisplay from "../components/displays/foodDisplay";
 import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
-import {
-  addWaterIntake,
-  subscribeToDailyWaterIntake,
-  removeWaterIntake,
-} from "../services/firebase/waterService";
-import WaterModal from "../components/modal/waterModal";
+import WaterDisplay from "../components/displays/waterDisplay";
+
 import {
   addWellnessLog,
   subscribeWellnessLog,
@@ -45,16 +41,12 @@ const Home = () => {
     const year = d.getFullYear();
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
-
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     formatDateStorage(new Date())
   );
   const [user, setUser] = useState(null);
   const [symptoms, setSymptoms] = useState([]);
-  const [waterIntake, setWaterIntake] = useState(0);
-  const [isWaterModalVisible, setIsWaterModalVisible] = useState(false);
-  const [isAdding, setIsAdding] = useState(true);
   const [selectedMood, setSelectedMood] = useState(null);
 
   // Check if the user is signed in
@@ -90,59 +82,10 @@ const Home = () => {
 
   useEffect(() => {}, [selectedMood]);
 
-  //Water intake subscribe
-  useEffect(() => {
-    if (user && selectedDate) {
-      // Subscribe to daily water intake updates in Firestore
-      const unsubscribe = subscribeToDailyWaterIntake(
-        user.uid,
-        selectedDate,
-        (total) => {
-          setWaterIntake(total); // Update state when water intake changes
-        }
-      );
-
-      // Cleanup function to unsubscribe when the component unmounts or user changes
-      return () => unsubscribe();
-    }
-  }, [user, selectedDate]);
-
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(formatDateStorage(newDate));
-  };
-
-  const handleAddWater = async (amount) => {
-    if (user) {
-      const newWaterIntake = waterIntake + amount;
-      try {
-        await addWaterIntake(user.uid, newWaterIntake); // Add the new water intake
-        setWaterIntake(newWaterIntake); // Update the local state
-      } catch (error) {
-        //Insert error handling
-        console.error("Error adding water intake:", error);
-      }
-    } else {
-      alert("Please sign in to log your water intake.");
-    }
-  };
-
-  const handleRemoveWater = async (amount) => {
-    if (user) {
-      try {
-        const newWaterIntake = await removeWaterIntake(
-          user.uid,
-          selectedDate,
-          amount
-        ); // Pass the amount to remove
-        setWaterIntake(newWaterIntake); // Update the local state with the new value
-      } catch (error) {
-        //Insert error handling
-      }
-    } else {
-      alert("Please sign in to remove water intake.");
-    }
   };
 
   const emoticons = [
@@ -209,43 +152,7 @@ const Home = () => {
           <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
         </View>
 
-        <View style={styles.waterContainer}>
-          <View style={styles.logTitleContainer}>
-            <Text style={styles.logTitle}>Tilføj væskeindtag</Text>
-          </View>
-
-          <View style={styles.waterContent}>
-            <Text style={styles.waterIntakeText}>Væske {waterIntake} l</Text>
-            <View style={styles.waterIconContainer}>
-              <Ionicons
-                name="remove-circle-outline"
-                size={34}
-                color="red"
-                onPress={() => {
-                  setIsWaterModalVisible(true);
-                  setIsAdding(false);
-                }}
-              />
-              <Ionicons
-                name="add-circle-outline"
-                size={34}
-                marginLeft={10}
-                color="green"
-                onPress={() => {
-                  setIsWaterModalVisible(true);
-                  setIsAdding(true);
-                }}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* modal when isWaterModalVisible is true */}
-        <WaterModal
-          isVisible={isWaterModalVisible}
-          onClose={() => setIsWaterModalVisible(false)}
-          onAddWater={isAdding ? handleAddWater : handleRemoveWater}
-        />
+        <WaterDisplay user={user} selectedDate={selectedDate} />
 
         <BowelDisplay user={user} selectedDate={selectedDate} />
 
@@ -342,37 +249,6 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 8,
   },
-  waterContainer: {
-    width: "100%",
-    padding: 10,
-    borderRadius: 20,
-    marginTop: 10,
-    backgroundColor: "white",
-    alignItems: "center",
-    alignContent: "center",
-    elevation: 10,
-  },
-  waterContent: {
-    alignItems: "center",
-  },
-  waterIntakeText: {
-    fontSize: 16,
-    fontWeight: "400",
-    marginTop: 10,
-    borderColor: "black",
-    borderWidth: 0.2,
-    padding: 5,
-    borderRadius: 50,
-    width: 140,
-    textAlign: "center",
-  },
-  waterIconContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-    width: "34%",
-    paddingHorizontal: 15,
-  },
-
   WellnessContainer: {
     width: "100%",
     padding: 10,
