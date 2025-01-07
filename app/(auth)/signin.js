@@ -29,7 +29,7 @@ const SignIn = () => {
       })
       .catch((error) => {
         setLoading(false);
-        Alert.alert("Login Error", error);
+        Alert.alert("Fejl, fejl ved login");
       });
 
     setLoading(true);
