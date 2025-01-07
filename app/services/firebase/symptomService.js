@@ -80,7 +80,6 @@ export const fetchSymptoms = async (userId, date) => {
         intensity: symptom.intensity,
       }));
     } else {
-      console.log("No symptom log found for this date:", date);
       return []; // Return an empty array if no document exists
     }
   } catch (error) {
