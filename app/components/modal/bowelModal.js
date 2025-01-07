@@ -78,15 +78,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       Alert.alert("Error", "Please select a bowel type.");
       return;
     }
-
     try {
-      // Get the current userId
-      const user = getAuth().currentUser; // Get the currently authenticated user
-      if (!user) {
-        Alert.alert("Error", "You must be logged in to save a bowel log.");
-        return;
-      }
-
       // Call the addBowelLog service with the necessary parameters
       await addBowelLog(
         user.uid,
@@ -101,7 +93,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       onClose(); // Close the modal after saving
     } catch (error) {
       console.error("Error saving bowel log:", error);
-      Alert.alert("Error", "Noget gik galt - prøv igen");
+      Alert.alert("Fejl", "Noget gik galt - prøv igen");
     }
   };
 
@@ -147,8 +139,7 @@ const BowelModal = ({ isVisible, onClose }) => {
       animationIn="fadeIn"
       animationOut="fadeOut"
       backdropColor="rgba(0, 0, 0, 0.6)"
-      onBackdropPress={onClose}
-      onRequestClose={onClose}
+      onBackdropPress={handleClose}
       style={styles.modal}
     >
       <View style={styles.container}>
@@ -352,7 +343,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   dateText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "300",
   },
   imageContainer: {
