@@ -25,7 +25,7 @@ const CustomButton = ({
             size={16}
             color="white"
             style={styles.icon}
-          /> // Icon with size and color
+          /> 
         )}
         <Text style={[styles.buttonText, textStyles]}>
           {isLoading ? loadingText || "Loading..." : title}

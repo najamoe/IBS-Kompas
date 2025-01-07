@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import CustomButton from "../CustomButton";
 
 const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
   if (!isVisible) return null;
@@ -9,16 +10,21 @@ const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalText}>
-            Er du sikker på, at du vil slette loggen?
+            Er du sikker på, at du vil slette?
           </Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-              <Text style={styles.buttonText}>Nej</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onConfirm} style={styles.confirmButton}>
-              <Text style={styles.buttonText}>Ja</Text>
-            </TouchableOpacity>
-            
+            <CustomButton
+              title="Nej"
+              handlePress={onCancel}
+              customStyles={styles.cancelButton}
+              textStyles={styles.buttonText}
+            />
+            <CustomButton
+              title="Ja"
+              handlePress={onConfirm}
+              customStyles={styles.confirmButton}
+              textStyles={styles.buttonText}
+            />
           </View>
         </View>
       </View>
@@ -50,19 +56,23 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   confirmButton: {
-    backgroundColor: "red",
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
+    width: 100,
+    marginRight: 20,
   },
   cancelButton: {
     backgroundColor: "gray",
     padding: 10,
     borderRadius: 5,
+    width: 100,
+    marginLeft: 20,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
+    marginLeft: 0,
   },
 });
 
