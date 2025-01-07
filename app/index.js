@@ -1,36 +1,16 @@
 import { StatusBar } from "expo-status-bar";
+import React, {useEffect, useState} from "react";
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFonts } from "expo-font";
 import Toast from "react-native-toast-message";
 import { SplashScreen } from "expo-splash-screen";
 import { router } from "expo-router";
-import { useEffect } from "react";
 import CustomButton from "./components/CustomButton";
+import { getAuth } from "firebase/auth";
 
 import logo from "../assets/images/logo.png";
 
 export default function App() {
-  // Load fonts using the useFonts hook
-  let [fontsLoaded] = useFonts({
-    "Poppins-Regular": require("../assets/fonts/PoppinsRegular.ttf"),
-  });
-
-  // Keep the splash screen visible while fonts are loading
-  useEffect(() => {
-    const prepare = async () => {
-      await SplashScreen.preventAutoHideAsync();
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    };
-
-    prepare();
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null; // Render nothing while fonts are loading
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,7 +61,7 @@ const styles = StyleSheet.create({
   mainText: {
     fontSize: 30,
     color: "#798b93",
-    fontFamily: "Poppins-Regular",
+
     fontWeight: "bold",
     marginTop: 40,
     marginBottom: 5,
@@ -91,7 +71,7 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 18,
     color: "#8da3ab",
-    fontFamily: "Poppins-Regular",
+
     fontWeight: "bold",
     marginBottom: 10,
     paddingHorizontal: 35,

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 34,
     color: "white",
-    fontFamily: "Poppins-Regular",
+    
     fontWeight: "bold",
     marginLeft: 20,
     marginTop: 90,
@@ -160,7 +160,6 @@ const styles = StyleSheet.create({
   },
   signupStyle: {
     fontWeight: "bold",
-    fontFamily: "Poppins-Regular",
     fontSize: 14,
     marginLeft: 10,
   },
