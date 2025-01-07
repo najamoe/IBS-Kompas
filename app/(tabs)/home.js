@@ -16,14 +16,10 @@ import FoodDisplay from "../components/displays/foodDisplay";
 import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
 import WaterDisplay from "../components/displays/waterDisplay";
+import WellnessDisplay from "../components/displays/wellnessDisplay";
 
 const Home = () => {
-  const [refreshing, setRefreshing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    formatDateStorage(new Date())
-  );
-  const [user, setUser] = useState(null);
-  const [symptoms, setSymptoms] = useState([]);
+
 
   // Check if the user is signed in
   useEffect(() => {
@@ -52,6 +48,13 @@ const Home = () => {
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
 
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(
+      formatDateStorage(new Date())
+    );
+    const [user, setUser] = useState(null);
+    const [symptoms, setSymptoms] = useState([]);
+
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + days);
@@ -62,9 +65,7 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={{ flex: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        
         contentContainerStyle={{ paddingBottom: 100 }} // Adjust to ensure content can scroll fully
       >
         <View style={styles.dateContainer}>
