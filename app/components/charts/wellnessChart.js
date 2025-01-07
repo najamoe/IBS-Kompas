@@ -29,10 +29,9 @@ const WellnessChart = ({ userId, selectedDate }) => {
           acc[name] = count; // Map emoticon name to count
           return acc;
         }, {});
-        setWeeklyData(data); // Store the emoticon counts for display
-      } else {
-        console.log("No data available for the selected week");
-      }
+          setWeeklyData(data); // Store the emoticon counts for display
+        }; // Add closing brace for try block
+   
     } catch (error) {
       console.error("Error fetching wellness log:", error);
     } finally {
