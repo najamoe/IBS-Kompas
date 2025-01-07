@@ -1,5 +1,4 @@
-import { doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore"; // Modular Firestore imports
-import { getAuth } from "firebase/auth";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; // Modular Firestore imports
 import firebaseConfig from "./FirebaseConfig";
 
 const { db } = firebaseConfig; // Get Firestore instance
