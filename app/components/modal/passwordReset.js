@@ -34,7 +34,7 @@ const ResetPasswordModal = ({
           <View style={styles.buttonContainer}>
             <CustomButton
               title="Afbryd"
-              customStyles={[styles.modalButtonStyle, { backgroundColor: "#a60202" }]}
+              customStyles={[styles.modalButtonStyle, { backgroundColor: "grey" }]}
               textStyles={styles.buttonTextStyle}
               handlePress={() => setModalVisible(false)}
               style={styles.cancelButton}
