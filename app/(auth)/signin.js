@@ -38,7 +38,6 @@ const SignIn = () => {
     signInUser(email, password)
       .then(() => {
         setLoading(false);
-        Alert.alert("Du er nu logget ind");
         router.push("/home");
       })
       .catch((error) => {
