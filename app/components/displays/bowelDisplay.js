@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  Alert,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import CustomButton from "../../components/CustomButton";
@@ -59,13 +60,11 @@ const BowelDisplay = ({ user, selectedDate }) => {
       deleteBowelLog(user.uid, logId); // Pass both userId and logId (date)
     } else {
       console.error("User ID is missing!");
+      Alert.alert("Fejl", "Der opstod en fejl- prøv igen senere.");
     }
     setIsConfirmDeleteVisible(false);
   };
 
-  const cancelDelete = () => {
-    setIsConfirmDeleteVisible(false);
-  };
 
   return (
     <ScrollView
