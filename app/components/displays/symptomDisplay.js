@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
-import { LinearGradient } from "expo-linear-gradient"; // Import expo-linear-gradient
+import { LinearGradient } from "expo-linear-gradient"; 
 import {
   addSymptoms,
   fetchSymptoms,
@@ -12,6 +12,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
   const [currentIntensity, setCurrentIntensity] = useState(null); // To track the currently selected intensity
   const [showIntensity, setShowIntensity] = useState(false); // Controls visibility of intensity value
   const [loading, setLoading] = useState(false);
+ 
   const symptomOptions = [
     { label: "Krampe", value: "krampe" },
     { label: "Kvalme", value: "kvalme" },
@@ -26,6 +27,8 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     const initializeSymptoms = async () => {
       if (!user) return; // Prevent fetch if user is not authenticated
       try {
+        await addSymptoms(user.uid, selectedDate, []);
+
         const symptomsFromFirestore = await fetchSymptoms(
           user.uid,
           selectedDate
@@ -39,7 +42,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
         }, {});
         setSymptomIntensities(initialSymptoms);
       } catch (error) {
-        console.error("Error fetching symptoms:", error);
+        console.error("Error fetching symptoms from symptomDisplay:", error);
       } finally {
         setLoading(false); // Stop loading after data is fetched or on error
       }
@@ -73,7 +76,6 @@ const SymptomDisplay = ({ user, selectedDate }) => {
 
     try {
       await addSymptoms(user.uid, selectedDate, symptomsToSave);
-      
     } catch (error) {
       console.error("Error saving symptoms:", error);
     }
@@ -88,7 +90,10 @@ const SymptomDisplay = ({ user, selectedDate }) => {
           <View key={symptomOption.value} style={styles.symptomContainer}>
             <Text style={styles.symptomLabel}>{symptomOption.label}</Text>
 
-            <Text style={styles.valueText}> {symptomIntensities[symptomOption.value]}</Text>
+            <Text style={styles.valueText}>
+              {" "}
+              {symptomIntensities[symptomOption.value]}
+            </Text>
             {/* Custom Slider with Gradient Background */}
             <LinearGradient
               colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
@@ -128,9 +133,9 @@ export default SymptomDisplay;
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    alignItems: "center", 
-    justifyContent: "flex-start", 
-    width: "100%", 
+    alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
     padding: 10,
     backgroundColor: "white",
     borderRadius: 20,
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   symptomContainer: {
-    width: "45%", 
+    width: "45%",
     padding: 10,
     borderRadius: 20,
     margin: 5,

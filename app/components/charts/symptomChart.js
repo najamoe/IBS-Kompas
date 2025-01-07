@@ -49,6 +49,8 @@ const SymptomChart = ({ userId, selectedDate }) => {
     fetchSymptoms();
   }, [userId, selectedDate]);
 
+  
+
   // Prepare data for the LineChart
   const chartData = {
     labels: [], // Days of the week
@@ -78,7 +80,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
       };
     }
 
-    // Find the index of the current day and update the count
+    // Find the index of the current day and update the intensity
     const dayIndex = chartData.labels.indexOf(dateFormatted);
     if (dayIndex !== -1) {
       symptoms[dayData.name].data[dayIndex] = dayData.intensity;
@@ -93,7 +95,6 @@ const SymptomChart = ({ userId, selectedDate }) => {
     withDots: true, // Show points on the line
     withInnerLines: false,
     withOuterLines: false,
-    // Add dashed lines for overlapping lines (optional)
     dash: symptoms[symptom].data.some((val, index, arr) => {
       return arr.filter((v) => v === val).length > 1; // If multiple points have the same value
     })
@@ -110,7 +111,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     propsForDots: {
-      r: "3", 
+      r: "3",
       strokeWidth: "0.5",
       stroke: "#fff",
     },
@@ -120,13 +121,17 @@ const SymptomChart = ({ userId, selectedDate }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Symptomer</Text>
 
-      {/* Loading Indicator or chart */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
           <Text>Loading...</Text>
         </View>
+      ) : weeklyData.length === 0 ? (
+        <View style={styles.container}>
+          <Text>No symptoms logged for this week yet</Text>
+        </View>
       ) : (
+        // Chart rendering if data is available
         <View style={styles.chartWrapper}>
           <LineChart
             data={chartData}
@@ -156,6 +161,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
     </View>
   );
 };
+
 
 export default SymptomChart;
 
