@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
-  RefreshControl,
   Text,
   View,
   ScrollView,
@@ -11,7 +10,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { getAuth } from "firebase/auth";
 import { AntDesign } from "@expo/vector-icons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FoodDisplay from "../components/displays/foodDisplay";
 import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
@@ -19,8 +17,6 @@ import WaterDisplay from "../components/displays/waterDisplay";
 import WellnessDisplay from "../components/displays/wellnessDisplay";
 
 const Home = () => {
-
-
   // Check if the user is signed in
   useEffect(() => {
     const auth = getAuth();
@@ -48,12 +44,11 @@ const Home = () => {
     return `${year}-${month}-${day}`; // Internal format for calendar
   };
 
-    const [refreshing, setRefreshing] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(
-      formatDateStorage(new Date())
-    );
-    const [user, setUser] = useState(null);
-    const [symptoms, setSymptoms] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(
+    formatDateStorage(new Date())
+  );
+  const [user, setUser] = useState(null);
+  const [symptoms, setSymptoms] = useState([]);
 
   const handleDayChange = (days) => {
     const newDate = new Date(selectedDate);
@@ -65,7 +60,6 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={{ flex: 1 }}
-        
         contentContainerStyle={{ paddingBottom: 100 }} // Adjust to ensure content can scroll fully
       >
         <View style={styles.dateContainer}>
@@ -110,7 +104,6 @@ const Home = () => {
           setSymptoms={setSymptoms}
         />
 
-        {/* Symptom Section */}
         <SymptomDisplay
           user={user}
           selectedDate={selectedDate}
@@ -168,42 +161,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
     fontWeight: 600,
-  },
-  foodContent: {
-    borderColor: "grey",
-    borderWidth: 0.3,
-    borderRadius: 10,
-    backgroundColor: "white",
-    marginTop: 10,
-    marginBottom: 10,
-    width: "95%",
-    padding: 10,
-    elevation: 8,
-  },
-
-  WellnessContainer: {
-    width: "100%",
-    padding: 10,
-    borderRadius: 20,
-    marginTop: 10,
-    backgroundColor: "white",
-    alignItems: "center",
-    elevation: 10,
-  },
-  emoticonWrapper: {
-    margin: 6,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 50,
-  },
-  emoticonContainer: {
-    flexDirection: "row",
-    elevation: 10,
-  },
-  selectedEmoticon: {
-    backgroundColor: "#86C5D8",
-    padding: 2,
   },
   logTitleContainer: {
     flexDirection: "row",
