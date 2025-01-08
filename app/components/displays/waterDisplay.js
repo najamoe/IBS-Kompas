@@ -128,14 +128,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 140,
     textAlign: "center",
-    padding: 15,    
   },
   waterIconContainer: {
     flexDirection: "row",
     marginTop: 10,
     marginBottom: 10,
     width: "34%",
-    paddingHorizontal: 15,
   },
   logTitleContainer: {
     marginBottom: 10,
