@@ -125,9 +125,9 @@ const SymptomChart = ({ userId, selectedDate }) => {
           <Text>Loading...</Text>
         </View>
       ) : weeklyData.length === 0 ? (
-        <View style={styles.container}>
+        
           <Text>Du har ikke logget symptomer for denne uge</Text>
-        </View>
+        
       ) : (
         // Chart rendering if data is available
         <View style={styles.chartWrapper}>
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     borderColor: "#86C5D8",
     borderWidth: 6,
     elevation: 5,
+    
   },
   title: {
     fontSize: 24,
