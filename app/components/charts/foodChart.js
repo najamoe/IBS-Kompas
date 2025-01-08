@@ -46,13 +46,18 @@ const FoodChart = ({ userId, initialDate }) => {
   };
 
   // Swipe handlers for changing dates
-  const handleSwipeLeft = () => {
+  const handleSwipeRight = () => {
     setSelectedDate((prevDate) => moment(prevDate).add(1, "days"));
   };
 
-  const handleSwipeRight = () => {
+  const handleSwipeLeft = () => {
     setSelectedDate((prevDate) => moment(prevDate).subtract(1, "days"));
   };
+
+  const handleDayChange = (days) => {
+  
+  } 
+
 
   return (
     <GestureRecognizer
@@ -62,13 +67,13 @@ const FoodChart = ({ userId, initialDate }) => {
     >
       
         <View style={styles.dateNavigation}>
-          <TouchableOpacity onPress={() => handleDayChange(-1)}>
+          <TouchableOpacity onPress={handleSwipeLeft}>
             <AntDesign name="left" size={22} />
           </TouchableOpacity>
           <Text style={styles.dateText}>
             {selectedDate.format("dddd, MMMM Do YYYY")}
           </Text>
-          <TouchableOpacity onPress={() => handleDayChange(1)}>
+          <TouchableOpacity onPress={handleSwipeRight}>
             <AntDesign name="right" size={22} />
           </TouchableOpacity>
         </View>
