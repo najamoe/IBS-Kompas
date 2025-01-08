@@ -102,9 +102,9 @@ const SymptomChart = ({ userId, selectedDate }) => {
 
   // Chart configuration
   const chartConfig = {
-    backgroundColor: "#cae9f5",
-    backgroundGradientFrom: "#ffffff",
-    backgroundGradientTo: "#cae9f5",
+    backgroundColor: "#FFFFFF",
+    backgroundGradientFrom: "#FFFFFF",
+    backgroundGradientTo: "#FFFFFF",
     decimalPlaces: 0,
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -138,6 +138,7 @@ const SymptomChart = ({ userId, selectedDate }) => {
             yAxisInterval={1}
             chartConfig={chartConfig}
             bezier
+       
           />
         </View>
       )}
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    height: 480, 
+    height: 490, 
     marginVertical: 10,
     marginHorizontal: 8,
     alignItems: "center",
@@ -182,11 +183,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    marginTop: 10,
   },
   chartWrapper: {
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 5,
+   
   },
   loadingContainer: {
     alignItems: "center",
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
   legendItem: {
     flexDirection: "row",
