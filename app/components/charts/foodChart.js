@@ -4,9 +4,9 @@ import {
   Text,
   View,
   ActivityIndicator,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { fetchFoodIntakeForWeek } from "../../services/firebase/foodService";
 import moment from "moment";
 import GestureRecognizer from "react-native-swipe-gestures";
@@ -60,30 +60,25 @@ const FoodChart = ({ userId, initialDate }) => {
       onSwipeRight={handleSwipeRight}
       style={styles.container}
     >
-      <View>
+      
         <View style={styles.dateNavigation}>
-          <TouchableOpacity onPress={handleSwipeRight}>
-            <Text style={styles.navButton}>◀</Text>
+          <TouchableOpacity onPress={() => handleDayChange(-1)}>
+            <AntDesign name="left" size={22} />
           </TouchableOpacity>
           <Text style={styles.dateText}>
             {selectedDate.format("dddd, MMMM Do YYYY")}
           </Text>
-          <TouchableOpacity onPress={handleSwipeLeft}>
-            <Text style={styles.navButton}>▶</Text>
+          <TouchableOpacity onPress={() => handleDayChange(1)}>
+            <AntDesign name="right" size={22} />
           </TouchableOpacity>
         </View>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : foodData &&
-          Object.keys(foodData).some(
-            (mealType) => foodData[mealType]?.length > 0
-          ) ? (
-          <ScrollView>
-            {["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
-              const mealData = foodData[mealType]; // foodData is now categorized by meal type
-              if (!Array.isArray(mealData) || mealData.length === 0) {
-                return null; // Skip rendering if no data for the meal type
-              }
+       
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : Object.keys(foodData).length > 0 ? (
+            ["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
+              const mealData = foodData[mealType];
+              if (!mealData || mealData.length === 0) return null;
 
               return (
                 <View key={mealType} style={styles.mealTypeContainer}>
@@ -93,19 +88,21 @@ const FoodChart = ({ userId, initialDate }) => {
                   {mealData.map((item, index) => (
                     <View key={index} style={styles.foodItem}>
                       <Text>{item.name}</Text>
-                      <Text>{item.quantity}</Text>
+                      <Text>{item.quantity} {item.unit}</Text>
+                      <View style={styles.separator} />
                     </View>
                   ))}
                 </View>
               );
-            })}
-          </ScrollView>
-        ) : (
-          <View style={styles.noDataContainer}>
-            <Text>No food logs for this week</Text>
-          </View>
-        )}
-      </View>
+                ;
+            })
+          ) : (
+            <View style={styles.noDataContainer}>
+              <Text>No food logs for this week</Text>
+            </View>
+          )}
+       
+      
     </GestureRecognizer>
   );
 };
@@ -114,7 +111,6 @@ export default FoodChart;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     marginTop: 20,
     marginHorizontal: 8,
     width: "96%",
@@ -124,23 +120,30 @@ const styles = StyleSheet.create({
     borderColor: "#86C5D8",
     borderWidth: 4,
     elevation: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
   dateNavigation: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    marginTop: 10,
     marginBottom: 15,
+    borderColor: "#86C5D8",
+    borderWidth: 1,
+    width: "70%",
+    padding: 10,
+    borderRadius: 30,
   },
-  navButton: {
-    fontSize: 24,
-    color: "blue",
-  },
+
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
   },
   mealTypeContainer: {
     marginBottom: 15,
+    backgroundColor: "#F0F8FF",
+    width: "90%",
+    borderRadius: 10,
+    padding: 10,
   },
   mealTypeTitle: {
     fontSize: 16,
@@ -148,7 +151,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   foodItem: {
-    backgroundColor: "#e0e0e0",
     padding: 10,
     borderRadius: 5,
     marginBottom: 5,
@@ -157,5 +159,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 200,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#ccc", // Choose the color you prefer for the line
+    marginTop: 10, 
+    width: "100%", 
   },
 });
