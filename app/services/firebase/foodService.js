@@ -32,14 +32,14 @@ export const addFoodIntake = async (userId, foodData, type) => {
     const foodLogRef = doc(
       firestore,
       `users/${userId}/foodLogs/${date}/${type}/${timestamp}`
-    ); 
+    );
 
     // Set food data to the document with timestamp as the ID
     await setDoc(foodLogRef, {
       ...foodData,
       type,
       date,
-      timestamp, 
+      timestamp,
       categories:
         foodData.categories && foodData.categories.length > 0
           ? foodData.categories
@@ -158,7 +158,6 @@ export const fetchFoodIntakeForWeek = async (userId, weekStartDate) => {
   }
 };
 
-
 export const deleteFoodIntake = async (userId, foodData, type) => {
   if (!firestore) {
     throw new Error("Firestore instance is missing.");
@@ -176,9 +175,12 @@ export const deleteFoodIntake = async (userId, foodData, type) => {
     );
 
     // Query for the document by its name
-    const q = query(foodLogRef, where("name", "==", foodData.name));
+    const q = query(
+      foodLogRef,
+      where("timestamp", "==", foodData.timestamp)
+    );
     const snapshot = await getDocs(q);
-   
+
     for (const doc of snapshot.docs) {
       await deleteDoc(doc.ref);
     }

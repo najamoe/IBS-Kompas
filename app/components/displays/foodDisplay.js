@@ -72,11 +72,13 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
 const handleDeleteItem = async () => {
   try {
     if (itemToDelete) {
-      // Optimistically remove item from UI
+      // Optimistically remove item from UI by matching timestamp
       setFoodData((prevFoodData) =>
-        prevFoodData.filter((foodItem) => foodItem.name !== itemToDelete.name)
+        prevFoodData.filter(
+          (foodItem) =>
+            foodItem.timestamp !== itemToDelete.timestamp
+        )
       );
-
       // Perform the actual deletion from Firestore
       await deleteFoodIntake(user.uid, itemToDelete, type);
 
@@ -94,6 +96,7 @@ const handleDeleteItem = async () => {
     setIsDeleteModalVisible(false);
   }
 };
+
 
 
   const handleUpdateItem = async () => {
