@@ -72,7 +72,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
 const handleDeleteItem = async () => {
   try {
     if (itemToDelete) {
-      // Optimistically remove item from UI by matching timestamp
+      // removing item from UI by matching timestamp
       setFoodData((prevFoodData) =>
         prevFoodData.filter(
           (foodItem) =>
@@ -89,9 +89,9 @@ const handleDeleteItem = async () => {
   } catch (error) {
     console.error("Error deleting food item:", error);
 
-    // Revert the optimistic UI update on error
+    // Revert the UI update on error
     setFoodData((prevFoodData) => [
-      ...prevFoodData, // Restore the deleted item if necessary
+      ...prevFoodData, 
     ]);
     setIsDeleteModalVisible(false);
   }
