@@ -1,12 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import { SplashScreen } from "expo-splash-screen";
 import { router } from "expo-router";
 import CustomButton from "./components/CustomButton";
-import { getAuth } from "firebase/auth";
 
 import logo from "../assets/images/logo.png";
 
