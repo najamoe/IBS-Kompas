@@ -328,9 +328,9 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: "#ccc", // Choose the color you prefer for the line
-    marginTop: 10, // Space between the title and the line
-    width: "100%", // Make sure it spans the whole width of the container
+    backgroundColor: "#ccc", 
+    marginTop: 10, 
+    width: "100%", 
   },
   foodContent: {
     marginTop: 10,
