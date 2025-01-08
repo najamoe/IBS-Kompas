@@ -32,14 +32,14 @@ export const addFoodIntake = async (userId, foodData, type) => {
     const foodLogRef = doc(
       firestore,
       `users/${userId}/foodLogs/${date}/${type}/${timestamp}`
-    ); // Set the document ID to timestamp
+    ); 
 
     // Set food data to the document with timestamp as the ID
     await setDoc(foodLogRef, {
       ...foodData,
       type,
       date,
-      timestamp, // Ensure timestamp exists
+      timestamp, 
       categories:
         foodData.categories && foodData.categories.length > 0
           ? foodData.categories

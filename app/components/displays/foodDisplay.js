@@ -100,18 +100,17 @@ const handleDeleteItem = async () => {
     try {
       if (selectedItem) {
         if (!quantity || isNaN(quantity) || quantity <= 0 || !unit) {
-          Alert.alert(
-            "Fejl",
-            "Der er noget galt med mængden eller enheden."
-          );
+          Alert.alert("Fejl", "Der er noget galt med mængden eller enheden.");
           return;
         }
 
         const updatedItem = {
           ...selectedItem,
-          quantity,
-          unit,
+          quantity: quantity,
+          unit: unit,
         };
+        console.log(selectedItem, quantity, unit);
+
 
         await updateFoodItem(
           user.uid,
@@ -126,6 +125,12 @@ const handleDeleteItem = async () => {
             item.id === selectedItem.id ? updatedItem : item
           )
         );
+
+        // Reset form fields
+        setItemName("");
+        setQuantity("");
+        setUnit("");
+
         setShowUpdateModal(false);
       }
     } catch (error) {
@@ -181,11 +186,15 @@ const handleDeleteItem = async () => {
             >
               <TouchableOpacity
                 onPress={() => {
-                  setSelectedItem(item); // Set the selected item here
-                  setItemName(item.name); // Optional: Pre-fill input fields
-                  setQuantity(item.quantity); // Optional: Pre-fill input fields
-                  setUnit(item.unit); // Optional: Pre-fill input fields
-                  setShowUpdateModal(true); // Show the modal
+                  setSelectedItem(item);
+                  setItemName(item.name);
+                  setQuantity(item.quantity);
+                  setUnit(item.unit || "");
+                  setShowUpdateModal(true);
+                  // Log the selected item, quantity, and unit
+                  console.log("Opening modal for item:", item.name);
+                  console.log("Quantity:", item.quantity);
+                  console.log("Unit:", item.unit || "N/A");
                 }}
               >
                 <Text style={styles.foodItemText}>{item.name}</Text>

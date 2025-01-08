@@ -47,7 +47,8 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
         const foodData = {
           name: item.name,
           brand: item.brand,
-          quantity: `${item.quantity} ${item.unit}`,
+          quantity: item.quantity,
+          unit: item.unit,
           categories:
             item.categories && item.categories.length > 0
               ? item.categories
