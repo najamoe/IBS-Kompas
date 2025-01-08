@@ -54,10 +54,6 @@ const FoodChart = ({ userId, initialDate }) => {
     setSelectedDate((prevDate) => moment(prevDate).subtract(1, "days"));
   };
 
-  const handleDayChange = (days) => {
-  
-  } 
-
 
   return (
     <GestureRecognizer
