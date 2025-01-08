@@ -62,7 +62,7 @@ const Home = () => {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingBottom: TAB_BAR_HEIGHT + 20 }, // Dynamically add padding
+          { paddingBottom: TAB_BAR_HEIGHT + 10 }, 
         ]}
       >
       <View style={styles.dateContainer}>
@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#cae9f5",
     alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 80,
   },
   dateContainer: {
     backgroundColor: "#ffffff",
