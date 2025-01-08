@@ -27,22 +27,37 @@ const SymptomDisplay = ({ user, selectedDate }) => {
     const initializeSymptoms = async () => {
       if (!user) return; // Prevent fetch if user is not authenticated
       try {
-        await addSymptoms(user.uid, selectedDate, []);
-
         const symptomsFromFirestore = await fetchSymptoms(
           user.uid,
           selectedDate
         );
-        const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
-          const fetchedSymptom = symptomsFromFirestore.find(
-            (s) => s.name === symptom.value
+
+        if (symptomsFromFirestore.length === 0) {
+          // If no symptoms exist in Firestore, initialize with default symptoms
+          const defaultSymptoms = symptomOptions.map((symptom) => ({
+            symptom: symptom.value,
+            intensity: 0,
+          }));
+          await addSymptoms(user.uid, selectedDate, defaultSymptoms);
+          setSymptomIntensities(
+            defaultSymptoms.reduce((acc, symptom) => {
+              acc[symptom.symptom] = symptom.intensity;
+              return acc;
+            }, {})
           );
-          acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
-          return acc;
-        }, {});
-        setSymptomIntensities(initialSymptoms);
+        } else {
+          // Map the fetched symptoms to the state
+          const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
+            const fetchedSymptom = symptomsFromFirestore.find(
+              (s) => s.name === symptom.value
+            );
+            acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
+            return acc;
+          }, {});
+          setSymptomIntensities(initialSymptoms);
+        }
       } catch (error) {
-        console.error("Error fetching symptoms from symptomDisplay:", error);
+        console.error("Error fetching symptoms from SymptomDisplay:", error);
       } finally {
         setLoading(false); // Stop loading after data is fetched or on error
       }
@@ -53,6 +68,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
       initializeSymptoms();
     }
   }, [user, selectedDate]);
+
 
   const handleSliderChange = (symptom, value) => {
     setSymptomIntensities((prev) => ({
