@@ -1,6 +1,6 @@
 import { StatusBar } from "react-native";
 import React from "react";
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Entypo } from "@expo/vector-icons";
 
@@ -14,7 +14,7 @@ const TabIcon = ({ name, color, size, iconType }) => {
 const TabsLayout = () => {
   return (
     <>
-     <StatusBar backgroundColor="#ffffff" style="light" />
+      <StatusBar backgroundColor="#ffffff" style="light" />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -27,13 +27,13 @@ const TabsLayout = () => {
             height: 60,
             borderRadius: 30,
             marginHorizontal: 10,
-            width: "90%", 
-            alignSelf: "center", 
+            width: "90%",
+            alignSelf: "center",
             position: "absolute",
-            bottom: 4, // Adjust for bottom spacing
-           marginLeft: 20,
-            elevation: 5, // Shadow for Android
-            shadowColor: "#000", // Shadow for iOS
+            bottom: 4,
+            marginLeft: 20,
+            elevation: 5,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 5,
