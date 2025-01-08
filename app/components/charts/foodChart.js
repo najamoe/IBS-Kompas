@@ -116,13 +116,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
+    marginHorizontal: 8,
+    width: "96%",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    borderColor: "#86C5D8",
+    borderWidth: 4,
     elevation: 5,
   },
   dateNavigation: {

@@ -165,18 +165,17 @@ export default SymptomChart;
 
 const styles = StyleSheet.create({
   container: {
-    width: "98%",
+    width: "96%",
     marginTop: 20,
     backgroundColor: "white",
     borderRadius: 10,
     height: 480, 
     marginVertical: 10,
+    marginHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
+    borderColor: "#86C5D8",
+    borderWidth: 6,
     elevation: 5,
   },
   title: {

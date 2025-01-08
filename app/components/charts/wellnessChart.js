@@ -89,13 +89,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 }, // Increase shadow offset for more elevation
-    shadowOpacity: 0.2, // Slightly increased opacity for stronger shadow
-    shadowRadius: 6, // Increase shadow radius for a larger shadow
-    elevation: 6, // Increase elevation for Android
-    borderColor: "#86C5D8", // Light grey border color
-    borderWidth: 6, // Thicker border to create the elevated effect
+    elevation: 6,
+    borderColor: "#86C5D8",
+    borderWidth: 6,
   },
 
   chartWrapper: {

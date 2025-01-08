@@ -94,7 +94,7 @@ const Stats = () => {
         <View>
           {user ? (
             <SymptomChart
-              style={styles.graphContainer}
+              
               userId={user.uid}
               selectedDate={selectedDate}
             />

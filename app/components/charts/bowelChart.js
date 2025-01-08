@@ -89,8 +89,9 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
       ) : (
         <LineChart
           data={chartData}
-          width={310}
+          width={280}
           height={220}
+          style={{ alignSelf: "center" }}
           chartConfig={chartConfig}
         />
       )}
@@ -252,12 +253,9 @@ const styles = StyleSheet.create({
     height: 300,
     width: "96%",
     marginVertical: 10,
+    marginHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
     elevation: 5,
     borderColor: "#86C5D8",
     borderWidth: 6,
