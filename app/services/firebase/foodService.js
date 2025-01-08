@@ -62,17 +62,17 @@ export const subscribeFood = async (userId, date, type, callback) => {
 
     // Listen to real-time updates
     const unsubscribe = onSnapshot(foodLogRef, (snapshot) => {
-      let updatedFood = []; // Collect the updated food data
+      let fetchedFood = []; // Collect the updated food data
 
       snapshot.forEach((doc) => {
         const foodData = { id: doc.id, ...doc.data() };
 
-        updatedFood.push(foodData);
+        fetchedFood.push(foodData);
       });
 
       // Call the callback with the updated food array
       if (callback) {
-        callback(updatedFood);
+        callback(fetchedFood);
       }
     });
 

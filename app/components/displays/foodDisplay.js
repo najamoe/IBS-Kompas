@@ -30,7 +30,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -43,8 +43,8 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
             user.uid,
             selectedDate,
             type,
-            (updatedFood) => {
-              setFoodData(Array.isArray(updatedFood) ? updatedFood : []);
+            (fetchedFood) => {
+              setFoodData(Array.isArray(fetchedFood) ? fetchedFood : []);
             }
           );
 
@@ -59,38 +59,88 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     fetchData();
   }, [user, selectedDate, selectedType]);
 
-  const handleFoodModal = () => {
+  const openFoodModal = () => {
     setSelectedType(type);
     setIsFoodModalVisible(true);
   };
 
- const confirmDeleteItem = (item) => {
-   setItemToDelete(item);
-   setIsDeleteModalVisible(true);
- };
+  const confirmDeleteItem = (item) => {
+    setItemToDelete(item);
+    setIsDeleteModalVisible(true);
+  };
 
- const handleDeleteItem = async () => {
-   try {
-     if (itemToDelete) {
-       await deleteFoodIntake(user.uid, itemToDelete, type);
+const handleDeleteItem = async () => {
+  try {
+    if (itemToDelete) {
+      // Optimistically remove item from UI
+      setFoodData((prevFoodData) =>
+        prevFoodData.filter((foodItem) => foodItem.name !== itemToDelete.name)
+      );
 
-       const updatedFoodData = foodData.filter(
-         (foodItem) => foodItem.name !== itemToDelete.name
-       );
+      // Perform the actual deletion from Firestore
+      await deleteFoodIntake(user.uid, itemToDelete, type);
 
-       setFoodData(updatedFoodData);
-       setIsDeleteModalVisible(false);
-       setItemToDelete(null);
-     }
-   } catch (error) {
-     console.error("Error deleting food item:", error);
-     setIsDeleteModalVisible(false);
-   }
- };
+      // Close the modal and reset item to delete
+      setIsDeleteModalVisible(false);
+      setItemToDelete(null);
+    }
+  } catch (error) {
+    console.error("Error deleting food item:", error);
+
+    // Revert the optimistic UI update on error
+    setFoodData((prevFoodData) => [
+      ...prevFoodData, // Restore the deleted item if necessary
+    ]);
+    setIsDeleteModalVisible(false);
+  }
+};
+
+
+  const handleUpdateItem = async () => {
+    try {
+      if (selectedItem) {
+        if (!quantity || isNaN(quantity) || quantity <= 0 || !unit) {
+          Alert.alert(
+            "Invalid input",
+            "Please enter a valid quantity and unit."
+          );
+          return;
+        }
+
+        const updatedItem = {
+          ...selectedItem,
+          quantity,
+          unit,
+        };
+
+        await updateFoodItem(
+          user.uid,
+          selectedItem.id,
+          updatedItem,
+          type,
+          selectedDate
+        );
+
+        setFoodData((prevFoodData) =>
+          prevFoodData.map((item) =>
+            item.id === selectedItem.id ? updatedItem : item
+          )
+        );
+        setShowUpdateModal(false);
+      }
+    } catch (error) {
+      console.error("Error updating food item:", error);
+      Alert.alert(
+        "Update failed",
+        "There was an error updating the food item."
+      );
+      setShowUpdateModal(false);
+    }
+  };
 
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    setShowUpdateModal(false);
     setSelectedItems([]); // Clear selected items
     setItemName(""); // Reset item name
     setQuantity(""); // Reset quantity
@@ -108,7 +158,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     <View style={styles.foodContainer}>
       <View style={styles.titleContainer}>
         <Text style={styles.mealTypeTitle}>{mealTypeLabels[type]}</Text>
-        <TouchableOpacity onPress={handleFoodModal}>
+        <TouchableOpacity onPress={openFoodModal}>
           <AntDesign
             name="pluscircleo"
             size={20}
@@ -135,7 +185,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                   setItemName(item.name); // Optional: Pre-fill input fields
                   setQuantity(item.quantity); // Optional: Pre-fill input fields
                   setUnit(item.unit); // Optional: Pre-fill input fields
-                  setShowModal(true); // Show the modal
+                  setShowUpdateModal(true); // Show the modal
                 }}
               >
                 <Text style={styles.foodItemText}>{item.name}</Text>
@@ -172,12 +222,12 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
         />
       </View>
 
-      {/* Modal for quantity and unit input */}
-      {showModal && (
+      {/* Update Modal */}
+      {showUpdateModal && (
         <Modal
           animationType="slide"
           transparent={true}
-          visible={showModal}
+          visible={showUpdateModal}
           onRequestClose={handleCloseModal}
         >
           <View style={styles.modalContainer}>
@@ -217,7 +267,7 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
                 <CustomButton
                   customStyles={[styles.cancelButton]}
                   title="Afbryd"
-                  handlePress={() => setShowModal(false)}
+                  handlePress={() => setShowUpdateModal(false)}
                 />
 
                 <CustomButton
