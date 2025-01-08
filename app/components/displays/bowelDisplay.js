@@ -4,8 +4,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
-  RefreshControl,
   Alert,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -23,7 +21,6 @@ const BowelDisplay = ({ user, selectedDate }) => {
   const [selectedLogId, setSelectedLogId] = useState(null);
   const [bowelLogs, setBowelLogs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     let unsubscribe;
@@ -65,13 +62,7 @@ const BowelDisplay = ({ user, selectedDate }) => {
     setIsConfirmDeleteVisible(false);
   };
 
-
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContainer}
-      refreshControl={<RefreshControl refreshing={refreshing} />}
-    >
-      {/* Bowel Container */}
+  return (    
       <View style={styles.bowelContainer}>
         <View style={styles.logTitleContainer}>
           <Text style={styles.logTitle}>Log toiletbesøg</Text>
@@ -111,9 +102,9 @@ const BowelDisplay = ({ user, selectedDate }) => {
           handlePress={() => {
             setIsBowelModalVisible(true);
           }}
-          style={styles.addBowelButton}
+          customStyles={styles.addBowelButton}
         />
-      </View>
+      
 
       {/* Bowel Modal */}
       <BowelModal
@@ -127,26 +118,22 @@ const BowelDisplay = ({ user, selectedDate }) => {
         onConfirm={() => confirmDelete(selectedLogId)}
         onCancel={() => setIsConfirmDeleteVisible(false)}
       />
-    </ScrollView>
+    </View>
   );
 };
 
 export default BowelDisplay;
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 10,
-    backgroundColor: "#f5f5f5",
-  },
   bowelContainer: {
     backgroundColor: "white",
-    width: "100%",
+    width: "96%",
     padding: 10,
     borderRadius: 20,
-    marginTop: 10,
+    marginTop: 20,
+    marginBottom: 10,
     alignItems: "center",
-    elevation: 10,
+    elevation: 5,
   },
   logTitleContainer: {
     marginBottom: 10,
@@ -166,8 +153,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F0F8FF",
     borderRadius: 10,
+    borderColor: "#86C5D8",
+    borderWidth: 1,
     padding: 10,
     width: "30%",
+    marginHorizontal: 5,
+    elevation: 5,
   },
   trashIcon: {
     left: 30,
@@ -177,15 +168,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   addBowelButton: {
-    borderColor: "black",
-    borderWidth: 0.2,
+    borderColor: "#CAE9F5",
+    borderWidth: 2,
     padding: 10,
     borderRadius: 50,
     width: 120,
-    textAlign: "center",
-    marginBottom: 10,
-    marginTop: 10,
-    backgroundColor: "#d1e7dd",
+    backgroundColor: "#ADD8E6",
   },
   addBowelText: {
     fontSize: 16,
