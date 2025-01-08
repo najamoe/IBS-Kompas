@@ -87,13 +87,16 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
       {loading || !weeklyData.length ? (
         <LoadingOrData loading={loading} />
       ) : (
+        <View style={styles.chartWrapper}>
         <LineChart
           data={chartData}
-          width={280}
+          width={310}
           height={220}
           style={{ alignSelf: "center" }}
           chartConfig={chartConfig}
+          bezier
         />
+        </View>
       )}
     </View>
   );
@@ -149,17 +152,27 @@ export const BowelChartByType = ({ userId, selectedDate }) => {
 
   return (
     <View style={styles.frequentContainer}>
-      <Text style={styles.typeText}>Type</Text>
-      <Text style= {styles.frequentText}>
-        Din mest almindelige afføringstype denne uge er{" "} {"\n"}
-        <Text style={styles.boldText}>{formatBowelType(mostFrequentType)}</Text>
-      </Text>
-      {mostFrequentType && bowelTypeImages[mostFrequentType] && (
-        <Image
-          source={bowelTypeImages[mostFrequentType]}
-          style={styles.typeImage}
-          resizeMode="contain"
-        />
+      {loading ? (
+        <LoadingOrData loading={loading} />
+      ) : mostFrequentType ? (
+        <>
+          <Text style={styles.typeText}>Type</Text>
+          <Text style={styles.frequentText}>
+            Din mest almindelige afføringstype denne uge er {"\n"}
+            <Text style={styles.boldText}>
+              {formatBowelType(mostFrequentType)}
+            </Text>
+          </Text>
+          {bowelTypeImages[mostFrequentType] && (
+            <Image
+              source={bowelTypeImages[mostFrequentType]}
+              style={styles.typeImage}
+              resizeMode="contain"
+            />
+          )}
+        </>
+      ) : (
+        <Text>Ingen data tilgængelig for denne uge.</Text>
       )}
     </View>
   );
@@ -258,10 +271,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 5,
     borderColor: "#86C5D8",
-    borderWidth: 6,
+    borderWidth: 4,
   },
   title: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
   },
@@ -273,6 +286,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     
   },
+  chartWrapper: {
+    alignSelf: "flex-start",
+  },
+
   typeImage: {
     width: 60,
     height: 60,
@@ -291,7 +308,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     borderColor: "#86C5D8", 
-    borderWidth: 6,
+    borderWidth: 4,
   },
   typeText: {
     fontSize: 20,
@@ -314,7 +331,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     borderColor: "#86C5D8", 
-    borderWidth: 6,
+    borderWidth: 4,
   },
   TextContainer: {
     alignItems: "center",
