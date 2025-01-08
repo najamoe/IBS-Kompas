@@ -50,8 +50,6 @@ const SymptomChart = ({ userId, selectedDate }) => {
   }, [userId, selectedDate]);
 
   
-
-  // Prepare data for the LineChart
   const chartData = {
     labels: [], // Days of the week
     datasets: [], // Symptom datasets
