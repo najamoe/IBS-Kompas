@@ -24,7 +24,6 @@
     "expo": "~52.0.20",
     "expo-linear-gradient": "~14.0.1",
     "expo-router": "^4.0.15",
-    "expo-splash-screen": "^0.29.18",
     "expo-status-bar": "~2.0.0",
     "firebase": "^11.0.2",
     "lodash.debounce": "^4.0.8",
