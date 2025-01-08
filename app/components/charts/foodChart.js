@@ -54,7 +54,6 @@ const FoodChart = ({ userId, initialDate }) => {
     setSelectedDate((prevDate) => moment(prevDate).subtract(1, "days"));
   };
 
-
   return (
     <GestureRecognizer
       onSwipeLeft={handleSwipeLeft}
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: "#ccc", // Choose the color you prefer for the line
-    marginTop: 10, 
-    width: "100%", 
+    marginTop: 10,
+    width: "100%",
   },
 });
