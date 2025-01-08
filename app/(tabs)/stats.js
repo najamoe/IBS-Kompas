@@ -74,30 +74,30 @@ const Stats = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 80 }}
       >
         <View style={styles.dateContainer}>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => handleWeekChange(-1)}>
-              <AntDesign style={styles.arrowIcons} name="left" size={22} />
+              <AntDesign name="left" size={22} />
             </TouchableOpacity>
             <View style={styles.weekInfo}>
               <Text style={styles.weekText}>Uge {weekNumber}</Text>
               <Text style={styles.dateRangeText}>{weekRange}</Text>
             </View>
             <TouchableOpacity onPress={() => handleWeekChange(1)}>
-              <AntDesign style={styles.arrowIcons} name="right" size={22} />
+              <AntDesign name="right" size={22} />
             </TouchableOpacity>
           </View>
         </View>
-
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoText}>
+            Swipe ned for at opdatere data
+          </Text>
+        </View>
         <View>
           {user ? (
-            <SymptomChart
-              
-              userId={user.uid}
-              selectedDate={selectedDate}
-            />
+            <SymptomChart userId={user.uid} selectedDate={selectedDate} />
           ) : (
             <ActivityIndicator size="large" color="#0000ff" />
           )}
@@ -196,21 +196,17 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     marginHorizontal: 55,
     elevation: 5,
+    justifyContent: "center",
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-  arrowIcons: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "black",
-    margin: 10,
-  },
   weekInfo: {
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 10,
   },
   weekText: {
     fontSize: 18,
@@ -230,5 +226,14 @@ const styles = StyleSheet.create({
   },
   bowelChild: {
     width: "49%",
+  },
+  infoContainer: {
+    marginTop: 10,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  infoText: {
+    fontSize: 16,
+    color: "gray",
   },
 });
