@@ -77,13 +77,14 @@ export default WellnessDisplay;
 
 const styles = StyleSheet.create({
   WellnessContainer: {
-    width: "100%",
+    width: "96%",
     padding: 10,
     borderRadius: 20,
     marginTop: 10,
     backgroundColor: "white",
     alignItems: "center",
-    elevation: 10,
+    alignContent: "center",
+    elevation: 5,
   },
   emoticonWrapper: {
     margin: 6,
@@ -99,5 +100,13 @@ const styles = StyleSheet.create({
   selectedEmoticon: {
     backgroundColor: "#86C5D8",
     padding: 2,
+  },
+  logTitleContainer: {
+    marginBottom: 10,
+  },
+  logTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    padding: 10,
   },
 });
