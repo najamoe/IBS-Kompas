@@ -148,13 +148,15 @@ export default SymptomDisplay;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: "100%",
+    width: "96%",
     padding: 10,
-    backgroundColor: "white",
     borderRadius: 20,
+    marginTop: 20,
+    backgroundColor: "#ffffff",
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center",
+    elevation: 10,
   },
   logTitle: {
     fontSize: 24,
@@ -167,7 +169,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center", // Center symptoms horizontally
     width: "100%",
-    marginRight: 10,
   },
   symptomContainer: {
     width: "45%",
