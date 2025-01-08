@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 6,
-    borderColor: "#86C5D8",
+    borderColor: "#ADD8E6",
     borderWidth: 6,
   },
 

@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 5,
     borderColor: "#86C5D8",
-    borderWidth: 6,
+    borderWidth: 4,
   },
   chartWrapper: {
     alignSelf: "flex-start",
