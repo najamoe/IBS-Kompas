@@ -61,49 +61,47 @@ const FoodChart = ({ userId, initialDate }) => {
       onSwipeRight={handleSwipeRight}
       style={styles.container}
     >
-      
-        <View style={styles.dateNavigation}>
-          <TouchableOpacity onPress={handleSwipeLeft}>
-            <AntDesign name="left" size={22} />
-          </TouchableOpacity>
-          <Text style={styles.dateText}>
-            {selectedDate.format("dddd, MMMM Do YYYY")}
-          </Text>
-          <TouchableOpacity onPress={handleSwipeRight}>
-            <AntDesign name="right" size={22} />
-          </TouchableOpacity>
-        </View>
-       
-          {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : Object.keys(foodData).length > 0 ? (
-            ["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
-              const mealData = foodData[mealType];
-              if (!mealData || mealData.length === 0) return null;
+      <View style={styles.dateNavigation}>
+        <TouchableOpacity onPress={handleSwipeLeft}>
+          <AntDesign name="left" size={22} />
+        </TouchableOpacity>
+        <Text style={styles.dateText}>
+          {selectedDate.format("dddd, Do MMMM  YYYY")}
+        </Text>
+        <TouchableOpacity onPress={handleSwipeRight}>
+          <AntDesign name="right" size={22} />
+        </TouchableOpacity>
+      </View>
 
-              return (
-                <View key={mealType} style={styles.mealTypeContainer}>
-                  <Text style={styles.mealTypeTitle}>
-                    {mealTypeTranslation[mealType] || mealType}
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : Object.keys(foodData).length > 0 ? (
+        ["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
+          const mealData = foodData[mealType];
+          if (!mealData || mealData.length === 0) return null;
+
+          return (
+            <View key={mealType} style={styles.mealTypeContainer}>
+              <Text style={styles.mealTypeTitle}>
+                {mealTypeTranslation[mealType] || mealType}
+              </Text>
+              {mealData.map((item, index) => (
+                <View key={index} style={styles.foodItem}>
+                  <Text>{item.name}</Text>
+                  <Text>
+                    {item.quantity} {item.unit}
                   </Text>
-                  {mealData.map((item, index) => (
-                    <View key={index} style={styles.foodItem}>
-                      <Text>{item.name}</Text>
-                      <Text>{item.quantity} {item.unit}</Text>
-                      <View style={styles.separator} />
-                    </View>
-                  ))}
+                  <View style={styles.separator} />
                 </View>
-              );
-                ;
-            })
-          ) : (
-            <View style={styles.noDataContainer}>
-              <Text>No food logs for this week</Text>
+              ))}
             </View>
-          )}
-       
-      
+          );
+        })
+      ) : (
+        <View style={styles.noDataContainer}>
+          <Text>No food logs for this day</Text>
+        </View>
+      )}
     </GestureRecognizer>
   );
 };
