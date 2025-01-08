@@ -5,8 +5,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { getAuth } from "firebase/auth";
 import { AntDesign } from "@expo/vector-icons";
 import FoodDisplay from "../components/displays/foodDisplay";
@@ -14,6 +14,8 @@ import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
 import WaterDisplay from "../components/displays/waterDisplay";
 import WellnessDisplay from "../components/displays/wellnessDisplay";
+
+const TAB_BAR_HEIGHT = 60;
 
 const Home = () => {
   // Check if the user is signed in
@@ -56,63 +58,55 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 100 }} // Adjust to ensure content can scroll fully
+        contentContainerStyle={[
+          styles.container,
+          { paddingBottom: TAB_BAR_HEIGHT + 20 }, // Dynamically add padding
+        ]}
       >
-        <View style={styles.dateContainer}>
-          {/* Header with date navigation */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => handleDayChange(-1)}>
-              <AntDesign style={styles.arrowIcons} name="left" size={22} />
-            </TouchableOpacity>
-            <Text style={styles.dateText}>
-              {formatDateDisplay(selectedDate)}
-            </Text>
-            <TouchableOpacity onPress={() => handleDayChange(1)}>
-              <AntDesign style={styles.arrowIcons} name="right" size={22} />
-            </TouchableOpacity>
-          </View>
+      <View style={styles.dateContainer}>
+        {/* Header with date navigation */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handleDayChange(-1)}>
+            <AntDesign style={styles.arrowIcons} name="left" size={22} />
+          </TouchableOpacity>
+          <Text style={styles.dateText}>{formatDateDisplay(selectedDate)}</Text>
+          <TouchableOpacity onPress={() => handleDayChange(1)}>
+            <AntDesign style={styles.arrowIcons} name="right" size={22} />
+          </TouchableOpacity>
         </View>
+      </View>
 
-        {/* Daily Stats */}
+      <View style={styles.foodContainer}>
+        <Text style={styles.logTitle}> Madlog </Text>
 
-        <View style={styles.foodContainer}>
-          <Text style={styles.logTitle}> Madlog </Text>
+        <FoodDisplay type="breakfast" user={user} selectedDate={selectedDate} />
 
-          <FoodDisplay
-            type="breakfast"
-            user={user}
-            selectedDate={selectedDate}
-          />
+        <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
+        <FoodDisplay type="dinner" user={user} selectedDate={selectedDate} />
+        <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
+      </View>
 
-          <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
-          <FoodDisplay type="dinner" user={user} selectedDate={selectedDate} />
-          <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
-        </View>
+      <WaterDisplay user={user} selectedDate={selectedDate} />
 
-        <WaterDisplay user={user} selectedDate={selectedDate} />
+      <BowelDisplay user={user} selectedDate={selectedDate} />
 
-        <BowelDisplay user={user} selectedDate={selectedDate} />
+      <WellnessDisplay
+        user={user}
+        selectedDate={selectedDate}
+        symptoms={symptoms}
+        setSymptoms={setSymptoms}
+      />
 
-        <WellnessDisplay
-          user={user}
-          selectedDate={selectedDate}
-          symptoms={symptoms}
-          setSymptoms={setSymptoms}
-        />
-
-        <SymptomDisplay
-          user={user}
-          selectedDate={selectedDate}
-          symptoms={symptoms}
-          setSymptoms={setSymptoms}
-        />
-
-       
-      </ScrollView>
-    </SafeAreaView>
+      <SymptomDisplay
+        user={user}
+        selectedDate={selectedDate}
+        symptoms={symptoms}
+        setSymptoms={setSymptoms}
+      />
+    </ScrollView>
+  </SafeAreaView>
   );
 };
 
@@ -121,17 +115,22 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#cae9f5",
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingBottom: 80,
   },
   dateContainer: {
-    borderRadius: 30,
-    width: "90%",
-    padding: 5,
-    marginTop: 25,
+    backgroundColor: "#ffffff",
+    flexDirection: "row",
+    marginTop: 20,
     marginBottom: 10,
-    alignSelf: "center",
+    borderColor: "#86C5D8",
+    borderWidth: 1.5,
+    width: "70%",
+    padding: 10,
+    borderRadius: 40,
+    marginHorizontal: 55,
+    elevation: 5,
     justifyContent: "center",
   },
   header: {
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
     fontWeight: 600,
   },
   foodContainer: {
-    width: "100%",
+    width: "96%",
     padding: 10,
     borderRadius: 20,
     marginTop: 5,
