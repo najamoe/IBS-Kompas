@@ -101,8 +101,8 @@ const handleDeleteItem = async () => {
       if (selectedItem) {
         if (!quantity || isNaN(quantity) || quantity <= 0 || !unit) {
           Alert.alert(
-            "Invalid input",
-            "Please enter a valid quantity and unit."
+            "Fejl",
+            "Der er noget galt med mængden eller enheden."
           );
           return;
         }
@@ -131,8 +131,8 @@ const handleDeleteItem = async () => {
     } catch (error) {
       console.error("Error updating food item:", error);
       Alert.alert(
-        "Update failed",
-        "There was an error updating the food item."
+        "Opdatering mislykkedes",
+        "Der skete en fejl under opdatering af maden."
       );
       setShowUpdateModal(false);
     }
