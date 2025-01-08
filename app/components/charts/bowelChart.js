@@ -45,6 +45,7 @@ const chartConfig = {
   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   style: { borderRadius: 16 },
   propsForDots: { r: "2", strokeWidth: "2", stroke: "red" },
+  yAxisMax: 10,
 };
 
 // Chart by frequency 
@@ -89,7 +90,7 @@ export const BowelChartByFrequency = ({ userId, selectedDate }) => {
         <LineChart
           data={chartData}
           width={310}
-          height={240}
+          height={220}
           chartConfig={chartConfig}
         />
       )}
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     height: 300,
+    width: "96%",
     marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -257,6 +259,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
+    borderColor: "#86C5D8",
+    borderWidth: 6,
   },
   title: {
     fontSize: 14,
