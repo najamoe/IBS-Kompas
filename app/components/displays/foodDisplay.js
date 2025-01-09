@@ -70,35 +70,30 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setIsDeleteModalVisible(true);
   };
 
-const handleDeleteItem = async () => {
-  try {
-    if (itemToDelete) {
-      // removing item from UI by matching timestamp
-      setFoodData((prevFoodData) =>
-        prevFoodData.filter(
-          (foodItem) =>
-            foodItem.timestamp !== itemToDelete.timestamp
-        )
-      );
-      // Perform the actual deletion from Firestore
-      await deleteFoodIntake(user.uid, itemToDelete, type);
+  const handleDeleteItem = async () => {
+    try {
+      if (itemToDelete) {
+        // removing item from UI by matching timestamp
+        setFoodData((prevFoodData) =>
+          prevFoodData.filter(
+            (foodItem) => foodItem.timestamp !== itemToDelete.timestamp
+          )
+        );
+        // Perform the actual deletion from Firestore
+        await deleteFoodIntake(user.uid, itemToDelete, type);
 
-      // Close the modal and reset item to delete
+        // Close the modal and reset item to delete
+        setIsDeleteModalVisible(false);
+        setItemToDelete(null);
+      }
+    } catch (error) {
+      console.error("Error deleting food item:", error);
+
+      // Revert the UI update on error
+      setFoodData((prevFoodData) => [...prevFoodData]);
       setIsDeleteModalVisible(false);
-      setItemToDelete(null);
     }
-  } catch (error) {
-    console.error("Error deleting food item:", error);
-
-    // Revert the UI update on error
-    setFoodData((prevFoodData) => [
-      ...prevFoodData, 
-    ]);
-    setIsDeleteModalVisible(false);
-  }
-};
-
-
+  };
 
   const handleUpdateItem = async () => {
     try {
@@ -150,8 +145,6 @@ const handleDeleteItem = async () => {
       setLoading(false); // Ensure loading is stopped even if an error occurs
     }
   };
-
-
 
   const handleCloseModal = () => {
     setShowUpdateModal(false);
@@ -290,7 +283,7 @@ const handleDeleteItem = async () => {
 
                 <CustomButton
                   customStyles={[styles.addButton]}
-                  title={ loading ? "Opdaterer..." :  "Opdater"}
+                  title={loading ? "Opdaterer..." : "Opdater"}
                   handlePress={handleUpdateItem}
                 />
               </View>
@@ -334,9 +327,9 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: "#ccc", 
-    marginTop: 10, 
-    width: "100%", 
+    backgroundColor: "#ccc",
+    marginTop: 10,
+    width: "100%",
   },
   foodContent: {
     marginTop: 10,
