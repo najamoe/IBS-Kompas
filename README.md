@@ -2,11 +2,33 @@
 
 ### Mobile application for tracking what causes outbreak of IBS
 #### Created with react native & Expo Go
-
 ##### Exam assignment for AP graduate in computer science 2025
 
-
 ---
+
+## Features
+
+- **Account Management:** 
+  - Create an account and sign in
+  - Reset password
+- **Home Screen:**
+  - Overview of daily tracking
+- **Tracking Data:**
+  - Log water intake
+  - Log bowel movements with delete function
+  - Log food intake with an update function
+- **Statistics:**
+  - View detailed statistics to help identify patterns and potential IBS triggers
+- **Profile Management:**
+  - Update profile details
+  - Update password
+  - Delete account
+    
+---
+
+## GIFs of the Application in Action
+
+Here are some GIFs showing the app in use:
 
 ## **Account screens**
 Create an account & sign in
