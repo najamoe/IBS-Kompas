@@ -1,6 +1,6 @@
 # IBS-Kompas &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/najamoe/IBS-Kompas/blob/master/Docs/images/logo.png" height="140" height="320" />
 
-### Mobile application for tracking possible causes of IBS flare up
+### Mobile application for tracking possible causes of IBS flare ups
 #### Created with react native & Expo Go
 ##### Exam assignment for AP graduate in computer science 2025
 
