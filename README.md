@@ -1,4 +1,4 @@
-# IBS-Kompas &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/najamoe/IBS-Kompas/blob/master/Docs/images/logo.png" height="170" height="350" />
+# IBS-Kompas &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/najamoe/IBS-Kompas/blob/master/Docs/images/logo.png" height="170" height="350" />
 
 ### Mobile application for tracking what causes outbreak of IBS
 #### Created with react native & Expo Go
