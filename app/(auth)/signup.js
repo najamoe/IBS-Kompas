@@ -103,7 +103,7 @@ const SignUp = () => {
             <CustomButton
               customStyles={[styles.buttonStyle]}
               textStyles={styles.buttonTextStyle}
-              title={loading ? "Opretter bruger" : "Opret bruger"}
+              title={loading ? "Opretter bruger..." : "Opret bruger"}
               handlePress={submitNewUser}
             />
           </View>

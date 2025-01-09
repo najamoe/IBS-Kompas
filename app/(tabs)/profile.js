@@ -411,7 +411,7 @@ const Profile = () => {
 
           <View style={styles.buttonContainer}>
             <CustomButton
-              title="Log ud"
+              title={loading ? "Logger ud..." : "Log ud"}
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#86C5D8" },
@@ -422,7 +422,7 @@ const Profile = () => {
             />
 
             <CustomButton
-              title="Skift password"
+              title={ "Skift password"}
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#AFDCEB", zIndeks: 1 },
@@ -434,7 +434,7 @@ const Profile = () => {
             />
 
             <CustomButton
-              title="Slet konto"
+              title={"Slet konto"}
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#a60202" },
@@ -477,7 +477,7 @@ const Profile = () => {
                 customStyles={styles.cancelButton}
               />
               <CustomButton
-                title="Ja, slet konto"
+                title={ loading ? "Sletter konto " : "Ja, slet konto"}
                 handlePress={handleDeleteUser}
                 customStyles={styles.deleteButton}
                 textStyles={styles.buttonTextStyle}

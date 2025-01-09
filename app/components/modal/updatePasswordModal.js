@@ -18,7 +18,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
 
   const handleChangePassword = async () => {
     console.log("Changing password...");
-
+    setLoading(true);
     // Validate form fields
     if (!currentPassword || !newPassword || !confirmPassword) {
       console.log("All fields are required");
@@ -51,6 +51,7 @@ const UpdatePasswordModal = ({ user, visible, closeModal }) => {
       Alert.alert("Success", "Password opdateret");
 
       // Close modal on success
+      setLoading(false);
       closeModal();
     } catch (error) {
       console.error("Error updating password:", error.message);
