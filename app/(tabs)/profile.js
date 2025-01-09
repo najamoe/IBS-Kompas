@@ -172,10 +172,10 @@ const Profile = () => {
       console.error("No authenticated user.");
       return;
     }
-
+    setLoading(true);
     try {
       await deleteUserAccount();
-
+      setLoading(false);
       setModalVisible(false);
       Alert.alert("Konto slettet", "Din konto er slettet");
     } catch (error) {
