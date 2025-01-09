@@ -92,3 +92,13 @@ Create an account & sign in
 ## Deleting Account
 
 <img src="https://github.com/najamoe/IBS-Kompas/blob/master/Docs/gifs/deleteAccount-gif.gif?raw=true" alt="Delete Account" height="450" />
+
+---
+# How to run the project with Expo go
+- Clone the repository into your preferred IDE
+  - in the terminal, run 'git clone https://github.com/najamoe/IBS-Kompas.git'
+- **Remember to have Node.js and npm installed on your local environment**
+- **Remember to have Expo CLI installed**
+- run npm install to install dependencies 
+- start the project using npm start
+
