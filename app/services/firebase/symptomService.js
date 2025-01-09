@@ -1,4 +1,4 @@
-import { doc, collection, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import moment from "moment";
 import FirebaseConfig from "../../firebase/FirebaseConfig";
 
@@ -104,7 +104,6 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
       .format("YYYY-MM-DD");
 
     const symptomsForWeek = [];
-    const symptomLogsRef = collection(firestore, `users/${userId}/symptomLogs`);
 
     // Loop over all days of the week to fetch symptom log for each day
     for (
