@@ -53,16 +53,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-    marginLeft: 8, // Space between icon and text
+    marginLeft: 8, 
   },
   loading: {
     opacity: 0.5,
   },
   buttonContent: {
-    flexDirection: "row", // Layout for icon and text (horizontal)
-    alignItems: "center", // Vertically center both
+    flexDirection: "row", 
+    alignItems: "center", 
   },
   icon: {
-    marginRight: 8, // Space between icon and text
+    marginRight: 8, 
   },
 });
