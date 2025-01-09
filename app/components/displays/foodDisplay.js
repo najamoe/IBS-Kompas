@@ -21,6 +21,7 @@ import {
 } from "../../services/firebase/foodService";
 
 const FoodDisplay = ({ type, user, selectedDate }) => {
+  const [loading, setLoading] = useState(false);
   const [foodData, setFoodData] = useState([]);
   const [isFoodModalVisible, setIsFoodModalVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -102,18 +103,21 @@ const handleDeleteItem = async () => {
   const handleUpdateItem = async () => {
     try {
       if (selectedItem) {
+        // Validate fields before setting loading to true
         if (!quantity || isNaN(quantity) || quantity <= 0 || !unit) {
           Alert.alert("Fejl", "Der er noget galt med mængden eller enheden.");
           return;
         }
+
+        setLoading(true); // Start loading before the operation begins
 
         const updatedItem = {
           ...selectedItem,
           quantity: quantity,
           unit: unit,
         };
-        console.log(selectedItem, quantity, unit);
 
+        console.log(selectedItem, quantity, unit);
 
         await updateFoodItem(
           user.uid,
@@ -123,6 +127,7 @@ const handleDeleteItem = async () => {
           selectedDate
         );
 
+        // Update the food data in the state
         setFoodData((prevFoodData) =>
           prevFoodData.map((item) =>
             item.id === selectedItem.id ? updatedItem : item
@@ -133,7 +138,6 @@ const handleDeleteItem = async () => {
         setItemName("");
         setQuantity("");
         setUnit("");
-
         setShowUpdateModal(false);
       }
     } catch (error) {
@@ -142,9 +146,11 @@ const handleDeleteItem = async () => {
         "Opdatering mislykkedes",
         "Der skete en fejl under opdatering af maden."
       );
-      setShowUpdateModal(false);
+    } finally {
+      setLoading(false); // Ensure loading is stopped even if an error occurs
     }
   };
+
 
 
   const handleCloseModal = () => {
@@ -284,7 +290,7 @@ const handleDeleteItem = async () => {
 
                 <CustomButton
                   customStyles={[styles.addButton]}
-                  title={"Opdater"}
+                  title={ loading ? "Opdaterer..." :  "Opdater"}
                   handlePress={handleUpdateItem}
                 />
               </View>
