@@ -131,6 +131,7 @@ export const fetchSymptomsForWeek = async (userId, selectedDate) => {
           ...symptoms.map((symptom) => ({
             name: symptom.symptom,
             intensity: symptom.intensity,
+            date: date,
           }))
         );
       } else {
