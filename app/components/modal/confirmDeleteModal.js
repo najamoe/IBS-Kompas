@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import CustomButton from "../CustomButton";
 
 const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
+  const [loading, setLoading] = useState(false);
   if (!isVisible) return null;
 
   return (
@@ -10,11 +11,11 @@ const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
-        onPress={onCancel} // Close modal when background is pressed
+        onPress={onCancel}
       >
         <TouchableOpacity
           style={styles.modalContent}
-          activeOpacity={1} // Prevent click-through on the modal content
+          activeOpacity={1} 
         >
           <Text style={styles.modalText}>
             Er du sikker på, at du vil slette?
@@ -27,7 +28,7 @@ const ConfirmDeleteModal = ({ isVisible, onConfirm, onCancel }) => {
               textStyles={styles.buttonText}
             />
             <CustomButton
-              title="Ja"
+              title={ loading ? "Sletter..." :"Ja"}
               handlePress={onConfirm}
               customStyles={styles.confirmButton}
               textStyles={styles.buttonText}
