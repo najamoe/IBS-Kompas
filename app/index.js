@@ -4,11 +4,15 @@ import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import CustomButton from "./components/CustomButton";
+import { LogBox } from "react-native";
 
 import logo from "../assets/images/logo.png";
 
-export default function App() {
+LogBox.ignoreLogs([
+  "Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.",
+]);
 
+export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ height: "100%" }}>
@@ -34,7 +38,7 @@ export default function App() {
           />
         </View>
       </ScrollView>
-   
+
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
