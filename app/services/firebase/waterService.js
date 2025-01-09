@@ -28,7 +28,7 @@ export const addWaterIntake = async (userId, amount) => {
 // Function to subscribe to daily water intake changes
 export const subscribeToDailyWaterIntake = (userId, date, callback) => {
   
-  const waterDocRef = doc(firestore, `users/${userId}/waterlogs/${date}`); // firestore instance
+  const waterDocRef = doc(firestore, `users/${userId}/waterlogs/${date}`); 
 
   // Set up a snapshot listener to watch for changes in this document
   const unsubscribe = onSnapshot(waterDocRef, (docSnapshot) => {
@@ -36,12 +36,12 @@ export const subscribeToDailyWaterIntake = (userId, date, callback) => {
       const totalWaterIntake = docSnapshot.data().total || 0; 
       callback(totalWaterIntake);
     } else {
-      // Handle case when the document does not exist (could be zero water intake)
+      // Handle case when the document does not exist 
       callback(0);
     }
   });
 
-  return unsubscribe; // Return unsubscribe function to stop listening when needed
+  return unsubscribe; 
 };
 
 export const subscribeToWeeklyWaterIntake = (

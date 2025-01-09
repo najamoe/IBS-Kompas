@@ -37,7 +37,8 @@ export const addWellnessLog = async (userId, emoticonType) => {
     throw error;
   }
 };
-// Used in home.js 
+
+
 export const subscribeWellnessLog = (userId, date, callback) => {
   if (!firestore || !userId || !date) {
     throw new Error("Firestore instance, userId, or date is missing");
@@ -52,16 +53,15 @@ export const subscribeWellnessLog = (userId, date, callback) => {
       if (snapshot.exists()) {
         callback(snapshot.data().emoticonType);
       } else {
-        callback(0); // Default value if no document exists
+        callback(0); 
       }
     },
     (error) => {
       console.log("Error fetching emoticonType:", error);
-      // Handle error if necessary, for example, show a message
+      
     }
   );
 
-  // Return the unsubscribe function so it can be used later (e.g., to unsubscribe)
   return unsubscribe;
 };
 
