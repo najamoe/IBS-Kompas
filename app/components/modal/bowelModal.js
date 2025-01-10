@@ -80,17 +80,19 @@ const BowelModal = ({ isVisible, onClose }) => {
     }
     const auth = getAuth();
     const userId = auth.currentUser.uid;
+
     try {
+    
       // Call the addBowelLog service with the necessary parameters
       await addBowelLog(
-      userId,
+        userId,
         selectedBowelType,
         pain,
         blood,
         urgent,
         notes,
-        date
       );
+
       Alert.alert("Gemt", "Informationer er gemt");
       onClose(); // Close the modal after saving
     } catch (error) {
