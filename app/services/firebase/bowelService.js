@@ -25,11 +25,9 @@ export const addBowelLog = async (
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-    // Get the current local date and time
-    const localDate = new Date();
-
+    
     // Format the date to 'YYYY-MM-DD'
-    const date = localDate.toISOString().split("T")[0]; // YYYY-MM-DD
+    const date = moment().format("YYYY-MM-DD");
     const time = moment().tz("Europe/Copenhagen").format("HH:mm:ss");
 
     // Reference to the bowelLogs collection under the user
