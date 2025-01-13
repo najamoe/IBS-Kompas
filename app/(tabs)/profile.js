@@ -59,7 +59,6 @@ const Profile = () => {
   const [editedValue, setEditedValue] = useState("");
   const [ibsType, setIbsType] = useState(null);
   const [selectedAllergies, setSelectedAllergies] = useState([]);
-
   const [gender, setGender] = useState("");
   const [waterGoal, setWaterGoal] = useState(userData?.waterGoal || "");
 
@@ -69,27 +68,38 @@ const Profile = () => {
       setRefreshing(false);
     }, 200);
   }, []);
-
  useEffect(() => {
-   const fetchData = async () => {
+   const getUserData = async () => {
      const auth = getAuth();
      const user = auth.currentUser;
-     if (!user) return;
+     if (!user) {
+       console.error("No authenticated user.");
+       setLoading(false);
+       return;
+     }
      try {
        const data = await fetchUserDetails(user.uid);
+
        setUserData(data);
-       await checkCompletedProfile(data, setUserData); // Initial check
+       if (data.gender) setGender(data.gender);
+       if (data.allergies) setSelectedAllergies(data.allergies);
+       if (data.birthday) setDate(new Date(data.birthday));
+       if (data.WaterGoal) setWaterGoal(data.WaterGoal);
+       if (data.ibsType) setIbsType(data.ibsType);
      } catch (error) {
        console.error("Error fetching user details:", error);
+     } finally {
+       setLoading(false);
      }
    };
-   fetchData();
+   getUserData();
  }, []);
 
 
   const handleSave = async () => {
     const user = auth.currentUser;
-    if (!user || !editingField || !editedValue) return;
+    if (!user || !editingField || !editedValue) 
+      return;
 
     try {
       // Update field based on `editingField`
