@@ -127,8 +127,8 @@ const Home = () => {
       />
 
       <CompleteProfileModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
+        modalVisible={modalVisible} // Modal displayed if profile is not completed
+        setModalVisible={setModalVisible} // Function to set modal visibility
         userData={userData}
         setUserData={setUserData}
       />
