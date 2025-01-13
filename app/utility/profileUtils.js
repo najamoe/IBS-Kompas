@@ -24,10 +24,11 @@ export const checkCompletedProfile = async (userData, setUserData) => {
       });
       setUserData((prevData) => ({
         ...prevData,
-        profileCompleted: updatedProfileCompleted, // Update the local state
+        profileCompleted: updatedProfileCompleted, 
       }));
     } catch (error) {
       console.error("Error updating completedProfile:", error);
     }
   }
 };
+

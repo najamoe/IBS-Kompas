@@ -2,14 +2,9 @@ import { StyleSheet, Text, View, Modal } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 import CustomButton from "../CustomButton";
-import { checkCompletedProfile } from "../../utility/profileUtils"; // Assuming this checks the profile
+import { checkCompletedProfile } from "../../utility/profileUtils"; 
 
-const CompleteProfileModal = ({
-  userData,
-  setUserData,
-  setModalVisible,
-  modalVisible,
-}) => {
+const CompleteProfileModal = ({ userData, setUserData, setModalVisible, modalVisible,}) => {
   return (
     <Modal
       animationType="slide"
@@ -20,42 +15,41 @@ const CompleteProfileModal = ({
       }}
     >
       <View style={styles.modalOverlay}>
-      <View style={styles.container}>
-        <Text style={styles.titleText}> Færdiggør din profil </Text>
-        <View style={styles.contentContainer}>
-        <Text style={styles.modalText}>
-          For at få den bedste oplevelse med appen, anbefaler vi at du udfylder
-          din profil.
-        </Text>
-        <Text style={styles.modalText}>
-          Du kan altid springe dette trin over og udfylde din profil senere.
-        </Text>
-        <Text style={styles.modalText}>
-          Ønsker du at færdiggøre din profil nu?
-        </Text>
+        <View style={styles.container}>
+          <Text style={styles.titleText}> Færdiggør din profil </Text>
+          <View style={styles.contentContainer}>
+            <Text style={styles.modalText}>
+              For at få den bedste oplevelse med appen, anbefaler vi at du
+              udfylder din profil.
+            </Text>
+            <Text style={styles.modalText}>
+              Du kan altid springe dette trin over og udfylde din profil senere.
+            </Text>
+            <Text style={styles.modalText}>
+              Ønsker du at færdiggøre din profil nu?
+            </Text>
 
-        <View style={styles.buttonContainer}>
-           <CustomButton
-            title="Spring over"
-            customStyles={styles.skipButton}
-            handlePress={() => {
-              setModalVisible(false);
-            }}
-          />
-          <CustomButton
-            title="Færdiggør Profil"
-            customStyles={styles.finishButton}
-            handlePress={() => {
-              // Calling the imported function to check if the profile is complete
-              checkCompletedProfile(userData, setUserData);
-              setModalVisible(false);
-              router.replace("/profile");
-            }}
-          />
-         
+            <View style={styles.buttonContainer}>
+              <CustomButton
+                title="Spring over"
+                customStyles={styles.skipButton}
+                handlePress={() => {
+                  setModalVisible(false);
+                }}
+              />
+              <CustomButton
+                title="Færdiggør Profil"
+                customStyles={styles.finishButton}
+                handlePress={() => {
+                  // Calling the imported function to check if the profile is complete
+                  checkCompletedProfile(userData, setUserData);
+                  setModalVisible(false);
+                  router.replace("/profile");
+                }}
+              />
+            </View>
           </View>
         </View>
-      </View>
       </View>
     </Modal>
   );

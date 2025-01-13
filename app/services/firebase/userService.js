@@ -5,8 +5,8 @@ const { db } = firebaseConfig; // Get Firestore instance
 
 export const addUserToFirestore = async (uid, userData) => {
   try {
-    const userRef = doc(db, "users", uid); // Use doc() to reference the document
-    await setDoc(userRef, userData); // Use setDoc to write data
+    const userRef = doc(db, "users", uid); 
+    await setDoc(userRef, userData); 
   } catch (error) {
     console.error("Error adding user to Firestore:", error.message);
     throw error;
@@ -14,7 +14,7 @@ export const addUserToFirestore = async (uid, userData) => {
 };
 
 export const fetchUserDetails = async (uid) => {
-  const userRef = doc(db, "users", uid); // Ensure the collection name is correct
+  const userRef = doc(db, "users", uid); 
   const userSnap = await getDoc(userRef);
 
   if (userSnap.exists()) {
@@ -28,7 +28,7 @@ export const fetchUserDetails = async (uid) => {
 export const updateUserDetails = async (uid, updates) => {
   try {
     const userRef = doc(db, "users", uid);
-    await updateDoc(userRef, updates); // Update the document with the provided data
+    await updateDoc(userRef, updates); 
   } catch (error) {
     console.error("Error updating user details:", error.message);
     throw error;
