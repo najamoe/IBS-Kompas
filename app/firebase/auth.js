@@ -37,7 +37,7 @@ export const createUser = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      email,
+      email.trim(),
       password
     );
     return userCredential;
@@ -55,7 +55,7 @@ export const signInUser = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
-      email,
+      email.trim(),
       password
     );
     return userCredential;
