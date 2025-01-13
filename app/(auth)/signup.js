@@ -28,9 +28,7 @@ const SignUp = () => {
       Alert.alert("Adgangskoderne matcher ikke.");
       return;
     }
-
     setLoading(true);
-
     try {
       // Create user with Firebase Authentication
       const userCredential = await createUser(email, password);
