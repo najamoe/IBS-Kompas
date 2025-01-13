@@ -23,29 +23,33 @@ const Home = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
 
-  // Check if the user is signed in
- useEffect(() => {
-   const auth = getAuth();
-   const currentUser = auth.currentUser;
+  // Check if the user is signed in & fetch data to see if the profile is completed
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
 
-   if (currentUser) {
-     // Fetching user details using the uid
-     fetchUserDetails(currentUser.uid)
-       .then((fetchedUserData) => {
-         if (fetchedUserData) {
-           setUserData(fetchedUserData);
+      if (currentUser) {
+        // Fetch user details using the uid
+        const fetchedUserData = await fetchUserDetails(currentUser.uid);
 
-           // modal displayed if profile is not completed
-           if (fetchedUserData.profileCompleted === false) {
-             setModalVisible(true);
-           }
-         }
-       })
-       .catch((error) => {
-         console.error("Error fetching user details:", error);
-       });
-   }
- }, []);
+        if (fetchedUserData) {
+          setUserData(fetchedUserData);
+
+          // Display modal if the profile is not completed
+          if (fetchedUserData.profileCompleted === false) {
+            setModalVisible(true);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  fetchData();
+}, []);
 
   // Format date function to display in DD/MM/YYYY format
   const formatDateDisplay = (date) => {
