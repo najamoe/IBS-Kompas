@@ -24,32 +24,32 @@ const Home = () => {
   const [userData, setUserData] = useState(null);
 
   // Check if the user is signed in & fetch data to see if the profile is completed
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
 
-      if (currentUser) {
-        // Fetch user details using the uid
-        const fetchedUserData = await fetchUserDetails(currentUser.uid);
+        if (currentUser) {
+          // Fetch user details using the uid
+          const fetchedUserData = await fetchUserDetails(currentUser.uid);
 
-        if (fetchedUserData) {
-          setUserData(fetchedUserData);
+          if (fetchedUserData) {
+            setUserData(fetchedUserData);
 
-          // Display modal if the profile is not completed
-          if (fetchedUserData.profileCompleted === false) {
-            setModalVisible(true);
+            // Display modal if the profile is not completed
+            if (fetchedUserData.profileCompleted === false) {
+              setModalVisible(true);
+            }
           }
         }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
       }
-    } catch (error) {
-      console.error("Error fetching user details:", error);
-    }
-  };
+    };
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
   // Format date function to display in DD/MM/YYYY format
   const formatDateDisplay = (date) => {
@@ -86,58 +86,64 @@ useEffect(() => {
       <ScrollView
         contentContainerStyle={[
           styles.container,
-          { paddingBottom: TAB_BAR_HEIGHT + 10 }, 
+          { paddingBottom: TAB_BAR_HEIGHT + 10 },
         ]}
       >
-      <View style={styles.dateContainer}>
-        {/* Header with date navigation */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => handleDayChange(-1)}>
-            <AntDesign style={styles.arrowIcons} name="left" size={22} />
-          </TouchableOpacity>
-          <Text style={styles.dateText}>{formatDateDisplay(selectedDate)}</Text>
-          <TouchableOpacity onPress={() => handleDayChange(1)}>
-            <AntDesign style={styles.arrowIcons} name="right" size={22} />
-          </TouchableOpacity>
+        <View style={styles.dateContainer}>
+          {/* Header with date navigation */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => handleDayChange(-1)}>
+              <AntDesign style={styles.arrowIcons} name="left" size={22} />
+            </TouchableOpacity>
+            <Text style={styles.dateText}>
+              {formatDateDisplay(selectedDate)}
+            </Text>
+            <TouchableOpacity onPress={() => handleDayChange(1)}>
+              <AntDesign style={styles.arrowIcons} name="right" size={22} />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <View style={styles.foodContainer}>
-        <Text style={styles.logTitle}> Madlog </Text>
+        <View style={styles.foodContainer}>
+          <Text style={styles.logTitle}> Madlog </Text>
 
-        <FoodDisplay type="breakfast" user={user} selectedDate={selectedDate} />
+          <FoodDisplay
+            type="breakfast"
+            user={user}
+            selectedDate={selectedDate}
+          />
 
-        <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
-        <FoodDisplay type="dinner" user={user} selectedDate={selectedDate} />
-        <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
-      </View>
+          <FoodDisplay type="lunch" user={user} selectedDate={selectedDate} />
+          <FoodDisplay type="dinner" user={user} selectedDate={selectedDate} />
+          <FoodDisplay type="snack" user={user} selectedDate={selectedDate} />
+        </View>
 
-      <WaterDisplay user={user} selectedDate={selectedDate} />
+        <WaterDisplay user={user} selectedDate={selectedDate} />
 
-      <BowelDisplay user={user} selectedDate={selectedDate} />
+        <BowelDisplay user={user} selectedDate={selectedDate} />
 
-      <WellnessDisplay
-        user={user}
-        selectedDate={selectedDate}
-        symptoms={symptoms}
-        setSymptoms={setSymptoms}
-      />
+        <WellnessDisplay
+          user={user}
+          selectedDate={selectedDate}
+          symptoms={symptoms}
+          setSymptoms={setSymptoms}
+        />
 
-      <SymptomDisplay
-        user={user}
-        selectedDate={selectedDate}
-        symptoms={symptoms}
-        setSymptoms={setSymptoms}
-      />
+        <SymptomDisplay
+          user={user}
+          selectedDate={selectedDate}
+          symptoms={symptoms}
+          setSymptoms={setSymptoms}
+        />
 
-      <CompleteProfileModal
-        modalVisible={modalVisible} // Modal displayed if profile is not completed
-        setModalVisible={setModalVisible} // Function to set modal visibility
-        userData={userData}
-        setUserData={setUserData}
-      />
-    </ScrollView>
-  </SafeAreaView>
+        <CompleteProfileModal
+          modalVisible={modalVisible} // Modal displayed if profile is not completed
+          setModalVisible={setModalVisible} // Function to set modal visibility
+          userData={userData}
+          setUserData={setUserData}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
