@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { getAuth } from "firebase/auth";
 import { AntDesign } from "@expo/vector-icons";
+import { fetchUserDetails } from "../services/firebase/userService";
+import CompleteProfileModal from "../components/modal/completeProfileModal";
 import FoodDisplay from "../components/displays/foodDisplay";
 import SymptomDisplay from "../components/displays/symptomDisplay";
 import BowelDisplay from "../components/displays/bowelDisplay";
@@ -18,14 +20,32 @@ import WellnessDisplay from "../components/displays/wellnessDisplay";
 const TAB_BAR_HEIGHT = 60;
 
 const Home = () => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
+
   // Check if the user is signed in
-  useEffect(() => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setUser(currentUser); // Store user info
-    }
-  }, []);
+ useEffect(() => {
+   const auth = getAuth();
+   const currentUser = auth.currentUser;
+
+   if (currentUser) {
+     // Fetching user details using the uid
+     fetchUserDetails(currentUser.uid)
+       .then((fetchedUserData) => {
+         if (fetchedUserData) {
+           setUserData(fetchedUserData);
+
+           // modal displayed if profile is not completed
+           if (fetchedUserData.profileCompleted === false) {
+             setModalVisible(true);
+           }
+         }
+       })
+       .catch((error) => {
+         console.error("Error fetching user details:", error);
+       });
+   }
+ }, []);
 
   // Format date function to display in DD/MM/YYYY format
   const formatDateDisplay = (date) => {
@@ -104,6 +124,13 @@ const Home = () => {
         selectedDate={selectedDate}
         symptoms={symptoms}
         setSymptoms={setSymptoms}
+      />
+
+      <CompleteProfileModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        userData={userData}
+        setUserData={setUserData}
       />
     </ScrollView>
   </SafeAreaView>
