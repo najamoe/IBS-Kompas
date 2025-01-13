@@ -29,6 +29,7 @@ import {
   updateUserDetails,
 } from "../services/firebase/userService";
 import UpdatePasswordModal from "../components/modal/updatePasswordModal";
+import { checkCompletedProfile } from "../utility/profileUtils";
 import icon from "../../assets/icon.png";
 
 const { auth } = firebaseConfig;
@@ -69,62 +70,21 @@ const Profile = () => {
     }, 200);
   }, []);
 
-  useEffect(() => {
-    const getUserData = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        console.error("No authenticated user.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const data = await fetchUserDetails(user.uid);
-
-        setUserData(data);
-        if (data.gender) setGender(data.gender);
-        if (data.allergies) setSelectedAllergies(data.allergies);
-        if (data.birthday) setDate(new Date(data.birthday));
-        if (data.WaterGoal) setWaterGoal(data.WaterGoal);
-        if (data.ibsType) setIbsType(data.ibsType);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getUserData();
-  }, []);
-
-const checkCompletedProfile = async () => {
-  const { name, birthday, gender, ibsType, waterGoal } = userData || {};
-
-  // Check if all fields are filled
-  const isCompleted =
-    name &&
-    birthday &&
-    gender &&
-    ibsType &&
-    waterGoal &&
-    name.trim() !== "" &&
-    gender.trim() !== "" &&
-    ibsType.trim() !== "" &&
-    waterGoal.trim() !== "";
-
-  if (isCompleted !== userData.profileCompleted) {
-    // Update the Firestore database
-    try {
-      await updateUserDetails(userData.uid, { profileCompleted: isCompleted });
-      setUserData((prevData) => ({
-        ...prevData,
-        profileCompleted: isCompleted,
-      }));
-    } catch (error) {
-      console.error("Error updating completedProfile:", error);
-    }
-  }
-};
-
+ useEffect(() => {
+   const fetchData = async () => {
+     const auth = getAuth();
+     const user = auth.currentUser;
+     if (!user) return;
+     try {
+       const data = await fetchUserDetails(user.uid);
+       setUserData(data);
+       await checkCompletedProfile(data, setUserData); // Initial check
+     } catch (error) {
+       console.error("Error fetching user details:", error);
+     }
+   };
+   fetchData();
+ }, []);
 
 
   const handleSave = async () => {
@@ -141,7 +101,7 @@ const checkCompletedProfile = async () => {
         [editingField]: editedValue,
       }));
 
-      await checkCompletedProfile();
+      await checkCompletedProfile(userData, setUserData);
 
       Alert.alert("Success", "Dine oplysninger er blevet opdateret");
       setEditingField(null);
@@ -446,7 +406,7 @@ const checkCompletedProfile = async () => {
 
           <View style={styles.buttonContainer}>
             <CustomButton
-              title={loading ? "Logger ud..." : "Log ud"}
+              title={loading ? "Log ud" : "Logger ud..."}
               customStyles={[
                 styles.buttonStyle,
                 { backgroundColor: "#86C5D8" },
