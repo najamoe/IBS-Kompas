@@ -11,9 +11,6 @@ export const checkCompletedProfile = async (userData, setUserData) => {
     ibsType &&
     waterGoal &&
     name.trim() !== "" &&
-    birthday.trim() !== "" &&
-    gender.trim() !== "" &&
-    ibsType.trim() !== "" &&
     waterGoal.trim() !== "";
 
   // Ensure profileCompleted is a Boolean value
