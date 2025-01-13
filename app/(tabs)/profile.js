@@ -96,6 +96,37 @@ const Profile = () => {
     getUserData();
   }, []);
 
+const checkCompletedProfile = async () => {
+  const { name, birthday, gender, ibsType, waterGoal } = userData || {};
+
+  // Check if all fields are filled
+  const isCompleted =
+    name &&
+    birthday &&
+    gender &&
+    ibsType &&
+    waterGoal &&
+    name.trim() !== "" &&
+    gender.trim() !== "" &&
+    ibsType.trim() !== "" &&
+    waterGoal.trim() !== "";
+
+  if (isCompleted !== userData.profileCompleted) {
+    // Update the Firestore database
+    try {
+      await updateUserDetails(userData.uid, { profileCompleted: isCompleted });
+      setUserData((prevData) => ({
+        ...prevData,
+        profileCompleted: isCompleted,
+      }));
+    } catch (error) {
+      console.error("Error updating completedProfile:", error);
+    }
+  }
+};
+
+
+
   const handleSave = async () => {
     const user = auth.currentUser;
     if (!user || !editingField || !editedValue) return;
@@ -109,6 +140,9 @@ const Profile = () => {
         ...prevData,
         [editingField]: editedValue,
       }));
+
+      await checkCompletedProfile();
+
       Alert.alert("Success", "Dine oplysninger er blevet opdateret");
       setEditingField(null);
       setEditedValue("");
@@ -257,6 +291,7 @@ const Profile = () => {
                       updateUserDetails(userData.uid, { gender: value })
                         .then(() => {
                           setGender(value);
+                          checkCompletedProfile();
                         })
                         .catch((error) => {
                           console.error("Error updating gender:", error);
