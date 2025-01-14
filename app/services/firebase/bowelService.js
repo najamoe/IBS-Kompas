@@ -63,16 +63,16 @@ export const subscribeBowelLog = (userId, date, callback) => {
     if (!firestore || !userId) {
       throw new Error("Firestore instance or userId is missing.");
     }
-    // Reference to the bowelLogs collection under the user
+    // Referencing the collection
     const bowelRef = collection(
       firestore,
       `users/${userId}/bowelLogs/${date}/timeLogs`
     );
 
-    // Create a query (you can add filters here as needed)
+    // Creating a query to get all documents in the collection
     const q = query(bowelRef);
 
-    // Use onSnapshot to listen for changes in real time
+    // Using onSnapshot to listen for changes in real time
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
         // Map through the snapshot.docs array
@@ -85,7 +85,7 @@ export const subscribeBowelLog = (userId, date, callback) => {
 
         callback(bowelLogs); // Pass the updated logs to the callback
       } else {
-        callback(null); // No logs for the given date
+        callback(null); 
       }
     });
 
@@ -114,7 +114,7 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, selectedDate) => {
     const dailyBowelLog = [];
     const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
 
-    // Loop through each day of the week
+    // Looping through each day of the week
     for (
       let currentDate = moment(startOfWeek);
       currentDate.isBefore(moment(endOfWeek).add(1, "days"));
@@ -133,7 +133,7 @@ export const fetchWeeklyBowelLogByFrequency = async (userId, selectedDate) => {
       // Push the daily log with the total
       dailyBowelLog.push({
         date,
-        total: total || 0, // Default to 0 if no logs for the day
+        total: total || 0, // Default to 0 if no logs for the day (so the chart dosent get error)
       });
     }
 
@@ -160,10 +160,10 @@ export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
 
     const bowelTypeCount = {};
 
-    // Reference to the `bowelLogs` collection
+    // Referencing the collection
     const bowelLogsRef = collection(firestore, `users/${userId}/bowelLogs`);
 
-    // Loop through each day of the week
+    // Looping through each day of the week
     for (
       let currentDate = moment(startOfWeek);
       currentDate.isBefore(moment(endOfWeek).add(1, "days"));
@@ -171,7 +171,7 @@ export const fetchWeeklyBowelLogByType = async (userId, selectedDate) => {
     ) {
       const date = currentDate.format("YYYY-MM-DD");
 
-      // Reference to the 'timeLogs' sub-collection for the current date
+      // Referencing the 'timeLogs' sub-collection for the current date
       const dateDocRef = doc(bowelLogsRef, date);
       const timeLogsRef = collection(dateDocRef, "timeLogs");
 
@@ -290,11 +290,9 @@ export const deleteBowelLog = async (userId, time) => {
       throw new Error("Firestore instance, userId, or time is missing.");
     }
 
-    // Calculate the date based on the time
     const localDate = new Date();
-    const date = localDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
-
-    // Reference to the specific bowel log document
+    const date = localDate.toISOString().split("T")[0]; 
+    
     const bowelLogsRef = collection(
       firestore,
       `users/${userId}/bowelLogs/${date}/timeLogs`
