@@ -42,14 +42,14 @@ export const addSymptoms = async (userId, date, symptoms) => {
       }
     });
 
-    // If the document doesn't exist, create it; otherwise, update it
+    // If the document doesn't exist, create it -  otherwise, updates it
     if (symptomDoc.exists()) {
       await updateDoc(symptomDocRef, {
-        symptoms: updatedSymptoms, // Replace the entire symptoms array
+        symptoms: updatedSymptoms, // Replaces the entire symptoms array
       });
     } else {
       await setDoc(symptomDocRef, {
-        symptoms: updatedSymptoms, // Create the new document with the symptoms
+        symptoms: updatedSymptoms, // Creates the new document with the symptoms
       });
     }
   } catch (error) {
