@@ -92,9 +92,7 @@ export const subscribeToWeeklyWaterIntake = (
         }
       }
 
-      // Sort the array by date
-      dailyWaterIntakes.sort((a, b) => moment(a.date).diff(moment(b.date)));
-
+  
       // Trigger the callback with the updated data
       callback(dailyWaterIntakes);
     });
