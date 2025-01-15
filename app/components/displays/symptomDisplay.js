@@ -59,7 +59,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
       } catch (error) {
         console.error("Error fetching symptoms from SymptomDisplay:", error);
       } finally {
-        setLoading(false); // Stop loading after data is fetched or on error
+        setLoading(false); 
       }
     };
 
@@ -113,8 +113,8 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             {/* Custom Slider with Gradient Background */}
             <LinearGradient
               colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
-              start={{ x: 0, y: 0 }} // Start from left (green)
-              end={{ x: 1, y: 0 }} // End at right (red)
+              start={{ x: 0, y: 0 }} // Start from left 
+              end={{ x: 1, y: 0 }} // End at right 
               style={styles.gradientBackground}
             >
               <Slider
@@ -122,14 +122,14 @@ const SymptomDisplay = ({ user, selectedDate }) => {
                 minimumValue={0}
                 maximumValue={10}
                 step={1}
-                value={symptomIntensities[symptomOption.value]} // Get the current intensity value
+                value={symptomIntensities[symptomOption.value]} // Getting the current intensity value
                 onValueChange={(value) =>
                   handleSliderChange(symptomOption.value, value)
                 } // Update intensity when slider changes
                 onSlidingComplete={handleSliderRelease} // Save symptoms when sliding is complete
                 minimumTrackTintColor="transparent" // Set track colors via gradient background
                 maximumTrackTintColor="transparent"
-                thumbTintColor="white" // White thumb color for better visibility
+                thumbTintColor="white" 
               />
             </LinearGradient>
           </View>
@@ -162,12 +162,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "center", // Center the title text
+    textAlign: "center", 
   },
   symptomsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center", // Center symptoms horizontally
+    justifyContent: "center", 
     width: "100%",
   },
   symptomContainer: {
@@ -197,12 +197,12 @@ const styles = StyleSheet.create({
   },
   centeredIntensity: {
     position: "absolute",
-    top: "-10%", // Center it vertically
-    left: "45%", // Center it horizontally// Offset to truly center
-    fontSize: 100, // Large font size
+    top: "-10%",
+    left: "45%", 
+    fontSize: 100, 
     fontWeight: "bold",
-    color: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
-    backgroundColor: "transparent", // Transparent background
+    color: "rgba(0, 0, 0, 0.5)", 
+    backgroundColor: "transparent", 
   },
   valueText: {
     fontSize: 20,
