@@ -38,28 +38,30 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             symptom: symptom.value,
             intensity: 0,
           }));
+
+          // Add default symptoms to Firestore
           await addSymptoms(user.uid, selectedDate, defaultSymptoms);
-          setSymptomIntensities(
-            defaultSymptoms.reduce((acc, symptom) => {
-              acc[symptom.symptom] = symptom.intensity;
-              return acc;
-            }, {})
-          );
+
+          // Set the default intensities in state
+          const symptomObject = {};
+          defaultSymptoms.map(({ symptom, intensity }) => {
+            symptomObject[symptom] = intensity;
+          });
+
+          setSymptomIntensities(symptomObject);
         } else {
           // Map the fetched symptoms to the state
-          const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
-            const fetchedSymptom = symptomsFromFirestore.find(
-              (s) => s.name === symptom.value
-            );
-            acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
-            return acc;
-          }, {});
-          setSymptomIntensities(initialSymptoms);
+          const symptomObject = {};
+          symptomsFromFirestore.map(({ name, intensity }) => {
+            symptomObject[name] = intensity;
+          });
+
+          setSymptomIntensities(symptomObject);
         }
       } catch (error) {
         console.error("Error fetching symptoms from SymptomDisplay:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -68,6 +70,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
       initializeSymptoms();
     }
   }, [user, selectedDate]);
+
 
 
   const handleSliderChange = (symptom, value) => {
