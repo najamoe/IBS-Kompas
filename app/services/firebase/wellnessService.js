@@ -109,9 +109,9 @@ export const fetchWeeklyWellnessLog = async (userId, weekStartDate) => {
       }
     }
 
-    // If no valid emoticon types were found, return a default value or handle appropriately
+    // If no valid emoticon types were found, return a default value
     if (dailyMood.length === 0) {
-      return null; // or you could return a default value or handle it differently
+      return null;
     }
 
     // Count occurrences of each emoticon type
