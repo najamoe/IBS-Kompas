@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient"; 
-import {
-  addSymptoms,
-  fetchSymptoms,
-} from "../../services/firebase/symptomService";
+import {  addSymptoms, fetchSymptoms } from "../../services/firebase/symptomService";
 
 const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptomIntensities, setSymptomIntensities] = useState({});
@@ -39,6 +36,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             intensity: 0,
           }));
           await addSymptoms(user.uid, selectedDate, defaultSymptoms);
+          // Map the default symptoms to the state ( displayed in view )
           setSymptomIntensities(
             defaultSymptoms.reduce((acc, symptom) => {
               acc[symptom.symptom] = symptom.intensity;
@@ -46,7 +44,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             }, {})
           );
         } else {
-          // Map the fetched symptoms to the state
+          // Map the fetched symptoms to the state ( displayed in view )
           const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
             const fetchedSymptom = symptomsFromFirestore.find(
               (s) => s.name === symptom.value

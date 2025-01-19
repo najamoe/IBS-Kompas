@@ -65,40 +65,36 @@ const FoodDisplay = ({ type, user, selectedDate }) => {
     setIsFoodModalVisible(true);
   };
 
+  // Function to show the confirmation modal when a user clicks the delete button
   const confirmDeleteItem = (item) => {
     setItemToDelete(item);
     setIsDeleteModalVisible(true);
   };
+  // Function that is called when the user confirms the deletion, called from confirmDeleteModal
+  const handleDeleteItem = async () => {
+    try {
+      if (itemToDelete) {
+        // removing item from UI by matching timestamp
+        setFoodData((prevFoodData) =>
+          prevFoodData.filter(
+            (foodItem) => foodItem.timestamp !== itemToDelete.timestamp
+          )
+        );
+        // Perform the actual deletion from Firestore
+        await deleteFoodIntake(user.uid, itemToDelete, type);
 
-const handleDeleteItem = async () => {
-  try {
-    if (itemToDelete) {
-      // removing item from UI by matching timestamp
-      setFoodData((prevFoodData) =>
-        prevFoodData.filter(
-          (foodItem) =>
-            foodItem.timestamp !== itemToDelete.timestamp
-        )
-      );
-      // Perform the actual deletion from Firestore
-      await deleteFoodIntake(user.uid, itemToDelete, type);
+        // Close the modal and reset item to delete
+        setIsDeleteModalVisible(false);
+        setItemToDelete(null);
+      }
+    } catch (error) {
+      console.error("Error deleting food item:", error);
 
-      // Close the modal and reset item to delete
+      // Revert the UI update on error
+      setFoodData((prevFoodData) => [...prevFoodData]);
       setIsDeleteModalVisible(false);
-      setItemToDelete(null);
     }
-  } catch (error) {
-    console.error("Error deleting food item:", error);
-
-    // Revert the UI update on error
-    setFoodData((prevFoodData) => [
-      ...prevFoodData, 
-    ]);
-    setIsDeleteModalVisible(false);
-  }
-};
-
-
+  };
 
   const handleUpdateItem = async () => {
     try {
@@ -110,14 +106,12 @@ const handleDeleteItem = async () => {
         }
 
         setLoading(true); // Start loading before the operation begins
-
+        //Creating updated item object with new quantity and unit
         const updatedItem = {
           ...selectedItem,
           quantity: quantity,
           unit: unit,
         };
-
-        console.log(selectedItem, quantity, unit);
 
         await updateFoodItem(
           user.uid,
@@ -150,8 +144,6 @@ const handleDeleteItem = async () => {
       setLoading(false); // Ensure loading is stopped even if an error occurs
     }
   };
-
-
 
   const handleCloseModal = () => {
     setShowUpdateModal(false);
@@ -188,22 +180,21 @@ const handleDeleteItem = async () => {
         {foodData.length === 0 ? (
           <Text style={styles.noFoodText}>Intet mad tilføjet.</Text>
         ) : (
+          // if food items exist, its mpapped to display in the list
           foodData.map((item, index) => (
             <View
-              key={`${item.name}-${item.quantity}-${index}`}
+              key={item.id} // Unique key for each item from subscribeFoodIntake
               style={styles.foodItem}
             >
               <TouchableOpacity
                 onPress={() => {
+                  //Setting the selected item and opening the update modal
                   setSelectedItem(item);
                   setItemName(item.name);
                   setQuantity(item.quantity);
                   setUnit(item.unit || "");
                   setShowUpdateModal(true);
-                  // Log the selected item, quantity, and unit
-                  console.log("Opening modal for item:", item.name);
-                  console.log("Quantity:", item.quantity);
-                  console.log("Unit:", item.unit || "N/A");
+ 
                 }}
               >
                 <Text style={styles.foodItemText}>{item.name}</Text>
@@ -290,7 +281,7 @@ const handleDeleteItem = async () => {
 
                 <CustomButton
                   customStyles={[styles.addButton]}
-                  title={ loading ? "Opdaterer..." :  "Opdater"}
+                  title={loading ? "Opdaterer..." : "Opdater"}
                   handlePress={handleUpdateItem}
                 />
               </View>
