@@ -53,7 +53,7 @@ const FoodModal = ({ modalVisible, setModalVisible, userId, selectedType }) => {
             item.categories && item.categories.length > 0
               ? item.categories
               : ["ukendt"], // Defaulti to "ukendt" if categories are missing
-         
+         nutriment: item.nutriment,
         };
         await addFoodIntake(userId, foodData, selectedType); 
 
