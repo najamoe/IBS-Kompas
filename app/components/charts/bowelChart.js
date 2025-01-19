@@ -116,6 +116,7 @@ export const BowelChartByType = ({ userId, selectedDate }) => {
     type6,
     type7,
   };
+  
   const formatBowelType = (type) => {
     if (!type) return null;
     return type.replace(/type(\d)/, "Type $1"); // Converts "type4" to "Type 4"

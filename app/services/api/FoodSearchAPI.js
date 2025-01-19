@@ -20,6 +20,15 @@ export const searchProducts = async (query, page = 1) => {
       categories: product.categories
         ? product.categories.split(",").map((cat) => cat.trim())
         : [],
+      nutriment: {
+        energy: product.nutriments["energy-kcal_value"] || 0,
+        fat: product.nutriments.fat || 0,
+        carbohydrates: product.nutriments.carbohydrates || 0,
+        proteins: product.nutriments.proteins || 0,
+        fiber: product.nutriments.fiber || 0,
+        salt: product.nutriments.salt || 0,
+        sugars: product.nutriments.sugars || 0,
+      },
     }));
   } catch (error) {
     console.error("Error searching products:", error.message);

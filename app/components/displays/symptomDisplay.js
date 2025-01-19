@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
 import { LinearGradient } from "expo-linear-gradient"; 
-import {
-  addSymptoms,
-  fetchSymptoms,
-} from "../../services/firebase/symptomService";
+import {  addSymptoms, fetchSymptoms } from "../../services/firebase/symptomService";
 
 const SymptomDisplay = ({ user, selectedDate }) => {
   const [symptomIntensities, setSymptomIntensities] = useState({});
@@ -38,28 +35,30 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             symptom: symptom.value,
             intensity: 0,
           }));
+
+          // Add default symptoms to Firestore
           await addSymptoms(user.uid, selectedDate, defaultSymptoms);
-          setSymptomIntensities(
-            defaultSymptoms.reduce((acc, symptom) => {
-              acc[symptom.symptom] = symptom.intensity;
-              return acc;
-            }, {})
-          );
+
+          // Set the default intensities in state
+          const symptomObject = {};
+          defaultSymptoms.map(({ symptom, intensity }) => {
+            symptomObject[symptom] = intensity;
+          });
+
+          setSymptomIntensities(symptomObject);
         } else {
           // Map the fetched symptoms to the state
-          const initialSymptoms = symptomOptions.reduce((acc, symptom) => {
-            const fetchedSymptom = symptomsFromFirestore.find(
-              (s) => s.name === symptom.value
-            );
-            acc[symptom.value] = fetchedSymptom ? fetchedSymptom.intensity : 0;
-            return acc;
-          }, {});
-          setSymptomIntensities(initialSymptoms);
+          const symptomObject = {};
+          symptomsFromFirestore.map(({ name, intensity }) => {
+            symptomObject[name] = intensity;
+          });
+
+          setSymptomIntensities(symptomObject);
         }
       } catch (error) {
         console.error("Error fetching symptoms from SymptomDisplay:", error);
       } finally {
-        setLoading(false); // Stop loading after data is fetched or on error
+        setLoading(false);
       }
     };
 
@@ -68,6 +67,7 @@ const SymptomDisplay = ({ user, selectedDate }) => {
       initializeSymptoms();
     }
   }, [user, selectedDate]);
+
 
 
   const handleSliderChange = (symptom, value) => {
@@ -113,8 +113,8 @@ const SymptomDisplay = ({ user, selectedDate }) => {
             {/* Custom Slider with Gradient Background */}
             <LinearGradient
               colors={["green", "yellow", "red"]} // Gradient from green to yellow to red
-              start={{ x: 0, y: 0 }} // Start from left (green)
-              end={{ x: 1, y: 0 }} // End at right (red)
+              start={{ x: 0, y: 0 }} // Start from left 
+              end={{ x: 1, y: 0 }} // End at right 
               style={styles.gradientBackground}
             >
               <Slider
@@ -122,14 +122,14 @@ const SymptomDisplay = ({ user, selectedDate }) => {
                 minimumValue={0}
                 maximumValue={10}
                 step={1}
-                value={symptomIntensities[symptomOption.value]} // Get the current intensity value
+                value={symptomIntensities[symptomOption.value]} // Getting the current intensity value
                 onValueChange={(value) =>
                   handleSliderChange(symptomOption.value, value)
                 } // Update intensity when slider changes
                 onSlidingComplete={handleSliderRelease} // Save symptoms when sliding is complete
                 minimumTrackTintColor="transparent" // Set track colors via gradient background
                 maximumTrackTintColor="transparent"
-                thumbTintColor="white" // White thumb color for better visibility
+                thumbTintColor="white" 
               />
             </LinearGradient>
           </View>
@@ -162,12 +162,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "center", // Center the title text
+    textAlign: "center", 
   },
   symptomsWrapper: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center", // Center symptoms horizontally
+    justifyContent: "center", 
     width: "100%",
   },
   symptomContainer: {
@@ -197,12 +197,12 @@ const styles = StyleSheet.create({
   },
   centeredIntensity: {
     position: "absolute",
-    top: "-10%", // Center it vertically
-    left: "45%", // Center it horizontally// Offset to truly center
-    fontSize: 100, // Large font size
+    top: "-10%",
+    left: "45%", 
+    fontSize: 100, 
     fontWeight: "bold",
-    color: "rgba(0, 0, 0, 0.5)", // Semi-transparent black
-    backgroundColor: "transparent", // Transparent background
+    color: "rgba(0, 0, 0, 0.5)", 
+    backgroundColor: "transparent", 
   },
   valueText: {
     fontSize: 20,
